@@ -1,0 +1,113 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+.env
+*.egg-info/
+.eggs/
+dist/
+build/
+.installed.cfg
+*.egg
+
+# ===== Jupyter =====
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ===== Node.js =====
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm
+.yarn-integrity
+
+# ===== 前端构建 =====
+dist/
+build/
+.next/
+.nuxt/
+.output/
+.vite/
+.cache/
+
+# ===== 数据库与数据 =====
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+postgres_data/
+redis_data/
+backups/
+*.sql.bak
+
+# ===== 模型权重与数据集（体积大，不进 Git） =====
+*.pt
+*.pth
+*.onnx
+*.engine
+*.plan
+*.trt
+*.weights
+*.h5
+*.safetensors
+datasets/
+models_weights/
+runs/
+wandb/
+mlruns/
+
+# ===== 上传与生成文件 =====
+uploads/
+generated/
+reports/*.pdf
+reports/*.csv
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.webm
+
+# ===== 环境与密钥 =====
+.env
+.env.local
+.env.*.local
+secrets/
+*.key
+*.pem
+*.crt
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ===== 操作系统 =====
+desktop.ini
+.DS_Store
+
+# ===== 临时文件 =====
+tmp/
+temp/
+*.tmp
+*.log
+*.bak
+
+# ===== ComfyUI / MMAction2 缓存 =====
+.comfyui/
+.mmaction/
+.openmmlab/
+
+# ===== TRAE / AI 工具 =====
+.trae/
+.aider*
