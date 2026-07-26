@@ -1,0 +1,52 @@
+# ====================================================================
+# K9 Training Vision System - Backend Dependencies (Phase 0)
+# ====================================================================
+# Python 3.12 + PyTorch 2.11+cu128 baseline
+# PyTorch 不在此处指定版本，由 Phase 0 启动时按 ADR 0002 安装：
+#   pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
+
+# === Web 框架 ===
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+websockets==14.1
+
+# === Pydantic / 配置 ===
+pydantic==2.10.4
+pydantic-settings==2.7.1
+
+# === 数据库 ===
+SQLAlchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+psycopg2-binary==2.9.10
+alembic==1.14.0
+pgvector==0.5.0
+
+# === 任务队列 ===
+celery[redis]==5.4.0
+redis==5.2.1
+flower==2.0.1
+
+# === ML / CV（Phase 0 仅安装轻量，YOLO26 等大包留到 Phase 1） ===
+numpy==2.2.1
+pillow==11.0.0
+opencv-python-headless==4.10.0.84
+ultralytics==8.3.55
+
+# === 工具 ===
+python-dotenv==1.0.1
+loguru==0.7.3
+httpx==0.28.1
+python-dateutil==2.9.0.post0
+tqdm==4.67.1
+
+# === 测试 ===
+pytest==8.3.4
+pytest-asyncio==0.25.0
+httpx==0.28.1
+
+# === 报告生成 ===
+reportlab==4.2.5
+
+# === 文档（FastAPI 自动文档） ===
+# 已包含在 fastapi 中

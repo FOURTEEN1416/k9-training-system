@@ -1,8 +1,18 @@
 # Decision 0001: 中文路径迁移计划
 
 > 决策日期: 2026-07-26
-> 决策状态: 已确认（用户确认迁移到英文路径，但延后执行）
+> 决策状态: 已完成（2026-07-26 项目已迁移至 `D:\Desktop\k9-training-system`）
 > 决策类型: 工程基础设施
+
+## 状态更新（2026-07-26）
+
+✅ **迁移已完成**：项目当前路径 `D:\Desktop\k9-training-system`，Git 历史完整保留（1 commit on master），dev-docs/ 结构正常。
+
+后续验证项将在 Phase 0 启动时执行（npm install / pip install 时验证无 ghost entry）。
+
+---
+
+## 历史记录
 
 ## 背景
 

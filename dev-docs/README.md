@@ -45,7 +45,8 @@
 | 文档 | 用途 | 状态 |
 |------|------|------|
 | `decisions/` | 自研/升级/重要技术决策记录 | ✅ |
-| `decisions/0001-chinese-path-migration-plan.md` | 中文路径迁移计划 | ✅ |
+| `decisions/0001-chinese-path-migration-plan.md` | 中文路径迁移计划 | ✅ 已完成 |
+| `decisions/0002-runtime-stack-revision-blackwell.md` | 运行时栈修正（PyTorch 2.11+cu128） | ✅ 已确认 |
 
 ### 调研资料（只读参考）
 | 文档 | 来源 |
@@ -76,6 +77,8 @@
 - ✅ Function list 已创建
 - ✅ Technical selection 已创建
 - ✅ Architecture 已创建
-- ⏳ Agent constitution 待创建
+- ✅ Agent constitution 已创建（`AGENTS.md`）
+- ✅ ADR 0001 中文路径迁移计划（已完成迁移）
+- ✅ ADR 0002 运行时栈修正（Blackwell sm_120 + CUDA 12.8 + PyTorch 2.11）
 - ⏳ Runtime baseline 待建立（Phase 0）
 - ⏳ Frontend/Database/Backend skeleton 待建立（Phase 0）

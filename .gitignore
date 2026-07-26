@@ -108,6 +108,11 @@ temp/
 .mmaction/
 .openmmlab/
 
+# ===== PostgreSQL 排错临时文件 =====
+pg_hba_*.conf
+pg_hba_*.bat
+pg_hba_*.bak
+
 # ===== TRAE / AI 工具 =====
 .trae/
 .aider*
