@@ -1,10 +1,10 @@
 # Phase 0 — 基础设施阶段计划
 
 > 阶段: Phase 0 基础设施
-> 状态: 🔄 进行中（2026-07-26 启动）
+> 状态: ✅ 完成（2026-07-26 验收通过，见 `reports/phase-0-validation.md`）
 > Owner: Phase 0 基础设施
 > 入口条件: 立项完成（5 份 truth 文档 + 宪法 + ADR 0001/0002）✅
-> 出口条件: 见 §6 验收清单
+> 出口条件: 见 §6 验收清单（全部通过）
 
 ## 1. 阶段目标
 
@@ -167,11 +167,12 @@ Phase 0 完成后，由用户判断是否升级到 Phase 1。升级决策记录�
 - ✅ PostgreSQL 17 安装（已执行）
 - ✅ pgvector 编译安装（已执行）
 - ✅ k9system 数据库 + 用户创建（已执行）
-- ⏳ Alembic migration 应用到 k9system 数据库（待执行，可回滚但需谨慎）
-- ⏳ Git master → main 切换（待执行，需用户确认）
+- ✅ Alembic migration 应用到 k9system 数据库（已执行，version=5d7105cb28a9）
+- ✅ Git master → main 切换（已执行）
 
 ## 9. 修订历史
 
 | 版本 | 日期 | 变更 |
 |------|------|------|
 | v1.0 | 2026-07-26 | Phase 0 计划创建 |
+| v1.1 | 2026-07-26 | Phase 0 验收通过，状态更新为 ✅ 完成 |

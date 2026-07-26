@@ -150,8 +150,8 @@
 | 阶段 | 状态 | 关键交付 |
 |------|------|---------|
 | 立项 | ✅ 完成 | project-brief / function-list / technical-selection / architecture / constitution |
-| Phase 0 基础设施 | ⏳ 待启动 | 环境 + DB schema + 前后端骨架 |
-| Phase 1 MVP | ⏳ | YOLO26-pose + 规则 + PoseC3D + 评分 + 前后端 |
+| Phase 0 基础设施 | ✅ 完成（2026-07-26 验收） | 环境 + DB schema + 前后端骨架（见 reports/phase-0-validation.md） |
+| Phase 1 MVP | ⏳ 待启动（待用户升级决策） | YOLO26-pose + 规则 + PoseC3D + 评分 + 前后端 |
 | Phase 2 核心 | ⏳ | 数据飞轮 + 16 行为 + USPCA |
 | Phase 3 专业 | ⏳ | ST-GCN+BC + 多犬 + 3D + FCI-IGP |
 | Phase 4 前沿 | ⏳ 按需 | LLM / Transformer-Mamba / RL |
@@ -183,3 +183,4 @@
 | 版本 | 日期 | 变更 |
 |------|------|------|
 | v1.0 | 2026-07-26 | 初始版本，基于立项阶段产出 |
+| v1.1 | 2026-07-26 | Phase 0 验收通过，阶段映射 §7 状态更新 |
