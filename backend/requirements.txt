@@ -60,6 +60,11 @@ onnxruntime-gpu==1.20.1
 onnx==1.22.0
 onnxslim==0.1.94
 
+# === TensorRT FP16 推理（Phase 1.1，PyPI 官方包） ===
+# 实测：YOLO26n-pose + RTX 5060 Blackwell 上 TensorRT 17.05ms vs ONNX 13.39ms
+# 生产用 ONNX Runtime GPU，TensorRT engine 保留作为备选
+tensorrt==10.8.0.43
+
 # === 关键点处理 + PoseC3D 数据格式（Phase 1.2 / 1.3） ===
 scipy==1.15.0
 pandas==2.2.3
