@@ -1,0 +1,88 @@
+# 幼犬选育评分卡
+# Owner: ML 开发（见 AGENTS.md §2.2）
+# Phase: 1.4b
+# 依据: dev-docs/complex-features/scoring-card-schema.md §4.1
+# 信号来源: backend/ml/behavior/puppy_signals.py（Phase 1.6 实现）
+
+scoring_engine:
+  name: "幼犬选育评分卡"
+  version: "1.0.0"
+  scene: "puppy_selection"
+  description: |
+    工作犬幼犬选育 3 维评分：
+    食物欲望（0.40）+ 猎物欲望（0.40）+ 胆量（0.20）
+    依据: RESEARCH_PUPPY_SELECTION_BEHAVIOR.md
+
+  dimensions:
+    # === 食物欲望 ===
+    - id: food_drive
+      name: "食物欲望"
+      weight: 0.40
+      rules:
+        - id: food_high
+          condition: "approach_latency < 1.0 and approach_speed > 2.0"
+          score: 90
+          label: "高"
+        - id: food_medium
+          condition: "approach_latency < 3.0 and approach_speed > 1.0"
+          score: 60
+          label: "中"
+        - id: food_low
+          condition: "approach_latency >= 5.0"
+          score: 20
+          label: "低"
+        - id: food_default
+          condition: "True"
+          score: 40
+          label: "中低"
+
+    # === 猎物欲望（玩具/球） ===
+    - id: prey_drive
+      name: "猎物欲望"
+      weight: 0.40
+      rules:
+        - id: prey_high
+          condition: "chase_latency < 0.5 and hold_duration > 3.0"
+          score: 90
+          label: "高"
+        - id: prey_medium
+          condition: "chase_latency < 1.5 and hold_duration > 1.0"
+          score: 60
+          label: "中"
+        - id: prey_low
+          condition: "chase_latency >= 3.0"
+          score: 20
+          label: "低"
+        - id: prey_default
+          condition: "True"
+          score: 40
+          label: "中低"
+
+    # === 胆量 ===
+    - id: courage
+      name: "胆量"
+      weight: 0.20
+      rules:
+        - id: courage_high
+          condition: "retreat_distance < 0.5 and recovery_time < 2.0"
+          score: 90
+          label: "高"
+        - id: courage_medium
+          condition: "retreat_distance < 1.5 and recovery_time < 5.0"
+          score: 60
+          label: "中"
+        - id: courage_low
+          condition: "retreat_distance >= 2.0 or freeze_duration > 10.0"
+          score: 20
+          label: "低"
+        - id: courage_default
+          condition: "True"
+          score: 40
+          label: "中低"
+
+  thresholds:
+    pass: 70        # 合格（可进入训练体系）
+    borderline: 60  # 基本合格（观察）
+    fail: 0         # 淘汰
+
+  aggregation: "weighted_sum"

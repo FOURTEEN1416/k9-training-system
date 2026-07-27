@@ -1,0 +1,150 @@
+# 科目测评评分卡
+# Owner: ML 开发（见 AGENTS.md §2.2）
+# Phase: 1.4b
+# 依据: dev-docs/complex-features/scoring-card-schema.md §4.2
+# 信号来源: backend/ml/behavior/rule_engine.py（Phase 1.2 已实现）
+#
+# 5 维评分：准确度（0.30）+ 延迟（0.20）+ 保持（0.20）+ 注意力（0.15）+ 步态（0.15）
+# 依据: RESEARCH_SCORING_RULE_ENGINE.md §2.1 + PAT + 警犬训练标准
+
+scoring_engine:
+  name: "科目测评评分卡"
+  version: "1.0.0"
+  scene: "obedience_trial"
+  description: |
+    工作犬科目测评 5 维评分（坐/卧/立/随行/坐立/停留/叫/咬 8 类基础行为）：
+    准确度（0.30）+ 延迟（0.20）+ 保持（0.20）+ 注意力（0.15）+ 步态（0.15）
+
+  dimensions:
+    # === 准确度 ===
+    - id: accuracy
+      name: "准确度"
+      weight: 0.30
+      rules:
+        - id: accuracy_excellent
+          condition: "action_correct / action_count > 0.95"
+          score: 90
+          label: "优秀"
+        - id: accuracy_good
+          condition: "action_correct / action_count > 0.80"
+          score: 75
+          label: "良好"
+        - id: accuracy_pass
+          condition: "action_correct / action_count > 0.60"
+          score: 60
+          label: "合格"
+        - id: accuracy_fail
+          condition: "action_correct / action_count <= 0.60"
+          score: 30
+          label: "不合格"
+        - id: accuracy_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 延迟（指令到动作的响应时间） ===
+    - id: latency
+      name: "延迟"
+      weight: 0.20
+      rules:
+        - id: latency_excellent
+          condition: "command_to_action_latency < 0.5"
+          score: 90
+          label: "优秀"
+        - id: latency_good
+          condition: "command_to_action_latency < 1.5"
+          score: 75
+          label: "良好"
+        - id: latency_pass
+          condition: "command_to_action_latency < 3.0"
+          score: 60
+          label: "合格"
+        - id: latency_fail
+          condition: "command_to_action_latency >= 3.0"
+          score: 30
+          label: "不合格"
+        - id: latency_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 保持（动作持续时间） ===
+    - id: duration
+      name: "保持"
+      weight: 0.20
+      rules:
+        - id: duration_excellent
+          condition: "action_duration > 30.0"
+          score: 90
+          label: "优秀"
+        - id: duration_good
+          condition: "action_duration > 10.0"
+          score: 75
+          label: "良好"
+        - id: duration_pass
+          condition: "action_duration > 3.0"
+          score: 60
+          label: "合格"
+        - id: duration_fail
+          condition: "action_duration <= 3.0"
+          score: 30
+          label: "不合格"
+        - id: duration_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 注意力（聚焦比例） ===
+    - id: attention
+      name: "注意力"
+      weight: 0.15
+      rules:
+        - id: attention_high
+          condition: "focus_ratio > 0.80"
+          score: 90
+          label: "高"
+        - id: attention_medium
+          condition: "focus_ratio > 0.50"
+          score: 70
+          label: "中"
+        - id: attention_low
+          condition: "focus_ratio <= 0.50"
+          score: 30
+          label: "低"
+        - id: attention_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 步态 ===
+    - id: gait
+      name: "步态"
+      weight: 0.15
+      rules:
+        - id: gait_excellent
+          condition: "gait_score > 0.85"
+          score: 90
+          label: "优秀"
+        - id: gait_good
+          condition: "gait_score > 0.70"
+          score: 75
+          label: "良好"
+        - id: gait_pass
+          condition: "gait_score > 0.50"
+          score: 60
+          label: "合格"
+        - id: gait_fail
+          condition: "gait_score <= 0.50"
+          score: 30
+          label: "不合格"
+        - id: gait_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+  thresholds:
+    pass: 75        # 合格（达标）
+    borderline: 60  # 基本合格（需加强训练）
+    fail: 0         # 不合格
+
+  aggregation: "weighted_sum"
