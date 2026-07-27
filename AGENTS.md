@@ -8,7 +8,7 @@
 ## 0. 项目身份
 
 **项目**：工作犬训练机器视觉识别系统（K9 Training Vision System）
-**当前阶段**：立项完成，准备进入 Phase 0 基础设施
+**当前阶段**：Phase 1 MVP 启动中（2026-07-26 ADR 0003 确认，基于 [PROJECT_HEALTH_CHECK_2026-07-26](dev-docs/research/PROJECT_HEALTH_CHECK_2026-07-26.md) 体检通过）
 **Truth root**：`dev-docs/`
 **主语言**：中文（代码注释遵循用户最新消息语言）
 
@@ -151,7 +151,7 @@
 |------|------|---------|
 | 立项 | ✅ 完成 | project-brief / function-list / technical-selection / architecture / constitution |
 | Phase 0 基础设施 | ✅ 完成（2026-07-26 验收） | 环境 + DB schema + 前后端骨架（见 reports/phase-0-validation.md） |
-| Phase 1 MVP | ⏳ 待启动（待用户升级决策） | YOLO26-pose + 规则 + PoseC3D + 评分 + 前后端 |
+| Phase 1 MVP | ⏳ 启动中（2026-07-26 ADR 0003 确认） | YOLO26-pose + 规则 + PoseC3D + 评分 + 前后端（见 stages/phase-1.md） |
 | Phase 2 核心 | ⏳ | 数据飞轮 + 16 行为 + USPCA |
 | Phase 3 专业 | ⏳ | ST-GCN+BC + 多犬 + 3D + FCI-IGP |
 | Phase 4 前沿 | ⏳ 按需 | LLM / Transformer-Mamba / RL |
@@ -173,10 +173,11 @@
 
 ## 9. 未解决问题
 
-- ⏳ 中文路径迁移时机（见 `decisions/0001-chinese-path-migration-plan.md`）
+- ✅ 中文路径迁移（见 `decisions/0001-chinese-path-migration-plan.md`，已完成迁移至 `D:\Desktop\k9-training-system`）
 - ⏳ YOLO26 AGPL 商用许可（Phase 5 前解决）
-- ⏳ 工作犬数据采集方案（Phase 2 启动前调研）
-- ⏳ MMAction2 Windows 兼容性（Phase 0 验证）
+- ⏳ 工作犬数据采集方案（Phase 1 末采集 300 张微调 YOLO26-pose，见 ADR 0003）
+- ⏳ MMAction2 Windows 兼容性（Phase 1.3 实测验证，见 RESEARCH_PHASE1_STACK_DEEP.md §1）
+- ⏳ 项目守卫脚本 `scripts/check_project_guardrails.py` 未实现（Phase 0 遗留，Phase 1 内补建）
 
 ## 10. 修订历史
 
@@ -184,3 +185,5 @@
 |------|------|------|
 | v1.0 | 2026-07-26 | 初始版本，基于立项阶段产出 |
 | v1.1 | 2026-07-26 | Phase 0 验收通过，阶段映射 §7 状态更新 |
+| v1.2 | 2026-07-26 | Phase 1 升级决策（ADR 0003）确认，阶段映射 §7 状态更新 |
+| v1.3 | 2026-07-26 | 项目体检（PROJECT_HEALTH_CHECK_2026-07-26）后修正 §0 当前阶段 + §9 未解决问题（4 处过时字段） |
