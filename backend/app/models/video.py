@@ -27,6 +27,12 @@ class VideoStatus(str, enum.Enum):
     FAILED = "failed"  # 推理失败
 
 
+# 测试场景（与评分卡 scene 一致）
+SCENE_PUPPY_SELECTION = "puppy_selection"
+SCENE_OBEDIENCE_TRIAL = "obedience_trial"
+VALID_SCENES = (SCENE_PUPPY_SELECTION, SCENE_OBEDIENCE_TRIAL)
+
+
 class Video(TimestampMixin, Base):
     """训练视频元数据表。
 
@@ -65,6 +71,20 @@ class Video(TimestampMixin, Base):
         index=True,
     )
     error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    # 测试场景（puppy_selection / obedience_trial）
+    # 决定走哪条推理 + 评分管线
+    scene: Mapped[str] = mapped_column(
+        String(32),
+        nullable=False,
+        default=SCENE_OBEDIENCE_TRIAL,
+        comment="测试场景: puppy_selection / obedience_trial",
+    )
+
+    # PDF 报告相对路径（相对 reports_dir，完成后写入）
+    report_path: Mapped[Optional[str]] = mapped_column(
+        String(256), nullable=True, comment="PDF 报告相对 reports_dir 的路径"
+    )
 
     # 时间戳
     uploaded_at: Mapped[datetime] = mapped_column(

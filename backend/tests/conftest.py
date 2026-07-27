@@ -55,9 +55,14 @@ def yolo_pose_model() -> str:
 
 
 def pytest_collection_modifyitems(config, items):
-    """自动标记 slow 测试（需要 GPU 或模型下载）。"""
+    """自动标记 slow 测试（需要 GPU 或模型下载）。
+
+    fast 标记可覆盖 ml 模块的 slow 自动标记（评分引擎等纯 Python 测试）。
+    """
     for item in items:
         if "slow" in item.keywords:
+            continue
+        if "fast" in item.keywords:
             continue
         # 默认 GPU 相关测试标记为 slow
         if item.module.__name__.startswith("backend.tests.ml"):

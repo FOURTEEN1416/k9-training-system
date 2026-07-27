@@ -125,37 +125,40 @@
 
 **Owner**: 后端开发 + 前端开发 + ML 开发（评分）
 
-- **1.4a** **评分卡 YAML Schema 设计文档** `dev-docs/complex-features/scoring-card-schema.md`
+- ✅ **1.4a** **评分卡 YAML Schema 设计文档** `dev-docs/complex-features/scoring-card-schema.md`
   - 评分卡结构：dimensions / weight / rules / thresholds
   - 双场景评分卡：选育 3 维 + 科目 5 维
   - 热加载机制
-- **1.4b** F4 评分引擎 `backend/ml/scoring/`
-  - `engine.py`：评分引擎核心（~150 行）
-  - `schema.py`：Pydantic 数据模型（~80 行）
-  - `conditions.py`：条件表达式解析（~100 行）
+- ✅ **1.4b** F4 评分引擎 `backend/ml/scoring/`
+  - `engine.py`：评分引擎核心（单例 + mtime 热加载）
+  - `schema.py`：Pydantic 数据模型
+  - `conditions.py`：条件表达式解析
   - `configs/puppy_selection.yaml`：选育评分卡
   - `configs/obedience_trial.yaml`：科目评分卡
-- **1.4c** F5 报告生成 `backend/app/services/report.py`
+- ✅ **1.4c** F5 报告生成 `backend/app/services/report.py`
   - reportlab 模板：犬只信息 / 视频缩略图 / 行为时间线 / 评分表 / 关键帧截图
   - 输出：`reports/{video_id}.pdf`
-- **1.4d** F1 视频上传 API
-  - `POST /api/videos/upload`（multipart + 测试类型字段）
-  - 异步触发 Celery 推理任务
+- ✅ **1.4d** F1 视频上传 API + Celery 推理任务
+  - `POST /api/videos/upload`（multipart + scene 字段：puppy_selection / obedience_trial）
+  - Celery `ingest_video` 异步任务（姿态 → 行为/信号 → 评分 → PDF 全管线）
   - 状态轮询 `GET /api/videos/{id}/status`
-- **1.4e** F6 犬只档案 CRUD
+  - 报告下载 `GET /api/videos/{id}/report`
+  - 数据库扩展：`videos.scene` + `videos.report_path` + `behavior_class` 枚举新增 SIT_UP/STAY
+  - 单元测试 `test_ingest_video.py`（26 用例，覆盖行为映射/信号提取/管线集成/任务配置）
+- **1.4e** F6 犬只档案 CRUD（部分实现：list/create/get，缺 put/delete）
   - `POST/GET/PUT/DELETE /api/dogs`
-- **1.4f** F7 模型与评分卡管理 API
+- **1.4f** F7 模型与评分卡管理 API（部分实现：models list/get，缺 register/current/scoring configs）
   - `POST /api/models/register`（注册新模型版本）
   - `GET /api/models/current`（查询当前生产模型）
   - `GET /api/scoring/configs`（列出评分卡）
   - `GET /api/scoring/configs/{scene}`（获取评分卡）
   - `PUT /api/scoring/configs/{scene}`（更新评分卡，热加载）
   - `POST /api/scoring/evaluate`（评分）
-- **1.4g** 前端页面实现
-  - Upload.vue：拖拽上传 + 测试类型选择 + 进度条 + 状态轮询
-  - Report.vue：评分展示（双场景）+ PDF 在线预览 + 下载
-  - History.vue：视频历史列表 + 筛选
-  - Admin.vue：模型版本 + 评分卡 YAML 编辑器
+- **1.4g** 前端页面实现（当前为 Phase 0 占位，需重写）
+  - UploadView.vue：拖拽上传 + 测试类型选择 + 进度条 + 状态轮询
+  - ReportView.vue：评分展示（双场景）+ PDF 在线预览 + 下载
+  - HistoryView.vue：视频历史列表 + 筛选
+  - AdminView.vue：模型版本 + 评分卡 YAML 编辑器
 - **1.4h** 前后端联调（Vite proxy → FastAPI）
 
 ### Phase 1.5 物体检测集成（选育场景）
@@ -292,15 +295,17 @@ cd frontend && npm run dev
 
 ### 6.5 评分引擎 + 报告 + 前后端（Phase 1.4）
 
-- [ ] **`dev-docs/complex-features/scoring-card-schema.md` 评分卡 YAML Schema 文档**
-- [ ] 评分引擎核心实现（engine.py + schema.py + conditions.py）
-- [ ] 双场景评分卡 YAML（puppy_selection.yaml + obedience_trial.yaml）
-- [ ] 评分卡热加载机制
-- [ ] PDF 报告模板完成（含双场景评分）
-- [ ] F1 视频上传 API 通过测试
-- [ ] F6 犬只档案 CRUD 通过测试
-- [ ] F7 模型与评分卡管理 API 通过测试
-- [ ] 4 个前端页面（Upload/Report/History/Admin）功能完整
+- [x] **`dev-docs/complex-features/scoring-card-schema.md` 评分卡 YAML Schema 文档**
+- [x] 评分引擎核心实现（engine.py + schema.py + conditions.py）
+- [x] 双场景评分卡 YAML（puppy_selection.yaml + obedience_trial.yaml）
+- [x] 评分卡热加载机制（ScoringEngine 单例 + mtime 检测）
+- [x] PDF 报告模板完成（含双场景评分）
+- [x] F1 视频上传 API 通过测试（`POST /api/videos/upload` + 状态轮询 + 报告下载）
+- [x] Celery `ingest_video` 推理任务全管线跑通（姿态 → 行为/信号 → 评分 → PDF）
+- [x] `test_ingest_video.py` 26 用例通过（行为映射/信号提取/管线集成/任务配置）
+- [ ] F6 犬只档案 CRUD 通过测试（部分：list/create/get 已实现，缺 put/delete）
+- [ ] F7 模型与评分卡管理 API 通过测试（部分：models list/get，缺 register/current/scoring configs）
+- [ ] 4 个前端页面（Upload/Report/History/Admin）功能完整（当前为 Phase 0 占位）
 - [ ] 前后端联调通过
 
 ### 6.6 物体检测 + 选育信号（Phase 1.5 + 1.6）
@@ -361,3 +366,4 @@ Phase 1 完成后，由用户判断是否升级到 Phase 2。升级决策记录�
 | v1.0 | 2026-07-26 | Phase 1 计划创建，基于 ADR 0003 |
 | v1.1 | 2026-07-26 | 项目体检后修订：删除周期承诺；新增条件触发 |
 | v2.0 | 2026-07-27 | 用户立项研讨后重写：3-4 周约束 + 双场景（选育 + 测评）+ YAML 评分引擎 + 公开数据策略 + 学术副产物；删除 70% mAP 阈值（不现实）；删除 1.0-extra 基地数据采集（用户拿不到） |
+| v2.1 | 2026-07-27 | Phase 1.4a-d 验收：评分卡 Schema + 评分引擎（含热加载）+ PDF 报告 + 视频上传 API + Celery 推理任务 + 26 单元测试全部通过；标记 1.4e/f/g/h 未完成 |

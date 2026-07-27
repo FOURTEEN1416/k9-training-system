@@ -61,6 +61,7 @@ class VideoRead(ORMModel):
     handler_id: Optional[int] = None
     original_filename: str
     status: str
+    scene: str = "obedience_trial"
     duration_sec: Optional[float] = None
     fps: Optional[float] = None
     width: Optional[int] = None
@@ -68,6 +69,18 @@ class VideoRead(ORMModel):
     uploaded_at: datetime
     processed_at: Optional[datetime] = None
     error_message: Optional[str] = None
+    report_path: Optional[str] = None
+
+
+class VideoStatusRead(BaseModel):
+    """视频状态轮询响应。"""
+
+    id: int
+    status: str
+    scene: str
+    error_message: Optional[str] = None
+    report_path: Optional[str] = None
+    processed_at: Optional[datetime] = None
 
 
 class ScoreRead(ORMModel):
