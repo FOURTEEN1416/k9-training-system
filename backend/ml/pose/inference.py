@@ -114,7 +114,12 @@ class VideoInferenceResult:
 class PoseInferenceEngine:
     """YOLO26-pose 推理引擎。
 
-    支持 .pt（PyTorch）和 .engine（TensorRT，Phase 1.1）两种模型格式。
+    支持三种模型格式:
+        - .pt: PyTorch 原生（默认，GPU 17ms/frame @ RTX 5060）
+        - .engine: TensorRT FP16（Phase 1.1，目标 ≤5ms/frame，需系统安装）
+        - .onnx: ONNX Runtime GPU（Phase 1.1 回退方案，13ms/frame @ RTX 5060）
+
+    YOLO() 自动按文件后缀选择后端，无需手动配置。
     """
 
     def __init__(
