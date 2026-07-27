@@ -1,4 +1,4 @@
-"""犬只管理路由（Phase 0 占位）。"""
+"""犬只管理路由。"""
 
 from typing import Annotated
 
@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.database import get_db
 from backend.app.models.dog import Dog
-from backend.app.schemas.common import DogCreate, DogRead
+from backend.app.schemas.common import DogCreate, DogRead, DogUpdate
 
 router = APIRouter(prefix="/dogs", tags=["dogs"])
 
@@ -42,3 +42,29 @@ async def get_dog(dog_id: int, db: DbSession) -> Dog:
     if dog is None:
         raise HTTPException(status_code=404, detail=f"Dog {dog_id} not found")
     return dog
+
+
+@router.put("/{dog_id}", response_model=DogRead)
+async def update_dog(dog_id: int, payload: DogUpdate, db: DbSession) -> Dog:
+    """更新犬只档案（partial update，仅更新非 None 字段）。"""
+    dog = await db.get(Dog, dog_id)
+    if dog is None:
+        raise HTTPException(status_code=404, detail=f"Dog {dog_id} not found")
+
+    update_data = payload.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(dog, field, value)
+
+    await db.flush()
+    await db.refresh(dog)
+    return dog
+
+
+@router.delete("/{dog_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_dog(dog_id: int, db: DbSession) -> None:
+    """删除犬只档案。"""
+    dog = await db.get(Dog, dog_id)
+    if dog is None:
+        raise HTTPException(status_code=404, detail=f"Dog {dog_id} not found")
+    await db.delete(dog)
+

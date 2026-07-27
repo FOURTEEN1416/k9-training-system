@@ -50,6 +50,17 @@ class DogCreate(DogBase):
     pass
 
 
+class DogUpdate(ORMModel):
+    """犬只档案更新（所有字段可选，partial update）。"""
+
+    name: Optional[str] = None
+    breed: Optional[str] = None
+    gender: Optional[str] = None
+    chip_id: Optional[str] = None
+    handler_id: Optional[int] = None
+    training_stage: Optional[str] = None
+
+
 class DogRead(DogBase):
     id: int
     created_at: datetime
@@ -97,3 +108,67 @@ class ScoreRead(ORMModel):
     overall: float
     scoring_engine_version: str
     created_at: datetime
+
+
+# === ML 模型管理 ===
+
+class ModelCreate(ORMModel):
+    """注册新模型版本。"""
+
+    name: str
+    version: str
+    type: str  # pose / behavior / scoring
+    framework: str  # pytorch / onnx / tensorrt
+    storage_path: str
+    is_active: bool = False
+    metrics: Optional[dict] = None
+    description: Optional[str] = None
+
+
+class ModelRead(ORMModel):
+    id: int
+    name: str
+    version: str
+    type: str
+    framework: str
+    storage_path: str
+    is_active: bool
+    metrics_json: Optional[dict] = None
+    description: Optional[str] = None
+    created_at: datetime
+
+
+# === 评分卡管理 ===
+
+class ScoringConfigRead(BaseModel):
+    """评分卡读取响应。"""
+
+    scene: str
+    content: str  # YAML 原文
+
+
+class ScoringConfigUpdate(BaseModel):
+    """评分卡更新请求。"""
+
+    content: str  # YAML 原文
+
+
+class ScoringEvaluateRequest(BaseModel):
+    """评分请求。"""
+
+    scene: str  # puppy_selection / obedience_trial
+    signals: dict  # 信号字典
+
+
+class ScoringEvaluateResponse(BaseModel):
+    """评分响应。"""
+
+    total_score: float
+    verdict: str
+    passed: bool
+    dimension_labels: dict
+    dimension_scores: dict
+    explanation: list[str]
+    scene: str
+    card_name: str
+    card_version: str

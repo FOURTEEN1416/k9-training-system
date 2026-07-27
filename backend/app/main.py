@@ -6,7 +6,7 @@ from collections.abc import AsyncIterator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.api import dogs, health, models, scores, videos
+from backend.app.api import dogs, health, models, scoring, scores, videos
 from backend.app.core.config import settings
 
 
@@ -42,3 +42,4 @@ app.include_router(dogs.router, prefix="/api")
 app.include_router(videos.router, prefix="/api")
 app.include_router(scores.router, prefix="/api")
 app.include_router(models.router, prefix="/api")
+app.include_router(scoring.router, prefix="/api")
