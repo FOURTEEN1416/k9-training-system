@@ -44,6 +44,7 @@ build/
 *.db-journal
 postgres_data/
 redis_data/
+dump.rdb
 backups/
 *.sql.bak
 
@@ -58,6 +59,7 @@ backups/
 *.h5
 *.safetensors
 datasets/
+data/
 models_weights/
 runs/
 wandb/
