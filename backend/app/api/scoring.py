@@ -109,8 +109,11 @@ async def update_scoring_config(scene: str, payload: ScoringConfigUpdate) -> Sco
         )
 
     # 2. Schema 校验（确保评分卡可用）
+    # 评分卡 YAML 顶层结构为 {scoring_engine: {name, version, scene, dimensions, ...}}
+    # 与 engine.py from_yaml() 保持一致:从 scoring_engine key 下取值再校验
+    spec_data = parsed.get("scoring_engine", parsed) if isinstance(parsed, dict) else parsed
     try:
-        ScoringCardSpec.model_validate(parsed)
+        ScoringCardSpec.model_validate(spec_data)
     except Exception as e:
         raise HTTPException(
             status_code=422,

@@ -1,12 +1,12 @@
 """Phase 1.4d 单元测试: Celery 推理任务 + API.
 
 Owner: 后端开发 + ML 开发
-Phase: 1.4d
+Phase: 1.4d + Phase 1.6 升级
 
 测试策略:
     1. 纯函数测试（fast）:
        - _signals_from_obedience_episodes: 各种 episodes 场景
-       - _extract_puppy_signals_simple: 各种 kpts_seq 场景
+       - extract_puppy_signals: 各种 kpts_seq + detections 场景（Phase 1.6 升级）
        - _BEHAVIOR_STRING_TO_ENUM: 8 类 P0 行为映射完整
     2. 任务集成测试（integration, 需真实 DB + 模型）:
        - ingest_video 端到端（标记 @pytest.mark.integration，CI 默认跳过）
@@ -21,10 +21,10 @@ from unittest.mock import MagicMock, patch
 import numpy as np
 import pytest
 
+from backend.ml.behavior.puppy_signals import extract_puppy_signals
 from backend.ml.behavior.rule_engine import BehaviorEpisode
 from backend.workers.tasks import (
     _BEHAVIOR_STRING_TO_ENUM,
-    _extract_puppy_signals_simple,
     _resolve_model_path,
     _signals_from_obedience_episodes,
 )
@@ -147,89 +147,75 @@ class TestObedienceSignals:
 
 
 # ============================================================
-# 3. _extract_puppy_signals_simple
+# 3. extract_puppy_signals (Phase 1.6 升级)
 # ============================================================
 
 
-class TestPuppySignalsSimple:
-    """幼犬选育简化信号提取测试（Phase 1.6 前占位实现）."""
+class TestPuppySignals:
+    """幼犬选育信号提取测试（Phase 1.6 真实信号提取）.
 
-    def test_empty_kpts_returns_high_latency(self) -> None:
-        """空 keypoints → 高延迟（99.0）."""
-        signals = _extract_puppy_signals_simple(
-            np.zeros((0, 24, 3), dtype=np.float32), fps=30.0, duration_sec=0.0
+    覆盖 9 个信号:
+        - food_drive: approach_latency, approach_speed, sniff_duration
+        - prey_drive: chase_latency, chase_speed, hold_duration
+        - courage: retreat_distance, freeze_duration, recovery_time
+    """
+
+    def test_empty_kpts_returns_penalty_signals(self) -> None:
+        """空 keypoints → 惩罚信号（高延迟/距离/冻结）."""
+        signals = extract_puppy_signals(
+            np.zeros((0, 24, 3), dtype=np.float32),
+            detections=None, fps=30.0, duration_sec=0.0,
         )
         assert signals["approach_latency"] == 99.0
         assert signals["chase_latency"] == 99.0
         assert signals["recovery_time"] == 99.0
+        assert signals["retreat_distance"] == 99.0
 
-    def test_zero_fps_returns_high_latency(self) -> None:
-        """fps=0 → 高延迟."""
+    def test_zero_fps_returns_penalty_signals(self) -> None:
+        """fps=0 → 惩罚信号."""
         kpts = np.zeros((30, 24, 3), dtype=np.float32)
-        signals = _extract_puppy_signals_simple(kpts, fps=0.0, duration_sec=1.0)
+        signals = extract_puppy_signals(
+            kpts, detections=None, fps=0.0, duration_sec=1.0
+        )
         assert signals["approach_latency"] == 99.0
 
-    def test_all_invalid_withers_returns_zero_speed(self) -> None:
-        """withers 全部低置信度 → approach_speed=0."""
-        kpts = np.zeros((30, 24, 3), dtype=np.float32)  # withers conf=0
-        signals = _extract_puppy_signals_simple(kpts, fps=30.0, duration_sec=1.0)
-        assert signals["approach_speed"] == 0.0
+    def test_no_detections_returns_penalty_for_food_and_prey(self) -> None:
+        """无物体检测 → food/prey 维度走惩罚，courage 走 0（无惊吓）."""
+        kpts = np.zeros((30, 24, 3), dtype=np.float32)
+        kpts[:, 22, 2] = 0.9  # withers 有效
+        signals = extract_puppy_signals(
+            kpts, detections=None, fps=30.0, duration_sec=1.0
+        )
+        # food 信号: 无食物 → 高延迟
+        assert signals["approach_latency"] == 99.0
+        assert signals["sniff_duration"] == 0.0
+        # prey 信号: 无球 → 高延迟
+        assert signals["chase_latency"] == 99.0
         assert signals["hold_duration"] == 0.0
-
-    def test_immediate_detection_low_latency(self) -> None:
-        """首帧即检测到 withers → approach_latency=0."""
-        kpts = np.zeros((30, 24, 3), dtype=np.float32)
-        kpts[:, 22, 2] = 0.9  # withers 置信度 0.9
-        kpts[:, 22, 0] = 100  # withers.x 固定（不动）
-        signals = _extract_puppy_signals_simple(kpts, fps=30.0, duration_sec=1.0)
-        assert signals["approach_latency"] == 0.0
-        # withers.x 不动 → dx=0 → 所有 |dx| < 0.5 → 全部冻结
-        assert signals["freeze_duration"] == pytest.approx(1.0, rel=0.05)  # 29/30 ≈ 0.97
-        assert signals["hold_duration"] == 0.0  # 无运动
-
-    def test_delayed_detection_high_latency(self) -> None:
-        """第 15 帧才检测到 withers → approach_latency=0.5s."""
-        kpts = np.zeros((30, 24, 3), dtype=np.float32)
-        kpts[15:, 22, 2] = 0.9  # 第 15 帧开始有效
-        kpts[15:, 22, 0] = 100
-        signals = _extract_puppy_signals_simple(kpts, fps=30.0, duration_sec=1.0)
-        assert signals["approach_latency"] == pytest.approx(0.5)
-
-    def test_moving_withers_provides_speed(self) -> None:
-        """withers.x 持续递增 → approach_speed > 0."""
-        kpts = np.zeros((30, 24, 3), dtype=np.float32)
-        kpts[:, 22, 2] = 0.9
-        kpts[:, 22, 0] = np.arange(30, dtype=np.float32) * 5  # 每帧 +5 像素
-        signals = _extract_puppy_signals_simple(kpts, fps=30.0, duration_sec=1.0)
-        assert signals["approach_speed"] > 0.0
-        # 5 像素/帧 * 30 fps = 150 像素/秒
-        assert signals["approach_speed"] == pytest.approx(150.0, rel=0.05)
-        # 持续运动 → hold_duration > 0
-        assert signals["hold_duration"] > 0.0
-        # retreat_distance = 0（无反向运动）
+        # courage 信号: 无 person → 无惊吓（0 距离/冻结/恢复）
         assert signals["retreat_distance"] == 0.0
+        assert signals["freeze_duration"] == 0.0
+        assert signals["recovery_time"] == 0.0
 
-    def test_reverse_motion_provides_retreat_distance(self) -> None:
-        """withers.x 持续递减 → retreat_distance > 0."""
-        kpts = np.zeros((30, 24, 3), dtype=np.float32)
-        kpts[:, 22, 2] = 0.9
-        kpts[:, 22, 0] = 200 - np.arange(30, dtype=np.float32) * 3  # 每帧 -3 像素
-        signals = _extract_puppy_signals_simple(kpts, fps=30.0, duration_sec=1.0)
-        assert signals["retreat_distance"] > 0.0
-        # 29 帧 * 3 像素 = 87
-        assert signals["retreat_distance"] == pytest.approx(87.0, rel=0.05)
+    def test_invalid_shape_returns_penalty(self) -> None:
+        """错误 shape → 惩罚信号."""
+        kpts = np.zeros((10, 17, 3), dtype=np.float32)  # 17 关键点
+        signals = extract_puppy_signals(
+            kpts, detections=None, fps=30.0, duration_sec=1.0
+        )
+        assert signals["approach_latency"] == 99.0
 
     def test_signals_aligned_with_puppy_yaml(self) -> None:
-        """信号字典 key 与 puppy_selection.yaml 条件表达式对齐."""
+        """信号字典 key 与 puppy_selection.yaml v1.1.0 对齐（9 信号）."""
         kpts = np.zeros((30, 24, 3), dtype=np.float32)
         kpts[:, 22, 2] = 0.9
-        signals = _extract_puppy_signals_simple(kpts, fps=30.0, duration_sec=1.0)
-        # puppy_selection.yaml 用到的信号:
+        signals = extract_puppy_signals(
+            kpts, detections=None, fps=30.0, duration_sec=1.0
+        )
         expected_keys = {
-            "approach_latency", "approach_speed",
-            "chase_latency", "hold_duration",
-            "retreat_distance", "recovery_time",
-            "freeze_duration",
+            "approach_latency", "approach_speed", "sniff_duration",
+            "chase_latency", "chase_speed", "hold_duration",
+            "retreat_distance", "freeze_duration", "recovery_time",
         }
         assert expected_keys.issubset(set(signals.keys())), (
             f"缺失信号: {expected_keys - set(signals.keys())}"
@@ -241,10 +227,10 @@ class TestPuppySignalsSimple:
 
         kpts = np.zeros((30, 24, 3), dtype=np.float32)
         kpts[:, 22, 2] = 0.9
-        kpts[:, 22, 0] = np.arange(30, dtype=np.float32) * 5
-        signals = _extract_puppy_signals_simple(kpts, fps=30.0, duration_sec=1.0)
+        signals = extract_puppy_signals(
+            kpts, detections=None, fps=30.0, duration_sec=1.0
+        )
 
-        # 用真实评分卡评估
         puppy_yaml = (
             Path(__file__).resolve().parents[3]
             / "backend" / "ml" / "scoring" / "configs" / "puppy_selection.yaml"
@@ -253,7 +239,6 @@ class TestPuppySignalsSimple:
         ctx = ScoringContext(signals=signals, scene="puppy_selection")
         result = engine.evaluate(ctx)
 
-        # 信号有效 → 评分应非 0
         assert 0 <= result.total_score <= 100
         assert result.verdict in ("pass", "borderline", "fail")
 
@@ -337,7 +322,7 @@ class TestIngestVideoTaskMocked:
         assert result.scene == "obedience_trial"
 
     def test_run_puppy_pipeline_with_mock_kpts(self) -> None:
-        """puppy pipeline 能处理合成 keypoints 序列."""
+        """puppy pipeline 能处理合成 keypoints 序列（无物体检测，走降级路径）."""
         from backend.workers.tasks import _run_puppy_pipeline
 
         # 30 帧，withers 持续移动
@@ -345,15 +330,17 @@ class TestIngestVideoTaskMocked:
         kpts[:, 22, 2] = 0.9  # withers 置信度
         kpts[:, 22, 0] = np.arange(30, dtype=np.float32) * 5
 
+        # detection_result=None（无物体检测），信号提取器走降级路径
         episodes, signals, result = _run_puppy_pipeline(
-            kpts, fps=30.0, duration_sec=1.0
+            kpts, detection_result=None, fps=30.0, duration_sec=1.0
         )
 
         # puppy pipeline 不调用 rule_engine → episodes 为空
         assert episodes == []
-        # 信号有效
-        assert signals["approach_latency"] == 0.0
-        assert signals["approach_speed"] > 0.0
+        # 信号有效（无物体检测 → food/prey 走惩罚，courage 走 0）
+        assert signals["approach_latency"] == 99.0  # 无食物
+        assert signals["chase_latency"] == 99.0      # 无球
+        assert signals["retreat_distance"] == 0.0    # 无惊吓
         # 评分结果有效
         assert 0 <= result.total_score <= 100
         assert result.scene == "puppy_selection"

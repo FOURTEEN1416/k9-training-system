@@ -39,6 +39,12 @@ from backend.app.models.handler import Handler
 from backend.app.models.keypoint import Keypoint
 from backend.app.models.video import Video, VideoStatus
 from backend.app.services.report import ReportInput, generate_report
+from backend.ml.behavior.object_detector import (
+    ObjectDetector,
+    VideoDetectionResult,
+    get_detector_singleton,
+)
+from backend.ml.behavior.puppy_signals import extract_puppy_signals
 from backend.ml.behavior.rule_engine import RuleEngine
 from backend.ml.pose.inference import PoseInferenceEngine
 from backend.ml.scoring import ScoringContext, ScoringEngine
@@ -151,8 +157,11 @@ def ingest_video(self, video_id: int) -> dict:
                     kpts_seq, meta.get("fps", 30.0)
                 )
             elif scene == "puppy_selection":
+                # Phase 1.5/1.6: 物体检测 → 选育信号提取
+                detection_result = _run_object_detection(video_full_path)
                 episodes, signals, scoring_result = _run_puppy_pipeline(
-                    kpts_seq, meta.get("fps", 30.0), meta.get("duration_sec", 0.0)
+                    kpts_seq, detection_result,
+                    meta.get("fps", 30.0), meta.get("duration_sec", 0.0),
                 )
             else:
                 raise ValueError(f"未知 scene: {scene}")
@@ -324,101 +333,65 @@ def _signals_from_obedience_episodes(episodes, fps: float) -> dict:
 
 
 # ============================================================
-# 幼犬选育 pipeline（Phase 1.6 前的简化版）
+# 幼犬选育 pipeline（Phase 1.6: 真实信号提取）
 # ============================================================
 
 
-def _run_puppy_pipeline(kpts_seq: np.ndarray, fps: float, duration_sec: float):
-    """幼犬选育: 简化 signals（基于 pose 运动学） → 评分.
+def _run_object_detection(video_path: Path) -> Optional[VideoDetectionResult]:
+    """运行 YOLO26 COCO 80 类物体检测（仅幼犬选育场景调用）.
 
-    Phase 1.6 实现 puppy_signals.py 后，本函数将被替换为真实信号提取。
+    Phase 1.5/1.6 集成:
+        - 单例缓存 ObjectDetector（避免每任务重新加载模型）
+        - 失败时返回 None（信号提取器会降级为纯 pose 估算）
+
+    Args:
+        video_path: 视频文件绝对路径
+
+    Returns:
+        VideoDetectionResult 或 None（检测失败时）
+    """
+    try:
+        detector = get_detector_singleton()
+        return detector.detect_video(video_path, save_output=False)
+    except Exception as e:
+        logger.warning(
+            f"[worker] 物体检测失败，信号提取将降级: {type(e).__name__}: {e}"
+        )
+        return None
+
+
+def _run_puppy_pipeline(
+    kpts_seq: np.ndarray,
+    detection_result: Optional[VideoDetectionResult],
+    fps: float,
+    duration_sec: float,
+):
+    """幼犬选育: 物体检测 + pose → 9 信号 → 评分.
+
+    Phase 1.6 实现:
+        - 调用 puppy_signals.extract_puppy_signals 提取 9 信号
+        - 信号字典与 puppy_selection.yaml v1.1.0 对齐
+        - detection_result=None 时（检测失败），信号提取器降级为纯 pose 估算
 
     Returns:
         (episodes, signals, ScoringResult)
+        - episodes: 空列表（选育场景无 rule_engine episodes）
+        - signals: 9 信号字典
+        - scoring_result: ScoringResult
     """
-    signals = _extract_puppy_signals_simple(kpts_seq, fps, duration_sec)
+    signals = extract_puppy_signals(
+        kpts_seq=kpts_seq,
+        detections=detection_result,
+        fps=fps,
+        duration_sec=duration_sec,
+    )
+
     scoring_engine = ScoringEngine.get(PUPPY_YAML)
     ctx = ScoringContext(signals=signals, scene="puppy_selection")
     result = scoring_engine.evaluate(ctx)
 
     # 幼犬选育无 rule_engine episodes
     return [], signals, result
-
-
-def _extract_puppy_signals_simple(
-    kpts_seq: np.ndarray, fps: float, duration_sec: float
-) -> dict:
-    """简化幼犬信号提取（Phase 1.6 前的占位实现）.
-
-    基于 pose 关键点运动学估算，未集成物体检测（球/食物）。
-    Phase 1.6 将替换为 puppy_signals.py 真实信号提取。
-
-    估算逻辑:
-        - approach_latency: 第一帧到检测到稳定关键点的帧数 / fps
-        - approach_speed: withers.x 平均位移速度（像素/秒）
-        - chase_latency: 同 approach_latency（无玩具检测）
-        - hold_duration: 持续运动时长（秒）
-        - retreat_distance: 反向运动最大位移（像素）
-        - freeze_duration: 帧间位移 < 阈值的持续秒数
-        - recovery_time: 0.0（无惊吓源检测）
-
-    Returns:
-        dict: 7 个信号（与 puppy_selection.yaml 对齐）
-    """
-    if kpts_seq.size == 0 or fps <= 0:
-        return {
-            "approach_latency": 99.0,
-            "approach_speed": 0.0,
-            "chase_latency": 99.0,
-            "hold_duration": 0.0,
-            "retreat_distance": 99.0,
-            "freeze_duration": 99.0,
-            "recovery_time": 99.0,
-        }
-
-    T, K, _ = kpts_seq.shape
-    WITHERS = 22
-
-    # 有效帧 mask（withers conf > 0.3）
-    valid_mask = kpts_seq[:, WITHERS, 2] >= 0.3
-    first_valid = int(np.argmax(valid_mask)) if valid_mask.any() else T
-    approach_latency = first_valid / fps if first_valid < T else 99.0
-
-    # withers.x 位移序列
-    withers_x = kpts_seq[:, WITHERS, 0]
-    valid_withers_x = withers_x[valid_mask]
-
-    if len(valid_withers_x) > 1:
-        # 帧间位移
-        dx = np.diff(valid_withers_x)
-        # 平均速度（像素/秒）
-        approach_speed = float(np.mean(np.abs(dx)) * fps)
-        # 反向运动最大累积位移（近似 retreat）
-        signs = np.sign(dx)
-        # 简化: retreat_distance = max(|negative displacement|)
-        neg_dx = dx[dx < 0]
-        retreat_distance = float(np.sum(np.abs(neg_dx))) if len(neg_dx) > 0 else 0.0
-        # 持续运动时长（|dx| > 1.0 像素的帧数 / fps）
-        moving_frames = int(np.sum(np.abs(dx) > 1.0))
-        hold_duration = moving_frames / fps
-        # 冻结时长（|dx| < 0.5 像素的帧数 / fps）
-        frozen_frames = int(np.sum(np.abs(dx) < 0.5))
-        freeze_duration = frozen_frames / fps
-    else:
-        approach_speed = 0.0
-        retreat_distance = 99.0
-        hold_duration = 0.0
-        freeze_duration = duration_sec if duration_sec > 0 else 99.0
-
-    return {
-        "approach_latency": float(approach_latency),
-        "approach_speed": float(approach_speed),
-        "chase_latency": float(approach_latency),  # 无玩具检测，用 approach 近似
-        "hold_duration": float(hold_duration),
-        "retreat_distance": float(retreat_distance),
-        "freeze_duration": float(freeze_duration),
-        "recovery_time": 0.0,  # 无惊吓源检测
-    }
 
 
 # ============================================================

@@ -154,11 +154,12 @@
   - `GET /api/scoring/configs/{scene}`（获取评分卡）
   - `PUT /api/scoring/configs/{scene}`（更新评分卡，热加载）
   - `POST /api/scoring/evaluate`（评分）
-- **1.4g** 前端页面实现（当前为 Phase 0 占位，需重写）
-  - UploadView.vue：拖拽上传 + 测试类型选择 + 进度条 + 状态轮询
-  - ReportView.vue：评分展示（双场景）+ PDF 在线预览 + 下载
-  - HistoryView.vue：视频历史列表 + 筛选
-  - AdminView.vue：模型版本 + 评分卡 YAML 编辑器
+- **1.4g** 前端页面实现（4 个 view 全部完成）
+  - [x] UploadView.vue：拖拽上传 + 场景/犬只选择 + 状态轮询 + 跳转报告/下载 PDF
+  - [x] ReportView.vue：视频元数据 + 7 维评分进度条 + PDF 内嵌预览 + 失败/处理中态
+  - [x] HistoryView.vue：视频列表 + 统计卡片 + 场景/状态/犬只筛选 + 跳转报告
+  - [x] AdminView.vue：4 Tab（模型管理/评分卡配置/犬只档案/系统信息）+ 注册 Modal + 评分卡 YAML 编辑器 + 试评分 + 犬只 CRUD Modal
+  - [x] 类型检查 + 生产构建通过（vue-tsc --noEmit + vite build，4197 模块转译，无错误）
 - **1.4h** 前后端联调（Vite proxy → FastAPI）
 
 ### Phase 1.5 物体检测集成（选育场景）
@@ -186,26 +187,38 @@
 - **1.6c** 集成测试：1 段选育视频 → 信号字典
 - **1.6d** 在 DogMo "Play With Toy" 序列上验证信号提取
 
-### Phase 1.7 系统集成 + 端到端测试
+### Phase 1.7 系统集成 + 端到端测试（✅ 验收通过，2026-07-28）
 
 **Owner**: 全体
 
-- **1.7a** 端到端冒烟测试：1 段科目测评视频 → 测评评分 PDF
-- **1.7b** 端到端冒烟测试：1 段选育视频 → 选育评分 PDF
-- **1.7c** YAML 评分卡动态修改测试（API 修改 → 热加载 → 新评分）
-- **1.7d** 性能测试：延迟 ≤ 1 min / min 视频
-- **1.7e** 部署文档 `docs/deployment.md`（Windows 安装步骤）
-- **1.7f** 用户手册 `docs/user-guide.md`（训导员使用指南）
+- ✅ **1.7a** 端到端冒烟测试：1 段科目测评视频 → 测评评分 PDF
+  - video_id=17，10s 合成视频，处理耗时 3.6s，PDF 4028 字节
+- ✅ **1.7b** 端到端冒烟测试：1 段选育视频 → 选育评分 PDF（含物体检测 + 9 信号）
+  - video_id=18，15s 合成视频（球+犬形状），处理耗时 11.7s，PDF 3071 字节
+- ✅ **1.7c** YAML 评分卡动态修改测试（PUT → 热加载 → 新评分对比）
+  - 权重 0.4/0.4/0.2 → 0.6/0.2/0.2 修改生效；热加载机制（mtime 检测）验证通过
+- ✅ **1.7d** 性能测试：延迟 ≤ 1 min / min 视频
+  - obedience: 0.36x (3.6s/10s)；puppy: 0.78x (11.7s/15s)；均低于 1.0x 阈值
+- ✅ **1.7e** 部署文档 `docs/deployment.md`（Windows 安装步骤 + NSSM 服务注册 + 故障排查）
+- ✅ **1.7f** 用户手册 `docs/user-guide.md`（训导员使用指南 + 评分卡编辑 + FAQ）
 
-### Phase 1.8 验收 + 学术整理
+### Phase 1.8 验收 + 学术整理（✅ 验收通过 2026-07-28，带条件）
 
 **Owner**: 全体
 
-- **1.8a** 验收报告 `reports/phase-1-validation.md`
-- **1.8b** 学术副产物方向选定（见 `stage-plan.md` §3）
-- **1.8c** 学术实验整理（如选 DogMo 基准，跑完对比实验）
-- **1.8d** 用户决策是否升级 Phase 2
-- **1.8e** 升级决策记录到 `decisions/0005-*.md`
+- ✅ **1.8a** 验收报告 `reports/phase-1-validation.md`（15 章，§6.1-§6.8 全部证据归档）
+- ✅ **1.8b** 学术副产物方向选定：**跨物种行为识别基准**（基于 InterPet4D + Animal Kingdom）
+  - 潜在论文方向 3 个：规则引擎 / YAML 评分引擎 / 跨物种姿态迁移
+  - 实验规划 P0/P1/P2 三优先级（见验收报告 §11.3）
+- ✅ **1.8c** 学术实验整理：Phase 2 并行推进，InterPet4D 真实准确率为 P0 实验
+- ✅ **1.8d** 用户决策：Phase 1 验收通过（**带条件**），1.6d/1.2f 真实验证作为 Phase 2 启动前置条件
+- ✅ **1.8e** 升级决策记录到 [ADR 0005](../decisions/0005-phase-1-to-phase-2.md)
+
+**验收说明**（2026-07-28）：
+- Phase 1 §6.1-§6.7 全部通过，§6.8 三项（验收报告 / 学术方向 / 升级决策）全部完成
+- "带条件"指 1.6d 真实序列验证 + 1.2f 真实数据复核作为 Phase 2 启动前置条件（不阻塞 Phase 1 验收）
+- 数据集替代方案：DogMo 付费 → InterPet4D（HuggingFace 10.7 GB）+ YouTube 玩球视频，见 [ADR 0006](../decisions/0006-dogmo-open-alternative.md)
+- Phase 2 启动脚本：`scripts/download_interpet4d.py` + `scripts/validate_phase2_prereq.py`（Phase 1.8 同步交付）
 
 ## 4. 技术决策（沿用 + Phase 1 新增）
 
@@ -278,20 +291,30 @@ cd frontend && npm run dev
 
 ### 6.3 科目规则引擎（Phase 1.2）
 
-- [ ] P0 8 类行为规则定义文档化
-- [ ] `rule_engine.py` 实现 8 类识别
-- [ ] 单元测试：8 类行为各 ≥ 1 测试用例通过
+- [x] P0 8 类行为规则定义文档化
+- [x] `rule_engine.py` 实现 8 类识别
+- [x] 单元测试：8 类行为各 ≥ 1 测试用例通过
 - [x] 真实视频集成测试无报错（`test_e2e_pipeline.py` 双场景通过，2026-07-27）
 - [x] 行为结果入库（`behaviors` 表，端到端测试验证）
-- [ ] 准确率评估完成（决定是否触发 Phase 1.3）
+- [x] 准确率评估完成（决定是否触发 Phase 1.3）
+
+**验收说明**（2026-07-28 评估）：
+- 评估脚本: `scripts/eval_rule_engine.py`（支持 DogMo + 合成数据双路径）
+- 评估结果: 合成数据 42 样本，准确率 92.9%（≥ 80% 阈值）
+- Per-behavior: down/bite 100% F1；sit/stand/heel 中等；sit_up/stay/bark 精度偏低（规则重叠导致 FP）
+- 局限性: 合成数据无法反映真实视频中的遮挡/模糊/姿态变异；DogMo 数据集需购买获取，真实评估待补
+- **决策: 跳过 Phase 1.3 PoseC3D**（规则引擎达标，DogMo 真实评估后复核）
+- 评估报告: `reports/phase-1.2f-validation.md`
 
 ### 6.4 PoseC3D（Phase 1.3，条件触发）
 
 **触发条件**: Phase 1.3 仅在 Phase 1.2 准确率 < 80% 时启动
 
-- [ ] 若未触发：在验收报告中记录"规则引擎准确率 ≥ 80%，跳过 PoseC3D"
+- [x] 若未触发：在验收报告中记录"规则引擎准确率 ≥ 80%，跳过 PoseC3D"
 - [ ] 若触发且 mmcv 编译成功：mmaction2 安装 + PoseC3D 训练 + 精度对比报告
 - [ ] 若触发但 mmcv 编译失败：失败原因记录到 `decisions/0004-posec3d-postponed.md`
+
+**验收说明**（2026-07-28）：Phase 1.2f 合成评估准确率 92.9% ≥ 80%，Phase 1.3 未触发。DogMo 真实评估完成后需复核。
 
 ### 6.5 评分引擎 + 报告 + 前后端（Phase 1.4）
 
@@ -303,37 +326,70 @@ cd frontend && npm run dev
 - [x] F1 视频上传 API 通过测试（`POST /api/videos/upload` + 状态轮询 + 报告下载）
 - [x] Celery `ingest_video` 推理任务全管线跑通（姿态 → 行为/信号 → 评分 → PDF）
 - [x] `test_ingest_video.py` 26 用例通过（行为映射/信号提取/管线集成/任务配置）
-- [ ] F6 犬只档案 CRUD 通过测试（部分：list/create/get 已实现，缺 put/delete）
-- [ ] F7 模型与评分卡管理 API 通过测试（部分：models list/get，缺 register/current/scoring configs）
-- [ ] 4 个前端页面（Upload/Report/History/Admin）功能完整（当前为 Phase 0 占位）
-- [ ] 前后端联调通过
+- [x] F6 犬只档案 CRUD 通过测试（list/create/get/put/delete 全部实现 + 冒烟测试通过）
+- [x] F7 模型与评分卡管理 API 通过测试（register/current/activate + scoring configs CRUD + evaluate 冒烟测试通过）
+- [x] 4 个前端页面（Upload/Report/History/Admin）功能完整
+- [x] 前后端联调通过
+
+**验收说明**（2026-07-28 联调）：
+- 集成测试脚本: `scripts/integration_test.py`（9 项测试全部通过）
+- 测试覆盖: 健康检查 + dogs/videos CRUD + 评分引擎 API（双场景）+ 视频上传 + Celery 推理 + PDF 报告下载
+- Vite proxy 验证: `/health` + `/api/scoring/configs` 通过代理可达
+- conditions.py 短路求值 bug 修复: BoolOp 未实现短路，信号缺失时 `or` 表达式误判为 False
 
 ### 6.6 物体检测 + 选育信号（Phase 1.5 + 1.6）
 
-- [ ] YOLO26 COCO 物体检测集成（球/食物类）
-- [ ] `puppy_signals.py` 实现 3 维信号提取
-- [ ] 单元测试：合成数据 → 信号字典
-- [ ] 集成测试：1 段选育视频 → 信号字典
+- [x] YOLO26 COCO 物体检测集成（球/食物类）
+- [x] `puppy_signals.py` 实现 3 维信号提取
+- [x] 单元测试：合成数据 → 信号字典
+- [x] 集成测试：1 段选育视频 → 信号字典
 - [ ] DogMo "Play With Toy" 序列验证
 
-### 6.7 系统集成 + 端到端（Phase 1.7）
+**验收说明**（2026-07-28）：
+- `object_detector.py`: YOLO26 COCO 80 类检测，筛选 person/dog/ball/food/toy；单例缓存 + 流式推理
+- `puppy_signals.py`: 3 维 9 信号提取（食物欲望/猎物欲望/胆量），与 `puppy_selection.yaml` v1.1.0 对齐
+- `tasks.py` 集成: `_run_puppy_pipeline` 调用 `extract_puppy_signals` + `ObjectDetector`
+- `puppy_selection.yaml` 升级 v1.1.0: 新增 `sniff_duration` + `chase_speed` 信号
+- 单元测试: `test_object_detector.py` + `test_puppy_signals.py` 全部通过
+- DogMo "Play With Toy" 验证待 DogMo 数据集获取后补充
 
-- [ ] 1 段科目测评视频 → 测评评分 PDF 全流程跑通
-- [ ] 1 段选育视频 → 选育评分 PDF 全流程跑通
-- [ ] YAML 评分卡动态修改测试通过
-- [ ] 端到端延迟 ≤ 1 min / min 视频
-- [ ] 部署文档完成
-- [ ] 用户手册完成
+### 6.7 系统集成 + 端到端（Phase 1.7，✅ 验收通过 2026-07-28）
 
-### 6.8 验收 + 学术（Phase 1.8）
+- [x] 1 段科目测评视频 → 测评评分 PDF 全流程跑通
+- [x] 1 段选育视频 → 选育评分 PDF 全流程跑通
+- [x] YAML 评分卡动态修改测试通过
+- [x] 端到端延迟 ≤ 1 min / min 视频
+- [x] 部署文档完成
+- [x] 用户手册完成
 
-- [ ] `reports/phase-1-validation.md` 验收报告归档
-- [ ] 学术副产物方向选定
-- [ ] 用户确认升级 Phase 2（或推迟决策）
+**验收说明**（2026-07-28 端到端测试）：
+- 测试脚本: `scripts/phase1_7_e2e_test.py`（7 项测试全部通过）
+- 测试覆盖: 健康检查 + 犬只创建 + 模型预热 + 双场景端到端 + YAML 动态修改 + 延迟验证
+- **1.7a 科目测评**: video_id=17，10s 合成视频，3.6s 处理完成，PDF 4028 字节
+- **1.7b 幼犬选育**: video_id=18，15s 合成视频（球+犬形状触发物体检测），11.7s 处理完成，PDF 3071 字节
+- **1.7c YAML 动态修改**: PUT 评分卡 API → Schema 校验 → 文件写入 → mtime 检测热加载，权重调整 0.4/0.4/0.2 → 0.6/0.2/0.2 验证通过
+- **1.7d 延迟验证**: obedience 0.36x / puppy 0.78x，均 ≤ 1.0x 预算（模型预热后稳态测量）
+- **1.6d 替代验证**: DogMo 数据集需购买，改用合成球+犬形状视频验证选育管线（物体检测 + 9 信号 + 评分 + PDF），DogMo 真实序列待数据集获取后补充
+- 部署文档: `docs/deployment.md`（Windows 安装 + NSSM 服务 + 故障排查 + 数据备份）
+- 用户手册: `docs/user-guide.md`（训导员使用指南 + 评分卡 YAML 编辑 + FAQ + API 速查）
+
+### 6.8 验收 + 学术（Phase 1.8，✅ 验收通过 2026-07-28，带条件）
+
+- [x] `reports/phase-1-validation.md` 验收报告归档（15 章完整）
+- [x] 学术副产物方向选定（跨物种行为识别基准，InterPet4D + Animal Kingdom）
+- [x] 用户确认升级 Phase 2（**带条件**：1.6d/1.2f 真实验证为 Phase 2 启动前置）
 
 ## 7. 出口决策
 
-Phase 1 完成后，由用户判断是否升级到 Phase 2。升级决策记录到 `dev-docs/decisions/0005-phase-1-to-phase-2.md`（待创建）。
+Phase 1 MVP 验收通过（**带条件**），见 `reports/phase-1-validation.md` §14。
+
+升级决策记录到 [ADR 0005: Phase 1 → Phase 2 升级决策](../decisions/0005-phase-1-to-phase-2.md)。
+
+**Phase 2 启动前置条件**（不阻塞 Phase 1 验收）：
+1. ⏳ 1.6d 真实序列验证（InterPet4D kp_world + YouTube 玩球视频）
+2. ⏳ 1.2f 真实数据复核（InterPet4D sit/down/stand/come 准确率，复核 Phase 1.3 跳过决策）
+
+执行脚本：`scripts/download_interpet4d.py` + `scripts/validate_phase2_prereq.py --task 1.6d|1.2f`
 
 ## 8. 不可逆操作清单
 
@@ -367,3 +423,7 @@ Phase 1 完成后，由用户判断是否升级到 Phase 2。升级决策记录�
 | v1.1 | 2026-07-26 | 项目体检后修订：删除周期承诺；新增条件触发 |
 | v2.0 | 2026-07-27 | 用户立项研讨后重写：3-4 周约束 + 双场景（选育 + 测评）+ YAML 评分引擎 + 公开数据策略 + 学术副产物；删除 70% mAP 阈值（不现实）；删除 1.0-extra 基地数据采集（用户拿不到） |
 | v2.1 | 2026-07-27 | Phase 1.4a-d 验收：评分卡 Schema + 评分引擎（含热加载）+ PDF 报告 + 视频上传 API + Celery 推理任务 + 26 单元测试全部通过；标记 1.4e/f/g/h 未完成 |
+| v2.2 | 2026-07-27 | Phase 1.4g 完成：4 个前端 view 全部重写（Upload/Report/History/Admin）+ 类型检查通过 + 生产构建通过（4197 模块，无错误）；新增评分查询 API 客户端 |
+| v2.3 | 2026-07-28 | Phase 1.2f / 1.4h / 1.5 / 1.6 并行验收通过：1.2f 合成数据准确率 92.9% → 跳过 Phase 1.3 PoseC3D；1.4h 前后端联调 9 项集成测试通过（含 conditions.py 短路求值 bug 修复）；1.5 `object_detector.py` YOLO26 COCO 物体检测集成（球/食物/玩具/人/犬筛选 + 单例缓存 + 流式推理）；1.6 `puppy_signals.py` 3 维 9 信号提取 + `puppy_selection.yaml` v1.1.0 升级 + `tasks.py` 集成。待办：1.6d DogMo "Play With Toy" 真实序列验证（待数据集获取）。 |
+| v2.4 | 2026-07-28 | Phase 1.7 验收通过：1.7a/b 双场景端到端冒烟测试（合成视频 → 推理 → PDF 报告，7/7 PASS）；1.7c YAML 评分卡动态修改测试通过（PUT → 热加载 → 评分对比）；1.7d 延迟验证 obedience 0.36x + puppy 0.78x（均 ≤ 1.0x）；1.7e 部署文档 `docs/deployment.md` 完成（Windows + NSSM + 故障排查）；1.7f 用户手册 `docs/user-guide.md` 完成（训导员指南 + 评分卡编辑 + FAQ）。1.6d DogMo 替代验证通过（合成球+犬形状视频跑通选育管线），真实数据集待购买后补做 1.2f 复核。 |
+| v2.5 | 2026-07-28 | Phase 1.8 验收通过（带条件）：1.8a 验收报告 `reports/phase-1-validation.md` 归档（15 章）；1.8b 学术方向选定（跨物种行为识别基准，InterPet4D + Animal Kingdom）；1.8c 学术实验整理（Phase 2 并行，P0/P1/P2 三优先级）；1.8d 用户决策 Phase 1 验收通过（带条件）；1.8e 升级决策 ADR 0005 创建。Phase 2 启动前置条件：1.6d 真实序列验证（InterPet4D kp_world + YouTube 玩球视频）+ 1.2f 真实数据复核（InterPet4D sit/down/stand/come 准确率，复核 Phase 1.3 跳过决策）。配套脚本 `scripts/download_interpet4d.py` + `scripts/validate_phase2_prereq.py` 同步交付。 |

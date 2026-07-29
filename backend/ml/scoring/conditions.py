@@ -103,13 +103,28 @@ def _eval_node(node: ast.AST, signals: dict) -> object:
             raise ConditionError(f"不支持的一元运算符: {type(node.op).__name__}")
         return _UNARY_OPS[type(node.op)](operand)
 
-    # 布尔运算
+    # 布尔运算（短路求值，信号缺失视为 False）
     if isinstance(node, ast.BoolOp):
-        values = [_eval_node(v, signals) for v in node.values]
         if isinstance(node.op, ast.And):
-            return all(values)
+            for v in node.values:
+                try:
+                    val = _eval_node(v, signals)
+                except _SignalMissing:
+                    # 信号缺失 → 该子表达式为 False → and 短路
+                    return False
+                if not val:
+                    return False
+            return True
         if isinstance(node.op, ast.Or):
-            return any(values)
+            for v in node.values:
+                try:
+                    val = _eval_node(v, signals)
+                except _SignalMissing:
+                    # 信号缺失 → 该子表达式为 False → or 继续下一项
+                    continue
+                if val:
+                    return True
+            return False
         raise ConditionError(f"不支持的布尔运算符: {type(node.op).__name__}")
 
     raise ConditionError(f"不支持的 AST 节点类型: {type(node).__name__}")

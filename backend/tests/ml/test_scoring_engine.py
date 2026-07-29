@@ -79,6 +79,27 @@ class TestConditionParser:
         """信号缺失时条件视为 False（不命中）。"""
         assert evaluate_condition("missing_signal < 1.0", {"x": 0.5}) is False
 
+    def test_or_short_circuit_with_missing_signal(self) -> None:
+        """or 短路: 左操作数为 True 时，右操作数信号缺失不应使整体为 False。"""
+        # approach_latency >= 5.0 为 True，sniff_duration 缺失 → 整体应为 True
+        assert evaluate_condition(
+            "approach_latency >= 5.0 or sniff_duration <= 0.0",
+            {"approach_latency": 6.0},
+        ) is True
+
+    def test_and_short_circuit_with_missing_signal(self) -> None:
+        """and 短路: 左操作数为 False 时，右操作数信号缺失不应影响整体。"""
+        assert evaluate_condition(
+            "x > 10.0 and missing_signal < 1.0",
+            {"x": 0.5},
+        ) is False
+
+    def test_or_both_missing_returns_false(self) -> None:
+        """or 两边信号都缺失 → False。"""
+        assert evaluate_condition(
+            "missing1 > 1.0 or missing2 < 2.0", {}
+        ) is False
+
     def test_forbidden_import(self) -> None:
         with pytest.raises(ConditionError):
             evaluate_condition("__import__('os')", {})
@@ -180,10 +201,13 @@ class TestPuppySelectionScoring:
             signals={
                 "approach_latency": 0.5,    # < 1.0
                 "approach_speed": 3.0,      # > 2.0
+                "sniff_duration": 2.0,      # > 1.0
                 "chase_latency": 0.3,       # < 0.5
+                "chase_speed": 4.0,         # > 3.0
                 "hold_duration": 5.0,       # > 3.0
                 "retreat_distance": 0.2,    # < 0.5
                 "recovery_time": 1.0,       # < 2.0
+                "freeze_duration": 0.5,     # < 1.0
             },
             scene="puppy_selection",
         )
@@ -216,10 +240,13 @@ class TestPuppySelectionScoring:
             signals={
                 "approach_latency": 2.0,    # 中等（food_medium 命中）
                 "approach_speed": 1.5,
+                "sniff_duration": 0.8,      # > 0.5
                 "chase_latency": 1.0,       # 中等
+                "chase_speed": 1.5,
                 "hold_duration": 1.5,
                 "retreat_distance": 1.0,    # 中等
                 "recovery_time": 3.0,
+                "freeze_duration": 1.5,     # < 3.0
             },
             scene="puppy_selection",
         )
@@ -492,10 +519,13 @@ class TestVerdictThresholds:
             signals={
                 "approach_latency": 0.5,
                 "approach_speed": 3.0,
+                "sniff_duration": 2.0,
                 "chase_latency": 0.3,
+                "chase_speed": 4.0,
                 "hold_duration": 5.0,
                 "retreat_distance": 0.2,
                 "recovery_time": 1.0,
+                "freeze_duration": 0.5,
             },
             scene="puppy_selection",
         )
