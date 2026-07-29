@@ -1,0 +1,4028 @@
+{
+  "total_canine_videos": 211,
+  "extracted_videos": 211,
+  "species_count": {
+    "Wild Dog": 35,
+    "Wolf": 142,
+    "Dog": 31,
+    "African Painted Dog": 1,
+    "Dingo Dog": 2
+  },
+  "action_count": {
+    "Running": 52,
+    "Exploring": 20,
+    "Sensing": 26,
+    "Attending": 12,
+    "Walking": 62,
+    "Carrying In Mouth": 8,
+    "Startled": 4,
+    "Barking": 6,
+    "Tail Swishing": 1,
+    "Chasing": 19,
+    "Jumping": 7,
+    "Eating": 8,
+    "Keeping still": 11,
+    "Attacking": 8,
+    "Biting": 6,
+    "Urinating": 1,
+    "Turning Around": 5,
+    "Fleeing": 10,
+    "Sitting": 2,
+    "Yawning": 2,
+    "Fighting": 2,
+    "Entering its nest": 2,
+    "Retaliating": 2,
+    "Preying": 1,
+    "Manipulating Object": 1
+  },
+  "videos": [
+    {
+      "video_id": "AFLPRFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "AHSAPCNX",
+      "type": "train",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "AKYIXRSU",
+      "type": "train",
+      "labels": "2,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Attending"
+        }
+      ]
+    },
+    {
+      "video_id": "AOZRGCNX",
+      "type": "train",
+      "labels": "133,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "APPQWCNX",
+      "type": "train",
+      "labels": "13",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Carrying In Mouth"
+        }
+      ]
+    },
+    {
+      "video_id": "AWJEUGCS",
+      "type": "train",
+      "labels": "3,118,1,102",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog",
+        "Dog",
+        "Leopard",
+        "Leopard"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Startled"
+        },
+        {
+          "animal": "Dog",
+          "action": "Barking"
+        }
+      ]
+    },
+    {
+      "video_id": "AZNCEFGA",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "BHXSRCNX",
+      "type": "train",
+      "labels": "126,133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Tail Swishing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "BLUIEDSN",
+      "type": "train",
+      "labels": "14,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "BLUYUTEK",
+      "type": "train",
+      "labels": "133,102,67",
+      "species": [
+        "African Painted Dog"
+      ],
+      "all_animals": [
+        "African Painted Dog",
+        "African Painted Dog",
+        "African Painted Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "African Painted Dog",
+          "action": "Walking"
+        },
+        {
+          "animal": "African Painted Dog",
+          "action": "Sensing"
+        },
+        {
+          "animal": "African Painted Dog",
+          "action": "Jumping"
+        }
+      ]
+    },
+    {
+      "video_id": "BTCQJCNX",
+      "type": "train",
+      "labels": "40",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Eating"
+        }
+      ]
+    },
+    {
+      "video_id": "BUKSUFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wildebeest"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "BWAOGRSU",
+      "type": "train",
+      "labels": "2,68",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Keeping still"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Attending"
+        }
+      ]
+    },
+    {
+      "video_id": "BWLFAFGA",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "CABQECNX",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "CJTABRSU",
+      "type": "train",
+      "labels": "133,13",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Carrying In Mouth"
+        }
+      ]
+    },
+    {
+      "video_id": "CKFVZXGD",
+      "type": "train",
+      "labels": "2",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Attending"
+        }
+      ]
+    },
+    {
+      "video_id": "CONNYFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Caribou",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "CREJWFGA",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "CUFGUGCS",
+      "type": "train",
+      "labels": "3,102,1,118,68,100",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Leopard",
+        "Dog",
+        "Leopard",
+        "Dog",
+        "Leopard",
+        "Dog",
+        "Dog",
+        "Leopard"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Startled"
+        },
+        {
+          "animal": "Dog",
+          "action": "Barking"
+        },
+        {
+          "animal": "Dog",
+          "action": "Keeping still"
+        },
+        {
+          "animal": "Dog",
+          "action": "Attacking"
+        }
+      ]
+    },
+    {
+      "video_id": "CUWYXCNX",
+      "type": "train",
+      "labels": "8,45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Biting"
+        }
+      ]
+    },
+    {
+      "video_id": "CZVTXFGA",
+      "type": "train",
+      "labels": "133,100,67",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Jumping"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "DHLCLRSU",
+      "type": "train",
+      "labels": "2,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Attending"
+        }
+      ]
+    },
+    {
+      "video_id": "DHOIVDSN",
+      "type": "train",
+      "labels": "14,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "DUZPVFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "DXNNORSU",
+      "type": "train",
+      "labels": "2,68",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Attending"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Keeping still"
+        }
+      ]
+    },
+    {
+      "video_id": "ECCJQCNX",
+      "type": "train",
+      "labels": "13",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Carrying In Mouth"
+        }
+      ]
+    },
+    {
+      "video_id": "EDHHMXGD",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "EDXUUCNX",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "EGVFHCNX",
+      "type": "train",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "EHXIFXGD",
+      "type": "train",
+      "labels": "2,133",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog",
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Walking"
+        },
+        {
+          "animal": "Dog",
+          "action": "Attending"
+        }
+      ]
+    },
+    {
+      "video_id": "EOFBMBME",
+      "type": "train",
+      "labels": "96,133,100",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Horse",
+        "Horse",
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "EUKRNXGD",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Dingo Dog"
+      ],
+      "all_animals": [
+        "Dingo Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dingo Dog",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "FNPLQCNX",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "FWPNCDSN",
+      "type": "train",
+      "labels": "14,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "GKUHTDSN",
+      "type": "train",
+      "labels": "8,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Biting"
+        }
+      ]
+    },
+    {
+      "video_id": "GNBCOCNX",
+      "type": "train",
+      "labels": "102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "GNMCNCNX",
+      "type": "train",
+      "labels": "40",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Eating"
+        }
+      ]
+    },
+    {
+      "video_id": "GPQEHCNX",
+      "type": "train",
+      "labels": "132",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Urinating"
+        }
+      ]
+    },
+    {
+      "video_id": "GPYEFFGA",
+      "type": "train",
+      "labels": "128",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Turning Around"
+        }
+      ]
+    },
+    {
+      "video_id": "GRUCDFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "GWRPTXDO",
+      "type": "train",
+      "labels": "102",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "HGLXJCNX",
+      "type": "train",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "HPRSIXDO",
+      "type": "train",
+      "labels": "14,51,100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Lion",
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        },
+        {
+          "animal": "Wild Dog",
+          "action": "Fleeing"
+        }
+      ]
+    },
+    {
+      "video_id": "HTVUFRSU",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "IBPHICNX",
+      "type": "train",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "ICCBOFGA",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "IJTCHRSU",
+      "type": "train",
+      "labels": "2,68",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Attending"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Keeping still"
+        }
+      ]
+    },
+    {
+      "video_id": "IMRAXCNX",
+      "type": "train",
+      "labels": "108,133,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sitting"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "IUGCUFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "IUJRJRSU",
+      "type": "train",
+      "labels": "14,51",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Fleeing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "IXJLIXGD",
+      "type": "train",
+      "labels": "2,139",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog",
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Attending"
+        },
+        {
+          "animal": "Dog",
+          "action": "Yawning"
+        }
+      ]
+    },
+    {
+      "video_id": "JFPCUGCS",
+      "type": "train",
+      "labels": "3,102",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog",
+        "Leopard"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Barking"
+        }
+      ]
+    },
+    {
+      "video_id": "JLQYOXGD",
+      "type": "train",
+      "labels": "2",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Attending"
+        }
+      ]
+    },
+    {
+      "video_id": "JONIBVMP",
+      "type": "train",
+      "labels": "47",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Fighting"
+        }
+      ]
+    },
+    {
+      "video_id": "JOTYIRSU",
+      "type": "train",
+      "labels": "14,51,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Fleeing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "KAFGDXGD",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "KEMLQDSN",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "KIANSCNX",
+      "type": "train",
+      "labels": "102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "KRJTGRSU",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "KUZYPXGD",
+      "type": "train",
+      "labels": "102",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "LDTFJXGD",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Dingo Dog"
+      ],
+      "all_animals": [
+        "Dingo Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dingo Dog",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "LFMVECNX",
+      "type": "train",
+      "labels": "133,45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "LGOBKRSU",
+      "type": "train",
+      "labels": "14,51",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Fleeing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "LGYJLCNX",
+      "type": "train",
+      "labels": "102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "LKEERFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "LWCFLRSU",
+      "type": "train",
+      "labels": "68",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Keeping still"
+        }
+      ]
+    },
+    {
+      "video_id": "MGBSOFGA",
+      "type": "train",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "MLUJSCNX",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "MMFCPRSU",
+      "type": "train",
+      "labels": "41",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Entering its nest"
+        }
+      ]
+    },
+    {
+      "video_id": "MVDCSFGA",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "NJBBBVMP",
+      "type": "train",
+      "labels": "40",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Eating"
+        }
+      ]
+    },
+    {
+      "video_id": "NJNBFRSU",
+      "type": "train",
+      "labels": "14,96,51,47",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf",
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Fighting"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Retaliating"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Fleeing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "NLFQXCNX",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "NMRJQRSU",
+      "type": "train",
+      "labels": "133,13",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Carrying In Mouth"
+        }
+      ]
+    },
+    {
+      "video_id": "NQFDEFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "NTYBLRSU",
+      "type": "train",
+      "labels": "133,13,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Carrying In Mouth"
+        }
+      ]
+    },
+    {
+      "video_id": "OKPCSFGA",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "ONNMKRSU",
+      "type": "train",
+      "labels": "14,51,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Fleeing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "OOTCBXGD",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "OQQRVXGD",
+      "type": "train",
+      "labels": "40",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Eating"
+        }
+      ]
+    },
+    {
+      "video_id": "ORBGIGCS",
+      "type": "train",
+      "labels": "68,118,1,100",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog",
+        "Leopard",
+        "Dog",
+        "Leopard"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Startled"
+        },
+        {
+          "animal": "Dog",
+          "action": "Keeping still"
+        }
+      ]
+    },
+    {
+      "video_id": "OTNOKXDO",
+      "type": "train",
+      "labels": "3,67",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Barking"
+        }
+      ]
+    },
+    {
+      "video_id": "PBXOORSU",
+      "type": "train",
+      "labels": "102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "PDJTSRSU",
+      "type": "train",
+      "labels": "2,68",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Keeping still"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Attending"
+        }
+      ]
+    },
+    {
+      "video_id": "PRXWIXGD",
+      "type": "train",
+      "labels": "100,67",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Kangaroo",
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "PWJTIFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "QFMMRXGD",
+      "type": "train",
+      "labels": "14,100,67",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Kangaroo",
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "QFXYXRSU",
+      "type": "train",
+      "labels": "68",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Keeping still"
+        }
+      ]
+    },
+    {
+      "video_id": "QNTULRSU",
+      "type": "train",
+      "labels": "14,51,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Fleeing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "QOZTQGCS",
+      "type": "train",
+      "labels": "118,1",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog",
+        "Leopard"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Startled"
+        }
+      ]
+    },
+    {
+      "video_id": "RJALNXGD",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "RKMYMRSU",
+      "type": "train",
+      "labels": "133,13,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Carrying In Mouth"
+        }
+      ]
+    },
+    {
+      "video_id": "RNDTTFGA",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "RTCFXXDO",
+      "type": "train",
+      "labels": "3",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Barking"
+        }
+      ]
+    },
+    {
+      "video_id": "SAZKLDSN",
+      "type": "train",
+      "labels": "133,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf",
+        "Buffalo"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "SBPPARSU",
+      "type": "train",
+      "labels": "14,51,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Fleeing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "SCAYVXGD",
+      "type": "train",
+      "labels": "2,139,133",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog",
+        "Dog",
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Walking"
+        },
+        {
+          "animal": "Dog",
+          "action": "Attending"
+        },
+        {
+          "animal": "Dog",
+          "action": "Yawning"
+        }
+      ]
+    },
+    {
+      "video_id": "SFSRCXGD",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "SMLRJXGD",
+      "type": "train",
+      "labels": "68",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Keeping still"
+        }
+      ]
+    },
+    {
+      "video_id": "SOTFAFGA",
+      "type": "train",
+      "labels": "128,45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Turning Around"
+        }
+      ]
+    },
+    {
+      "video_id": "SVNPCCNX",
+      "type": "train",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "TDRLECNX",
+      "type": "train",
+      "labels": "133,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "TEKPGCNX",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "TRBAWFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "TTOSQFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wildebeest"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "TWLBLCNX",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "UHTDGCNX",
+      "type": "train",
+      "labels": "102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "UOHILFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "UQYWCRSU",
+      "type": "train",
+      "labels": "96,1",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Attacking"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Retaliating"
+        }
+      ]
+    },
+    {
+      "video_id": "UXNFAXGD",
+      "type": "train",
+      "labels": "40",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Eating"
+        }
+      ]
+    },
+    {
+      "video_id": "VDDGCFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wildebeest"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "VEMEECNX",
+      "type": "train",
+      "labels": "68",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Keeping still"
+        }
+      ]
+    },
+    {
+      "video_id": "VGALMFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "VNXHXFGA",
+      "type": "train",
+      "labels": "133,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Caribou",
+        "Wolf",
+        "Caribou"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "VTPRNXDO",
+      "type": "train",
+      "labels": "91,96,1",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wild Dog",
+        "Hyena"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Attacking"
+        },
+        {
+          "animal": "Wild Dog",
+          "action": "Preying"
+        }
+      ]
+    },
+    {
+      "video_id": "WAUTGCNX",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "WGTWACNX",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "WYVCEDSN",
+      "type": "train",
+      "labels": "14,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "WZUIAXGD",
+      "type": "train",
+      "labels": "2",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Attending"
+        }
+      ]
+    },
+    {
+      "video_id": "WZYVNRSU",
+      "type": "train",
+      "labels": "41",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Entering its nest"
+        }
+      ]
+    },
+    {
+      "video_id": "XAKUOXGD",
+      "type": "train",
+      "labels": "100,67",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Kangaroo",
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "XDVZUFGA",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "XGZSSRSU",
+      "type": "train",
+      "labels": "14,51",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Fleeing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "XRTWVFGA",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "XSUBUCNX",
+      "type": "train",
+      "labels": "133,45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "XTNNWDSN",
+      "type": "train",
+      "labels": "14,51,26,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf",
+        "Buffalo",
+        "Buffalo"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "YBSATFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "YEYILXGD",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "YKJFXGCS",
+      "type": "train",
+      "labels": "3,97",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Leopard",
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Barking"
+        }
+      ]
+    },
+    {
+      "video_id": "YLZBNFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "YSVFJCNX",
+      "type": "train",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "YSWGBGCS",
+      "type": "train",
+      "labels": "68,100",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog",
+        "Leopard"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Keeping still"
+        }
+      ]
+    },
+    {
+      "video_id": "YXJBZFGA",
+      "type": "train",
+      "labels": "133,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Caribou",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "ZABYMFGA",
+      "type": "train",
+      "labels": "133,67",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Jumping"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "ZDQCJDSN",
+      "type": "train",
+      "labels": "14,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "ZGNADXGD",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "ZMKWRDSN",
+      "type": "train",
+      "labels": "133,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "ZOTKPRSU",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "ZPJLBFGA",
+      "type": "train",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wildebeest"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "AGILRCNX",
+      "type": "test",
+      "labels": "102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "AVFJUXDO",
+      "type": "test",
+      "labels": "51,102",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Lion",
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Fleeing"
+        }
+      ]
+    },
+    {
+      "video_id": "BLMFGFGA",
+      "type": "test",
+      "labels": "128,133,45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Turning Around"
+        }
+      ]
+    },
+    {
+      "video_id": "CSHALXDO",
+      "type": "test",
+      "labels": "1,26,102",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Hyena",
+        "Hyena"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Attacking"
+        }
+      ]
+    },
+    {
+      "video_id": "CWKHXFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Caribou",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "CWUSGFGA",
+      "type": "test",
+      "labels": "67",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Jumping"
+        }
+      ]
+    },
+    {
+      "video_id": "DCVGZXDO",
+      "type": "test",
+      "labels": "1,26",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Hyena"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Attacking"
+        }
+      ]
+    },
+    {
+      "video_id": "DWOLCXDO",
+      "type": "test",
+      "labels": "96,14,1",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wild Dog",
+        "Hyena"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Attacking"
+        },
+        {
+          "animal": "Wild Dog",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "EBOJNFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "ECQRGFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "ENCQCCNX",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "EPQDGFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wildebeest"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "ETOKQXGD",
+      "type": "test",
+      "labels": "14,26",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Dog",
+        "Kangaroo"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "EVQRFFGA",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "FGPGOCNX",
+      "type": "test",
+      "labels": "108,133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sitting"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "FKTOVCNX",
+      "type": "test",
+      "labels": "8",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Biting"
+        }
+      ]
+    },
+    {
+      "video_id": "FUNCGCNX",
+      "type": "test",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "GICIEXDO",
+      "type": "test",
+      "labels": "133,100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Lion"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "GNCBFXGD",
+      "type": "test",
+      "labels": "46,1,8",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Kangaroo",
+        "Dog",
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Biting"
+        },
+        {
+          "animal": "Dog",
+          "action": "Attacking"
+        }
+      ]
+    },
+    {
+      "video_id": "GXZYXCNX",
+      "type": "test",
+      "labels": "40,13,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Eating"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Carrying In Mouth"
+        }
+      ]
+    },
+    {
+      "video_id": "HGHBGCNX",
+      "type": "test",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "HWRGEFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "IDCHAFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "IFUBGCNX",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "IKAMHFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wildebeest"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "IVNWICNX",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "JBODVDSN",
+      "type": "test",
+      "labels": "133,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Buffalo"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "JKYVJDSN",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "KIWAPCNX",
+      "type": "test",
+      "labels": "102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "KURRZFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "KYABVCNX",
+      "type": "test",
+      "labels": "133,45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "LDNDOCNX",
+      "type": "test",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "LHCTQCNX",
+      "type": "test",
+      "labels": "102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "LIXLSFGA",
+      "type": "test",
+      "labels": "100,67",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Jumping"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "MMSNUCNX",
+      "type": "test",
+      "labels": "40,133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Eating"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "NGRURCNX",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "OKTSJFGA",
+      "type": "test",
+      "labels": "128,133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Turning Around"
+        }
+      ]
+    },
+    {
+      "video_id": "PEPZMXDO",
+      "type": "test",
+      "labels": "133,67",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Lion"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Jumping"
+        }
+      ]
+    },
+    {
+      "video_id": "PPOLHFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wildebeest"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "PRGKPCNX",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "PRJHLDSN",
+      "type": "test",
+      "labels": "14,100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "QMLUFCNX",
+      "type": "test",
+      "labels": "76",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Manipulating Object"
+        }
+      ]
+    },
+    {
+      "video_id": "RAUURFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "RGVOECNX",
+      "type": "test",
+      "labels": "128,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Turning Around"
+        }
+      ]
+    },
+    {
+      "video_id": "RIBYTDSN",
+      "type": "test",
+      "labels": "128,8,47",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Buffalo",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Biting"
+        }
+      ]
+    },
+    {
+      "video_id": "RKCNXCNX",
+      "type": "test",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "SKCIHXDO",
+      "type": "test",
+      "labels": "14,51,100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Hyena",
+        "Hyena",
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "SOXNEFGA",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wildebeest"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "TABWSFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "TDGPBDSN",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "THKNNFGA",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "TNANEFGA",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "TUBJVCNX",
+      "type": "test",
+      "labels": "102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "TVAUKXGD",
+      "type": "test",
+      "labels": "26,1,8,14,46",
+      "species": [
+        "Dog"
+      ],
+      "all_animals": [
+        "Kangaroo",
+        "Kangaroo",
+        "Dog",
+        "Dog",
+        "Dog"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Dog",
+          "action": "Biting"
+        },
+        {
+          "animal": "Dog",
+          "action": "Attacking"
+        },
+        {
+          "animal": "Dog",
+          "action": "Chasing"
+        }
+      ]
+    },
+    {
+      "video_id": "UOYWOCNX",
+      "type": "test",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "USTTFFGA",
+      "type": "test",
+      "labels": "100",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Wild Dog",
+        "Wildebeest"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        }
+      ]
+    },
+    {
+      "video_id": "UVFRLCNX",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "UVJBWCNX",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "VEOOFCNX",
+      "type": "test",
+      "labels": "13",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Carrying In Mouth"
+        }
+      ]
+    },
+    {
+      "video_id": "VFWIFCNX",
+      "type": "test",
+      "labels": "40",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Eating"
+        }
+      ]
+    },
+    {
+      "video_id": "VHSFPCNX",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "WALEWCNX",
+      "type": "test",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "WSXYDFGA",
+      "type": "test",
+      "labels": "133,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Caribou"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "WZKHHCNX",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "XERHCDSN",
+      "type": "test",
+      "labels": "68,133,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Buffalo",
+        "Buffalo"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        }
+      ]
+    },
+    {
+      "video_id": "XFIZXCNX",
+      "type": "test",
+      "labels": "133,45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "XVKTPCNX",
+      "type": "test",
+      "labels": "45",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Exploring"
+        }
+      ]
+    },
+    {
+      "video_id": "XYNMICNX",
+      "type": "test",
+      "labels": "133,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "ZDJZICNX",
+      "type": "test",
+      "labels": "133",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "ZMWNVCNX",
+      "type": "test",
+      "labels": "133,102",
+      "species": [
+        "Wolf"
+      ],
+      "all_animals": [
+        "Wolf",
+        "Wolf"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wolf",
+          "action": "Sensing"
+        },
+        {
+          "animal": "Wolf",
+          "action": "Walking"
+        }
+      ]
+    },
+    {
+      "video_id": "ZPTIZXDO",
+      "type": "test",
+      "labels": "133,100,67",
+      "species": [
+        "Wild Dog"
+      ],
+      "all_animals": [
+        "Lion",
+        "Wild Dog",
+        "Wild Dog",
+        "Wild Dog",
+        "Lion"
+      ],
+      "canine_actions": [
+        {
+          "animal": "Wild Dog",
+          "action": "Running"
+        },
+        {
+          "animal": "Wild Dog",
+          "action": "Jumping"
+        },
+        {
+          "animal": "Wild Dog",
+          "action": "Walking"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,299 @@
+======================================================================
+Animal Kingdom → Project Behavior Mapping Analysis
+======================================================================
+
+[1] Loading AR_metadata.xlsx ...
+    Sheets: ['AR', 'CARe', 'Action', 'Animal', 'video_url']
+    AR sheet: 30100 videos
+    Action sheet: 140 behaviors
+
+[2] All 140 behaviors (by category):
+
+    [Affection] (3 actions)
+       63  Holding hands
+       65  Hugging
+      106  Showing affection
+
+    [Aggressive] (13 actions)
+        1  Attacking
+       14  Chasing
+       17  Coiling
+       18  Competing for dominance
+       27  Disturbing another animal
+       47  Fighting
+       62  Hissing
+       89  Pounding
+       91  Preying
+       94  Rattling
+      112  Spitting venom
+      137  Wrapping itself around prey
+      138  Wrapping prey
+
+    [Communication] (5 actions)
+        3  Barking
+       10  Calling
+       15  Chirping
+       56  Giving off light
+      136  Waving
+
+    [Death] (2 actions)
+       21  Dead
+       39  Dying
+
+    [Defensive] (10 actions)
+       11  Camouflaging
+       23  Defensive rearing
+       26  Displaying defensive pose
+       29  Doing a back kick
+       42  Escaping
+       51  Fleeing
+       96  Retaliating
+       97  Retreating
+      117  Standing in alert
+      120  Struggling
+
+    [Feeding] (5 actions)
+        8  Biting
+       38  Drinking
+       40  Eating
+       80  Pecking
+      105  Sharing food
+
+    [General] (9 actions)
+       50  Flapping its ears
+       53  Gasping for air
+       68  Keeping still
+       75  Lying on top
+       79  Panting
+      111  Spitting
+      118  Startled
+      119  Stinging
+      126  Tail swishing
+
+    [Life cycle] (6 actions)
+       43  Exiting cocoon
+       55  Giving birth
+       60  Hatching
+       71  Laying eggs
+       77  Molting
+      129  Undergoing chrysalis
+
+    [Maintenance] (13 actions)
+       22  Defecating
+       31  Doing a chin dip
+       32  Doing a face dip
+       58  Grooming
+       73  Licking
+       82  Performing allo-grooming
+       83  Performing allo-preening
+       90  Preening
+       99  Rubbing its head
+      103  Shaking
+      104  Shaking head
+      132  Urinating
+      135  Washing
+
+    [Movement] (46 actions)
+        0  Abseiling
+       16  Climbing
+       24  Detaching as a parasite
+       25  Digging
+       28  Diving
+       30  Doing a backward tilt
+       33  Doing a neck raise
+       34  Doing a side tilt
+       36  Doing somersault
+       37  Drifting
+       41  Entering its nest
+       44  Exiting nest
+       46  Falling
+       48  Flapping
+       49  Flapping tail
+       52  Flying
+       57  Gliding
+       59  Hanging
+       64  Hopping
+       66  Immobilized
+       67  Jumping
+       69  Landing
+       72  Leaning
+       70  Lying down
+       74  Lying on its side
+       76  Manipulating object
+       78  Moving
+       93  Pulling
+       98  Rolling
+      100  Running
+      101  Running on water
+      107  Sinking
+      108  Sitting
+      113  Spreading
+      114  Spreading wings
+      115  Squatting
+      116  Standing
+      121  Surfacing
+      122  Swaying
+      123  Swimming
+      125  Swinging
+      128  Turning around
+      130  Unmounting
+      131  Unrolling
+      133  Walking
+      134  Walking on water
+
+    [Prey] (4 actions)
+        7  Being eaten
+       54  Getting bullied
+       88  Playing dead
+      127  Trapped
+
+    [Resting] (4 actions)
+       95  Resting
+      109  Sleeping
+      110  Sleeping in its nest
+
+    [Sensing] (4 actions)
+        2  Attending
+       45  Exploring
+       61  Having a flehmen response
+      102  Sensing
+
+    [Sexual] (8 actions)
+       19  Dancing
+       20  Dancing on water
+       35  Doing push up
+       84  Performing copulatory mounting
+       81  Performing sexual display
+       85  Performing sexual exploration
+       86  Performing sexual pursuit
+       92  Puffing its throat
+
+    [Shelter] (1 actions)
+        9  Building nest
+
+    [Social] (2 actions)
+       87  Playing
+      124  Swimming in circles
+
+    [Transport] (5 actions)
+        4  Being carried
+        5  Being carried in mouth
+        6  Being dragged
+       12  Carrying
+       13  Carrying in mouth
+
+[3] Canine video filtering ...
+    Mammal videos: 4576
+    Canine (by keyword) videos: 219
+
+    Top 20 animal names in canine videos:
+        190  Wolf
+         43  Dog
+         40  Wild Dog
+         17  Buffalo
+         12  Leopard
+          9  Wildebeest
+          8  Dog Faced Water Snake
+          7  Kangaroo
+          7  Hyena
+          6  Caribou
+          6  Lion
+          4  Fish
+          3  African Painted Dog
+          2  Horse
+          2  Dingo Dog
+
+[4] Behavior distribution in canine videos:
+    30 distinct behaviors in canine videos
+
+    Top 30 behaviors in canine videos:
+      133     72  [Movement       ]  Walking
+      100     66  [Movement       ]  Running
+      102     33  [Sensing        ]  Sensing
+       14     21  [Aggressive     ]  Chasing
+       45     20  [Sensing        ]  Exploring
+       68     19  [General        ]  Keeping still
+        2     12  [Sensing        ]  Attending
+       51     12  [Defensive      ]  Fleeing
+        1     11  [Aggressive     ]  Attacking
+       67     11  [Movement       ]  Jumping
+       13      8  [Transport      ]  Carrying in mouth
+       40      8  [Feeding        ]  Eating
+        3      6  [Communication  ]  Barking
+        8      6  [Feeding        ]  Biting
+      128      6  [Movement       ]  Turning around
+       96      5  [Defensive      ]  Retaliating
+       26      5  [Defensive      ]  Displaying defensive pose
+      118      4  [General        ]  Startled
+      123      4  [Movement       ]  Swimming
+       47      3  [Aggressive     ]  Fighting
+      108      2  [Movement       ]  Sitting
+      139      2  [?              ]  ?
+       41      2  [Movement       ]  Entering its nest
+       46      2  [Movement       ]  Falling
+      126      1  [General        ]  Tail swishing
+      132      1  [Maintenance    ]  Urinating
+       91      1  [Aggressive     ]  Preying
+       78      1  [Movement       ]  Moving
+       97      1  [Defensive      ]  Retreating
+       76      1  [Movement       ]  Manipulating object
+
+[5] Mapping AK behaviors → project P0+P1 (16 behaviors):
+
+    [sit]
+      108  count=    2  [Movement]  Sitting
+
+    [down]
+       26  count=    5  [Defensive]  Displaying defensive pose
+       75  count=    0  [General]  Lying on top
+       71  count=    0  [Life cycle]  Laying eggs
+       52  count=    0  [Movement]  Flying
+       70  count=    0  [Movement]  Lying down
+       74  count=    0  [Movement]  Lying on its side
+       88  count=    0  [Prey]  Playing dead
+       87  count=    0  [Social]  Playing
+
+    [stand]
+      117  count=    0  [Defensive]  Standing in alert
+      116  count=    0  [Movement]  Standing
+
+    [come] — NO MATCH
+
+    [heel] — NO MATCH
+
+    [sit_up] — NO MATCH
+
+    [stay] — NO MATCH
+
+    [bark]
+        3  count=    6  [Communication]  Barking
+
+    [fetch]
+       63  count=    0  [Affection]  Holding hands
+       12  count=    0  [Transport]  Carrying
+       13  count=    8  [Transport]  Carrying in mouth
+
+    [forward] — NO MATCH
+
+    [backward] — NO MATCH
+
+    [turn]
+      128  count=    6  [Movement]  Turning around
+
+    [jump]
+       67  count=   11  [Movement]  Jumping
+
+    [search] — NO MATCH
+
+    [bite]
+        8  count=    6  [Feeding]  Biting
+
+    [release] — NO MATCH
+
+[6] Summary:
+    Total AK videos: 30100
+    Canine videos: 219
+    Canine behaviors: 30
+    Project behaviors matched: 8/16
+
+    Mapping saved: reports\phase-2-ak-canine-mapping.json

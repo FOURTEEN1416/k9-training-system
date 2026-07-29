@@ -1,0 +1,293 @@
+{
+  "total_ak_videos": 30100,
+  "canine_videos": 219,
+  "canine_behaviors": 30,
+  "project_behaviors_matched": 8,
+  "project_behaviors_total": 16,
+  "mapping": {
+    "sit": [
+      {
+        "label": 108,
+        "action": "Sitting",
+        "category": "Movement",
+        "canine_count": 2
+      }
+    ],
+    "down": [
+      {
+        "label": 26,
+        "action": "Displaying defensive pose",
+        "category": "Defensive",
+        "canine_count": 5
+      },
+      {
+        "label": 75,
+        "action": "Lying on top",
+        "category": "General",
+        "canine_count": 0
+      },
+      {
+        "label": 71,
+        "action": "Laying eggs",
+        "category": "Life cycle",
+        "canine_count": 0
+      },
+      {
+        "label": 52,
+        "action": "Flying",
+        "category": "Movement",
+        "canine_count": 0
+      },
+      {
+        "label": 70,
+        "action": "Lying down",
+        "category": "Movement",
+        "canine_count": 0
+      },
+      {
+        "label": 74,
+        "action": "Lying on its side",
+        "category": "Movement",
+        "canine_count": 0
+      },
+      {
+        "label": 88,
+        "action": "Playing dead",
+        "category": "Prey",
+        "canine_count": 0
+      },
+      {
+        "label": 87,
+        "action": "Playing",
+        "category": "Social",
+        "canine_count": 0
+      }
+    ],
+    "stand": [
+      {
+        "label": 117,
+        "action": "Standing in alert",
+        "category": "Defensive",
+        "canine_count": 0
+      },
+      {
+        "label": 116,
+        "action": "Standing",
+        "category": "Movement",
+        "canine_count": 0
+      }
+    ],
+    "come": [],
+    "heel": [],
+    "sit_up": [],
+    "stay": [],
+    "bark": [
+      {
+        "label": 3,
+        "action": "Barking",
+        "category": "Communication",
+        "canine_count": 6
+      }
+    ],
+    "fetch": [
+      {
+        "label": 63,
+        "action": "Holding hands",
+        "category": "Affection",
+        "canine_count": 0
+      },
+      {
+        "label": 12,
+        "action": "Carrying",
+        "category": "Transport",
+        "canine_count": 0
+      },
+      {
+        "label": 13,
+        "action": "Carrying in mouth",
+        "category": "Transport",
+        "canine_count": 8
+      }
+    ],
+    "forward": [],
+    "backward": [],
+    "turn": [
+      {
+        "label": 128,
+        "action": "Turning around",
+        "category": "Movement",
+        "canine_count": 6
+      }
+    ],
+    "jump": [
+      {
+        "label": 67,
+        "action": "Jumping",
+        "category": "Movement",
+        "canine_count": 11
+      }
+    ],
+    "search": [],
+    "bite": [
+      {
+        "label": 8,
+        "action": "Biting",
+        "category": "Feeding",
+        "canine_count": 6
+      }
+    ],
+    "release": []
+  },
+  "top_canine_behaviors": [
+    {
+      "label": 133,
+      "action": "Walking",
+      "count": 72
+    },
+    {
+      "label": 100,
+      "action": "Running",
+      "count": 66
+    },
+    {
+      "label": 102,
+      "action": "Sensing",
+      "count": 33
+    },
+    {
+      "label": 14,
+      "action": "Chasing",
+      "count": 21
+    },
+    {
+      "label": 45,
+      "action": "Exploring",
+      "count": 20
+    },
+    {
+      "label": 68,
+      "action": "Keeping still",
+      "count": 19
+    },
+    {
+      "label": 2,
+      "action": "Attending",
+      "count": 12
+    },
+    {
+      "label": 51,
+      "action": "Fleeing",
+      "count": 12
+    },
+    {
+      "label": 1,
+      "action": "Attacking",
+      "count": 11
+    },
+    {
+      "label": 67,
+      "action": "Jumping",
+      "count": 11
+    },
+    {
+      "label": 13,
+      "action": "Carrying in mouth",
+      "count": 8
+    },
+    {
+      "label": 40,
+      "action": "Eating",
+      "count": 8
+    },
+    {
+      "label": 3,
+      "action": "Barking",
+      "count": 6
+    },
+    {
+      "label": 8,
+      "action": "Biting",
+      "count": 6
+    },
+    {
+      "label": 128,
+      "action": "Turning around",
+      "count": 6
+    },
+    {
+      "label": 96,
+      "action": "Retaliating",
+      "count": 5
+    },
+    {
+      "label": 26,
+      "action": "Displaying defensive pose",
+      "count": 5
+    },
+    {
+      "label": 118,
+      "action": "Startled",
+      "count": 4
+    },
+    {
+      "label": 123,
+      "action": "Swimming",
+      "count": 4
+    },
+    {
+      "label": 47,
+      "action": "Fighting",
+      "count": 3
+    },
+    {
+      "label": 108,
+      "action": "Sitting",
+      "count": 2
+    },
+    {
+      "label": 139,
+      "action": "?",
+      "count": 2
+    },
+    {
+      "label": 41,
+      "action": "Entering its nest",
+      "count": 2
+    },
+    {
+      "label": 46,
+      "action": "Falling",
+      "count": 2
+    },
+    {
+      "label": 126,
+      "action": "Tail swishing",
+      "count": 1
+    },
+    {
+      "label": 132,
+      "action": "Urinating",
+      "count": 1
+    },
+    {
+      "label": 91,
+      "action": "Preying",
+      "count": 1
+    },
+    {
+      "label": 78,
+      "action": "Moving",
+      "count": 1
+    },
+    {
+      "label": 97,
+      "action": "Retreating",
+      "count": 1
+    },
+    {
+      "label": 76,
+      "action": "Manipulating object",
+      "count": 1
+    }
+  ]
+}
