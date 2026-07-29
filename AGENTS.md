@@ -2,13 +2,13 @@
 
 > 工作犬训练机器视觉识别系统的 Agent 行为宪法
 > 基于 sliver-vibe-coding agent-constitution 框架
-> 状态: ✅ v1.0
-> 日期: 2026-07-26
+> 状态: ✅ v1.9
+> 日期: 2026-07-29
 
 ## 0. 项目身份
 
 **项目**：工作犬训练机器视觉识别系统（K9 Training Vision System）
-**当前阶段**：Phase 1 MVP 启动中（2026-07-26 ADR 0003 确认，基于 [PROJECT_HEALTH_CHECK_2026-07-26](dev-docs/research/PROJECT_HEALTH_CHECK_2026-07-26.md) 体检通过）
+**当前阶段**：Phase 2 启动中（2026-07-28 ADR 0007 确认升级，1.6d 通过 + 1.2f 条件通过 + 补强方案 ADR 0008）
 **Truth root**：`dev-docs/`
 **主语言**：中文（代码注释遵循用户最新消息语言）
 
@@ -37,6 +37,7 @@
 - 质量优先于速度
 - 清理临时脚本和死代码
 - 同步文档以改进目标与约束
+- 调研搜索强制 GitHub-First（零容忍硬规则）：本项目**完全禁止**使用 `WebSearch` 工具进行技术调研——没有「最后补充」、没有「仅官方域名」、没有任何例外。所有调研**必须**按以下顺序进行：① 先调用 `github-search-strategy` skill，按 Directory-First 流程（`sindresorhus/awesome` → `awesome-<topic>` → 从目录发现具体仓库 → 逐项验证活跃度/Issues）；② 需要深度抓取页面内容时调用 `browser-automation` skill 的爬虫（Crawl4AI / ScrapeGraphAI / Playwright）抓取 GitHub repo/issues、arxiv、官方文档、HuggingFace Discussions、Reddit r/computervision 等权威源。违反此规则（即对技术调研任务调用 `WebSearch`）立即触发 §8 漂移处理流程。唯一例外：用户对特定查询的明确书面许可
 
 ## 2. Owner Map（责任模块）
 
@@ -151,8 +152,8 @@
 |------|------|---------|
 | 立项 | ✅ 完成 | project-brief / function-list / technical-selection / architecture / constitution |
 | Phase 0 基础设施 | ✅ 完成（2026-07-26 验收） | 环境 + DB schema + 前后端骨架（见 reports/phase-0-validation.md） |
-| Phase 1 MVP | ⏳ 启动中（2026-07-26 ADR 0003 确认） | YOLO26-pose + 规则 + PoseC3D + 评分 + 前后端（见 stages/phase-1.md） |
-| Phase 2 核心 | ⏳ | 数据飞轮 + 16 行为 + USPCA |
+| Phase 1 MVP | ✅ 完成（2026-07-28 验收，带条件） | YOLO26-pose + 规则引擎 + 评分 + 前后端 + 端到端闭环（见 reports/phase-1-validation.md v1.2 + ADR 0005 v1.1） |
+| Phase 2 核心 | ✅ 启动中（2026-07-28 ADR 0007，1.6d 通过 + 1.2f 条件通过 + 补强方案 ADR 0008） | 数据飞轮 + 16 行为 + USPCA + 1.2f 补强 |
 | Phase 3 专业 | ⏳ | ST-GCN+BC + 多犬 + 3D + FCI-IGP |
 | Phase 4 前沿 | ⏳ 按需 | LLM / Transformer-Mamba / RL |
 
@@ -175,9 +176,15 @@
 
 - ✅ 中文路径迁移（见 `decisions/0001-chinese-path-migration-plan.md`，已完成迁移至 `D:\Desktop\k9-training-system`）
 - ⏳ YOLO26 AGPL 商用许可（Phase 5 前解决）
-- ⏳ 工作犬数据采集方案（Phase 1 末采集 300 张微调 YOLO26-pose，见 ADR 0003）
-- ⏳ MMAction2 Windows 兼容性（Phase 1.3 实测验证，见 RESEARCH_PHASE1_STACK_DEEP.md §1）
-- ⏳ 项目守卫脚本 `scripts/check_project_guardrails.py` 未实现（Phase 0 遗留，Phase 1 内补建）
+- ✅ 工作犬数据采集方案（Phase 1 末改用 Dog-Pose 微调 + 公开数据集评估，未触发 300 张采集，见 ADR 0003 §2.4）
+- ⏳ MMAction2 Windows 兼容性（Phase 1.3 未触发，1.2f 条件通过维持 PoseC3D 跳过决策，见 ADR 0006 v1.1）
+- ⏳ 项目守卫脚本 `scripts/check_project_guardrails.py` 未实现（Phase 0 遗留，Phase 2 内补建）
+- ✅ 1.6d 真实序列验证（InterPet4D kp_world 226/226 + 9/9 姿态指标变异，2026-07-28 通过，见 `reports/phase-2-prereq-1.6d-validation.md`）
+- ✅ 1.2f 真实数据复核（InterPet4D v1 无视频/标签，采用三层降级验证: 合成 92.9% + kp_world 管线 100% + 真实视频延后，2026-07-28 条件通过，见 `reports/phase-2-prereq-1.2f-validation.md` v1.1 + ADR 0006 v1.1）
+- ⏳ YouTube 玩球视频物体检测验证（1.6d 补充，Phase 2.0c 内推进）
+- ⏳ 1.2f 真实视频补强（Animal Kingdom video.tar.gz 已下载完成 15.59GB + 犬类视频提取完成 211 个/111.2MB + image.tar.gz 下载已停止非关键 + YouTube 自标为主路径，Label Studio 已部署就绪 project id=1，待人工标注，Phase 2.0a-b 内推进，见 ADR 0008 v1.5）→ **v2.0 收敛：2.0 降级为后台并行任务，不阻塞 2.1/2.2/2.3 主线，见 phase-2.md v2.0**
+- ✅ Phase 2 范围收敛（2026-07-29 sliver-vibe-coding 项目体检）：6 子阶段 → 3 核心（2.1 数据飞轮 + 2.2 16 行为 + 2.3 USPCA）+ 1 后台（2.0 数据补强）+ 1 收尾（2.6 系统集成）；2.4 多租户延后 Phase 3；2.5 训练历史合并 2.6；时间约束 6 周 → 3-4 周，见 phase-2.md v2.0
+- ✅ 用户决策升级 Phase 2（2026-07-28 ADR 0007 确认升级，Case A + Case B 并行）
 
 ## 10. 修订历史
 
@@ -187,3 +194,12 @@
 | v1.1 | 2026-07-26 | Phase 0 验收通过，阶段映射 §7 状态更新 |
 | v1.2 | 2026-07-26 | Phase 1 升级决策（ADR 0003）确认，阶段映射 §7 状态更新 |
 | v1.3 | 2026-07-26 | 项目体检（PROJECT_HEALTH_CHECK_2026-07-26）后修正 §0 当前阶段 + §9 未解决问题（4 处过时字段） |
+| v1.4 | 2026-07-28 | §1.3 用户偏好新增「调研搜索强制 GitHub-First（零容忍硬规则）」：完全禁止 WebSearch 用于技术调研（无任何例外/漏洞），强制 github-search-strategy + browser-automation 流程，违反立即触发 §8 漂移处理 |
+| v1.5 | 2026-07-28 | Phase 1 MVP 验收通过（带条件），§7 阶段映射更新：Phase 1 ✅ 完成（2026-07-28 验收，见 reports/phase-1-validation.md + ADR 0005），Phase 2 ⏳ 启动条件待满足（1.6d + 1.2f 真实验证）。§9 未解决问题：工作犬数据采集方案 ✅ 解决（未触发 300 张采集），新增 1.6d/1.2f Phase 2 启动前置条件 |
+| v1.6 | 2026-07-28 | 1.6d/1.2f 验证完成: §9 未解决问题更新 — 1.6d ✅ 通过（226/226 + 9/9 姿态指标变异），1.2f ✅ 条件通过（数据限制: InterPet4D v1 无视频/标签，三层降级验证）。新增 YouTube 物体检测 + 真实视频准确率作为 Phase 2 内推进项。Phase 2 启动条件达成，待用户决策（ADR 0005 v1.1 + ADR 0006 v1.1） |
+| v1.7 | 2026-07-28 | Phase 2 启动: §0 当前阶段 + §7 阶段映射更新（Phase 2 ✅ 启动中，ADR 0007）。§9 未解决问题: 用户决策升级 ✅ 解决，新增 1.2f 补强（ADR 0008: Animal Kingdom + YouTube 自标 + Label Studio）。Case A + Case B 并行推进 |
+| v1.8 | 2026-07-28 | Animal Kingdom 数据集已获取（用户提供 Google Drive 链接，无需申请）。§9 未解决问题更新: 1.2f 补强策略调整 — AK 犬类样本严重不足（219/30100，sit=2/down=0/stand=0/come=0），YouTube 自标升级为主路径。pose_estimation/dataset.tar.gz (2.46GB) 已下载验证，video.tar.gz (15.6GB) 因 Google Drive 限流待重试。见 ADR 0008 v1.1 + reports/phase-2-ak-canine-mapping.json |
+| v1.9 | 2026-07-29 | §9 未解决问题更新: 1.2f 补强 — Label Studio 部署完成（v1.23，session auth，project id=1，5 视频 + 5 预标注任务全部 200 OK），待人工标注。见 ADR 0008 v1.3 §2.3.2 部署详情 |
+| v1.10 | 2026-07-29 | §9 未解决问题更新: 1.2f 补强 — Animal Kingdom video.tar.gz 下载完成（15.59 GB，gzip 完整性验证通过，curl + Clash 代理断点续传）。见 ADR 0008 v1.4 |
+| v1.11 | 2026-07-29 | §9 未解决问题更新: 1.2f 补强 — video.tar.gz 犬类视频提取完成（211 个视频，111.2 MB，25 种行为: Wolf 142/Wild Dog 35/Dog 31/Dingo Dog 2/African Painted Dog 1）。image.tar.gz 后台下载启动（42GB，Google Drive 配额限制，每小时重试最多 24h）。见 ADR 0008 v1.5 |
+| v1.12 | 2026-07-29 | **sliver-vibe-coding 项目体检收敛**：①清理漂移（_browser_profile 删除 + reports/_ls_*.png 移到 docs/screenshots/ + scripts/_setup_ls_project.py 重命名为 setup_label_studio.py + image.tar.gz 后台下载停止）；②Phase 2 范围收敛（phase-2.md v2.0）：6 子阶段 → 3 核心 + 1 后台 + 1 收尾，2.0 降级为后台并行任务（不阻塞 2.1/2.2/2.3 主线），2.4 多租户延后 Phase 3，2.5 训练历史合并 2.6，时间约束 6 周 → 3-4 周；③§9 新增 Phase 2 范围收敛 ✅ 解决项 |
