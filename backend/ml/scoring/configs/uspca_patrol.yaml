@@ -1,0 +1,261 @@
+# USPCA PDI 巡逻犬认证评分卡（5 维）
+# Owner: ML 开发（见 AGENTS.md §2.2）
+# Phase: 2.3b
+# 依据: dev-docs/research/RESEARCH_STANDARDS.md §2.2 USPCA PDI 详解
+# 标准来源: United States Police Canine Association Patrol Dog Inspection
+#
+# USPCA PDI 分值结构（参考用，本评分卡归一化为 0-100 分）:
+#   Obedience (服从)       120 pts  可自动化 60%  → 准确度 + 延迟 + 保持
+#   Search (搜索)          140 pts  可自动化 70%  → 搜索效率 + 注意力
+#   Apprehension (扑咬)    340 pts  可自动化 25%  → 注意力（仅头部朝向 + 警觉可视觉判定）
+#   总分                   600 pts  及格 448 (70%) → 本卡 pass=75（对齐 70%+ 缓冲）
+#
+# 5 维评分：准确度（0.30）+ 延迟（0.20）+ 保持（0.20）+
+#           搜索效率（0.15）+ 注意力（0.15）
+#
+# USPCA 扣分规则映射（RESEARCH_STANDARDS.md §2.2）:
+#   - 指令后 > 3 秒未响应：扣 2-5 分   → latency_fail 阈值 3.0s
+#   - 动作保持 < 5 秒：扣 2-4 分       → duration_fail 阈值 5.0s
+#   - 不必要移动/吠叫：扣 1-2 分       → attention_low 阈值 0.50
+#   - 动作不到位（如坐姿歪斜）：扣 1-3 分 → accuracy_pass 阈值 0.60
+#
+# 信号来源: backend/ml/behavior/rule_engine.py（P0 8 类 + P1 8 类 = 16 类）
+# 信号字段（signals）:
+#   - action_correct: int     正确执行的动作数
+#   - action_count: int       总动作数
+#   - command_to_action_latency: float  指令到动作响应时间（秒）
+#   - action_duration: float  动作保持时间（秒）
+#   - search_coverage: float  搜索区域覆盖率 0-1
+#   - search_speed: float     搜索速度（区域/秒）
+#   - target_found: bool      是否发现目标
+#   - focus_ratio: float      注意力聚焦比例 0-1
+#   - unnecessary_movement_count: int  不必要移动/吠叫次数
+
+scoring_engine:
+  name: "USPCA PDI 巡逻犬认证评分卡"
+  version: "1.0.0"
+  scene: "uspca_patrol"
+  description: |
+    USPCA PDI 巡逻犬认证 5 维评分（对齐美国警犬协会 PDI 标准）：
+    准确度（0.30）+ 延迟（0.20）+ 保持（0.20）+ 搜索效率（0.15）+ 注意力（0.15）
+    依据: RESEARCH_STANDARDS.md §2.2 USPCA PDI 详解
+    及格线: 75 分（对齐 USPCA 70% 及格 + 5 分缓冲）
+
+  dimensions:
+    # === 准确度（服从科目 120 pts 的核心指标，60% 可自动化） ===
+    # USPCA 服从科目: 坐/卧/立/随行/召回/远距离指挥/跳跃
+    # 扣分: 动作不到位（如坐姿歪斜）扣 1-3 分
+    - id: accuracy
+      name: "准确度"
+      weight: 0.30
+      rules:
+        - id: accuracy_excellent
+          condition: "action_correct / action_count > 0.95"
+          score: 90
+          label: "优秀"
+        - id: accuracy_good
+          condition: "action_correct / action_count > 0.80"
+          score: 75
+          label: "良好"
+        - id: accuracy_pass
+          condition: "action_correct / action_count > 0.60"
+          score: 60
+          label: "合格"
+        - id: accuracy_fail
+          condition: "action_correct / action_count <= 0.60"
+          score: 30
+          label: "不合格"
+        - id: accuracy_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 延迟（USPCA 扣分规则: > 3 秒未响应扣 2-5 分） ===
+    - id: latency
+      name: "延迟"
+      weight: 0.20
+      rules:
+        - id: latency_excellent
+          condition: "command_to_action_latency < 0.5"
+          score: 90
+          label: "优秀"
+        - id: latency_good
+          condition: "command_to_action_latency < 1.5"
+          score: 75
+          label: "良好"
+        - id: latency_pass
+          # USPCA 3 秒及格线对齐
+          condition: "command_to_action_latency < 3.0"
+          score: 60
+          label: "合格"
+        - id: latency_fail
+          # USPCA > 3 秒扣 2-5 分
+          condition: "command_to_action_latency >= 3.0"
+          score: 30
+          label: "不合格"
+        - id: latency_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 保持（USPCA 扣分规则: 动作保持 < 5 秒扣 2-4 分） ===
+    - id: duration
+      name: "保持"
+      weight: 0.20
+      rules:
+        - id: duration_excellent
+          condition: "action_duration > 30.0"
+          score: 90
+          label: "优秀"
+        - id: duration_good
+          condition: "action_duration > 10.0"
+          score: 75
+          label: "良好"
+        - id: duration_pass
+          # USPCA 5 秒及格线对齐
+          condition: "action_duration > 5.0"
+          score: 60
+          label: "合格"
+        - id: duration_fail
+          # USPCA < 5 秒扣 2-4 分
+          condition: "action_duration <= 5.0"
+          score: 30
+          label: "不合格"
+        - id: duration_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 搜索效率（搜索科目 140 pts 的核心指标，70% 可自动化） ===
+    # USPCA 搜索科目: 建筑物/车辆搜索
+    # 评估: 覆盖率 + 速度 + 目标发现
+    - id: search_efficiency
+      name: "搜索效率"
+      weight: 0.15
+      rules:
+        - id: search_excellent
+          condition: "search_coverage > 0.85 and search_speed > 0.5 and target_found"
+          score: 90
+          label: "优秀"
+        - id: search_good
+          condition: "search_coverage > 0.60 and search_speed > 0.3"
+          score: 75
+          label: "良好"
+        - id: search_pass
+          condition: "search_coverage > 0.40 or target_found"
+          score: 60
+          label: "合格"
+        - id: search_fail
+          condition: "search_coverage <= 0.40 and not target_found"
+          score: 30
+          label: "不合格"
+        - id: search_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 注意力（贯穿所有科目，USPCA 扣分: 不必要移动/吠叫扣 1-2 分） ===
+    # 覆盖: 警觉度 + 不必要移动/吠叫控制
+    - id: attention
+      name: "注意力"
+      weight: 0.15
+      rules:
+        - id: attention_high
+          # 聚焦比例 > 80% 且无不必要移动
+          condition: "focus_ratio > 0.80 and unnecessary_movement_count < 2"
+          score: 90
+          label: "高"
+        - id: attention_medium
+          # 聚焦比例 > 50% 或少量不必要移动
+          condition: "focus_ratio > 0.50"
+          score: 70
+          label: "中"
+        - id: attention_low
+          # USPCA 不必要移动/吠叫扣 1-2 分
+          condition: "focus_ratio <= 0.50"
+          score: 30
+          label: "低"
+        - id: attention_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+  thresholds:
+    pass: 75        # USPCA PDI 及格线 70% + 5 分缓冲
+    borderline: 60  # 基本合格（需补测）
+    fail: 0         # 不合格
+
+  aggregation: "weighted_sum"
+
+  # === 16 行为映射（Phase 2.2e） ===
+  # 每个行为映射到评分维度 + 权重调整
+  # P0 基础 8 类（服从科目核心）
+  # P1 训练专项 8 类（巡逻犬场景核心）
+  behavior_mapping:
+    # --- P0 服从基础（准确度 + 延迟 + 保持） ---
+    sit:
+      dimensions: [accuracy, latency, duration]
+      weight: 1.0
+      label: "坐"
+    down:
+      dimensions: [accuracy, latency, duration]
+      weight: 1.0
+      label: "卧"
+    stand:
+      dimensions: [accuracy, latency, duration]
+      weight: 1.0
+      label: "立"
+    heel:
+      dimensions: [accuracy, attention]
+      weight: 1.0
+      label: "随行"
+    sit_up:
+      dimensions: [accuracy, latency]
+      weight: 0.8
+      label: "坐立"
+    stay:
+      dimensions: [duration, attention]
+      weight: 1.2
+      label: "停留"
+    bark:
+      dimensions: [accuracy, attention]
+      weight: 0.8
+      label: "叫"
+    bite:
+      dimensions: [accuracy, attention]
+      weight: 1.0
+      label: "咬"
+
+    # --- P1 巡逻专项（搜索效率 + 注意力 + 准确度） ---
+    track:
+      dimensions: [search_efficiency, attention]
+      weight: 1.5
+      label: "追踪"
+    alert_sit:
+      dimensions: [accuracy, latency, attention]
+      weight: 1.2
+      label: "示警坐"
+    alert_down:
+      dimensions: [accuracy, latency, attention]
+      weight: 1.2
+      label: "示警卧"
+    apprehend:
+      dimensions: [accuracy, attention]
+      weight: 1.5
+      label: "扑咬"
+    escort:
+      dimensions: [attention, duration]
+      weight: 1.0
+      label: "押解"
+    obstacle:
+      dimensions: [accuracy, search_efficiency]
+      weight: 1.0
+      label: "障碍穿越"
+    recall:
+      dimensions: [accuracy, latency]
+      weight: 1.2
+      label: "返回"
+    watch:
+      dimensions: [attention, duration]
+      weight: 1.0
+      label: "警戒"

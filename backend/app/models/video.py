@@ -10,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
+    from backend.app.models.annotation import Annotation, AnnotationTask
     from backend.app.models.behavior import Behavior
     from backend.app.models.dog import Dog
     from backend.app.models.handler import Handler
@@ -30,7 +31,14 @@ class VideoStatus(str, enum.Enum):
 # 测试场景（与评分卡 scene 一致）
 SCENE_PUPPY_SELECTION = "puppy_selection"
 SCENE_OBEDIENCE_TRIAL = "obedience_trial"
-VALID_SCENES = (SCENE_PUPPY_SELECTION, SCENE_OBEDIENCE_TRIAL)
+SCENE_WORKING_DOG_TRIAL = "working_dog_trial"
+SCENE_USPCA_PATROL = "uspca_patrol"
+VALID_SCENES = (
+    SCENE_PUPPY_SELECTION,
+    SCENE_OBEDIENCE_TRIAL,
+    SCENE_WORKING_DOG_TRIAL,
+    SCENE_USPCA_PATROL,
+)
 
 
 class Video(TimestampMixin, Base):
@@ -104,6 +112,12 @@ class Video(TimestampMixin, Base):
     )
     scores: Mapped[list["Score"]] = relationship(
         "Score", back_populates="video", cascade="all, delete-orphan"
+    )
+    annotation_tasks: Mapped[list["AnnotationTask"]] = relationship(
+        "AnnotationTask", back_populates="video", cascade="all, delete-orphan"
+    )
+    annotations: Mapped[list["Annotation"]] = relationship(
+        "Annotation", back_populates="video", cascade="all, delete-orphan"
     )
 
     def __repr__(self) -> str:

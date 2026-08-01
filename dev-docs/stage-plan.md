@@ -10,11 +10,11 @@
 |------|------|------|------|
 | 立项 | ✅ 完成 | 2026-07-26 → 2026-07-27 | truth 文档 + ADR + 调研 |
 | Phase 0 | ✅ 完成 | 2026-07-26 验收 | 环境 + DB schema + 前后端骨架 |
-| Phase 1 | ⏳ 启动中 | 3-4 周（单人全职） | MVP 端到端闭环（双场景 + YAML 评分） |
-| Phase 2 | ⏳ | +4-6 周 | 数据飞轮 + 16 行为 + 基地合作 |
-| Phase 3 | ⏳ | +8-12 周 | ST-GCN+BC + 多犬 + 3D + FCI-IGP |
+| Phase 1 | ✅ 完成 | 2026-07-28 验收 | MVP 端到端闭环（双场景 + YAML 评分） |
+| Phase 2 | ✅ 完成 | 2026-07-30 验收 | 数据飞轮 + 16 行为 + USPCA + 1.2f 补强 |
+| Phase 3 | ⏳ 启动中 | +8-12 周 | ST-GCN+BC + 多犬 + 3D + FCI-IGP + Jetson + 用户权限 |
 | Phase 4 | ⏳ 按需 | 不定 | LLM / Transformer-Mamba / RL |
-| 学术副产物 | ⏳ | Phase 1 后整理 | ACM MM / AAAI Application Track |
+| 学术副产物 | ⏳ | Phase 2 后整理 | ACM MM / AAAI Application Track |
 
 ## 2. Phase 1 详细计划（3-4 周）
 

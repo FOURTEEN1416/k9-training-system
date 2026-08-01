@@ -1,7 +1,7 @@
 # 部署指南（Windows 本地部署）
 
-> 工作犬训练机器视觉识别系统 — Phase 1 MVP
-> 适用版本: v0.1.0
+> 工作犬训练机器视觉识别系统 — Phase 2
+> 适用版本: v0.2.0
 > 目标系统: Windows 11（开发/单机部署）
 > 部署模式: 单机本地化（无云依赖，数据不出本机）
 
@@ -23,12 +23,13 @@
 |------|------|------|
 | Windows | 11 / Server 2022+ | 操作系统 |
 | Python | 3.12.x（CPython） | 后端运行时 |
-| Node.js | 20.x LTS | 前端构建 |
+| Node.js | 20.x LTS | 前端构建 + Label Studio |
 | PostgreSQL | 16.x（端口 5433） | 主数据库 |
 | Redis | 7.x+（端口 6379） | Celery 消息队列 + 结果后端 |
 | NVIDIA Driver | 560.x+（Blackwell 架构需 565+） | GPU 驱动 |
 | CUDA Toolkit | 12.8+（Blackwell 兼容） | PyTorch GPU 后端 |
 | Git | 2.40+ | 代码版本控制 |
+| Label Studio | 1.23+（端口 8080，Phase 2 可选） | 数据飞轮人工标注 |
 
 ## 2. 软件预安装
 
@@ -173,6 +174,19 @@ psql -U k9system -d k9system -p 5433 -c "\dt"
 # 若无 best.pt，系统会自动下载 yolo26n-pose.pt 作为兜底（精度较低）
 ```
 
+### 3.7a Phase 2 数据集与评分卡（可选）
+
+```powershell
+# Phase 2 新增数据目录（按需准备，不影响核心功能）：
+#   data\interpet4d\smal_npy\*.npz   — InterPet4D 3D 关键点数据（226 clips）
+#   data\youtube_self_label\raw\*.mp4 — YouTube 犬类视频（5 个，用于标注）
+#   data\animal_kingdom\...\video\*.mp4 — Animal Kingdom 犬类视频（211 个）
+#   data\kpm_project\               — keypoint-MoSeq 无监督行为发现产物
+
+# Phase 2 新增评分卡（已内置，无需额外操作）：
+#   backend\ml\scoring\configs\uspca_patrol.yaml — USPCA 巡逻犬 5 维 16 行为评分卡
+```
+
 ### 3.8 构建前端
 
 ```powershell
@@ -271,6 +285,26 @@ VITE_BACKEND_HOST=127.0.0.1
 VITE_BACKEND_PORT=8001
 ```
 
+### 4.7 启动 Label Studio（Phase 2 可选，数据飞轮标注用）
+
+```powershell
+# 安装 Label Studio（仅需一次）
+pip install label-studio==1.23.0
+
+# 启动（默认端口 8080）
+label-studio start --port 8080
+
+# 首次访问 http://127.0.0.1:8080 注册管理员账号
+# 登录后创建项目，配置关键点标注模板
+
+# Phase 2 数据飞轮标注流程：
+# 1. 上传视频到 Label Studio
+# 2. YOLO26-pose 预标注（脚本 scripts/setup_label_studio.py）
+# 3. 人工修正标注
+# 4. 导出标注 → finetune_from_annotations.py 微调
+# 5. 注册新模型 → 激活
+```
+
 ## 5. 端到端验证
 
 ### 5.1 健康检查
@@ -305,6 +339,44 @@ curl http://127.0.0.1:8000/docs  # 找到 /api/health 相关接口
 [4] 1.7d 端到端延迟验证:
   [PASS] 延迟 ≤ 1 min / min 视频
 结果: 7 passed, 0 failed, 0 skipped
+```
+
+### 5.2a Phase 2 系统集成端到端测试
+
+```powershell
+# 运行 Phase 2.6 端到端测试（USPCA 场景 + 数据飞轮 API + 历史评分 + 延迟）
+.venv\Scripts\python.exe scripts\phase2_6_e2e_test.py
+```
+
+**预期输出**：
+```
+[0] 环境准备:
+  [PASS] 健康检查 /health
+  [PASS] 创建测试犬只
+[1] 2.6a USPCA 场景端到端:
+  [PASS] USPCA 视频 → 推理 → PDF
+[2] 2.6b 历史评分查询 API:
+  [PASS] GET /api/scores/by-dog/{dog_id}
+[3] 2.6c 延迟验证:
+  [PASS] USPCA 延迟 ≤ 1 min/min
+[4] 2.6d 数据飞轮 API 契约:
+  [PASS] GET /api/finetune/status
+  [PASS] GET /api/finetune/pipeline
+  [PASS] GET /api/annotations/ls/health
+  [PASS] GET /api/models
+结果: 9 passed, 0 failed, 0 skipped
+```
+
+### 5.2b Phase 2 行为准确率验证
+
+```powershell
+# 16 行为规则引擎准确率（合成数据，目标 ≥ 85%）
+.venv\Scripts\python.exe scripts\eval_rule_engine.py --phase all -v
+# 预期: 总 96.3% / P0 92.9% / P1 100.0%
+
+# 1.2f kp_world 真实数据复核（InterPet4D 226 clips）
+.venv\Scripts\python.exe scripts/validate_phase2_prereq.py --task 1.2f --limit 10
+# 预期: 10/10 clips 通过，10 种行为分布
 ```
 
 ### 5.3 前端验证
@@ -518,6 +590,7 @@ psql -U postgres -p 5433 -c "DROP USER k9system;"
 | Redis | 6379 | Celery broker/result |
 | FastAPI | 8000（默认） / 8001 | 后端 API |
 | Vite Dev | 5173 | 前端开发服务器 |
+| Label Studio | 8080（Phase 2 可选） | 数据飞轮人工标注 |
 | Flower | 5555（可选） | Celery 监控面板 |
 
 ### 9.2 关键路径
@@ -527,6 +600,10 @@ psql -U postgres -p 5433 -c "DROP USER k9system;"
 | `data/uploads/` | 上传视频存储 |
 | `data/generated/` | 推理产物（关键点 JSON 等） |
 | `data/models_weights/` | 模型权重存储 |
+| `data/interpet4d/` | InterPet4D 3D 关键点数据（Phase 2） |
+| `data/youtube_self_label/` | YouTube 自标视频 + Label Studio 数据（Phase 2） |
+| `data/animal_kingdom/` | Animal Kingdom 犬类视频（Phase 2） |
+| `data/kpm_project/` | keypoint-MoSeq 无监督行为发现产物（Phase 2） |
 | `reports/` | 生成的 PDF 评分报告 |
 | `runs/train-2/weights/` | YOLO26-pose 微调权重 |
 | `backend/ml/scoring/configs/` | 评分卡 YAML 配置 |

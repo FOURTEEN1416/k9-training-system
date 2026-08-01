@@ -15,7 +15,16 @@ from pydantic import BaseModel, Field, field_validator
 
 
 # 场景标识
-Scene = Literal["puppy_selection", "obedience_trial"]
+# - puppy_selection: 选育 3 维（Phase 1）
+# - obedience_trial: 科目测评 5 维（Phase 1）
+# - working_dog_trial: 工作犬综合训练 7 维（Phase 2.2e，16 行为）
+# - uspca_patrol: USPCA PDI 5 维（Phase 2.3b，USPCA 标准映射）
+Scene = Literal[
+    "puppy_selection",
+    "obedience_trial",
+    "working_dog_trial",
+    "uspca_patrol",
+]
 
 # 聚合方式
 Aggregation = Literal["weighted_sum", "max", "min"]

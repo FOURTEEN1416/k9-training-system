@@ -8,7 +8,7 @@
 ## 0. 项目身份
 
 **项目**：工作犬训练机器视觉识别系统（K9 Training Vision System）
-**当前阶段**：Phase 2 启动中（2026-07-28 ADR 0007 确认升级，1.6d 通过 + 1.2f 条件通过 + 补强方案 ADR 0008）
+**当前阶段**：Phase 3 启动中（2026-07-30 ADR 0010 确认升级，Phase 2 核心 ✅ 完成 + 1.2f 数据源问题彻底解决）
 **Truth root**：`dev-docs/`
 **主语言**：中文（代码注释遵循用户最新消息语言）
 
@@ -153,8 +153,8 @@
 | 立项 | ✅ 完成 | project-brief / function-list / technical-selection / architecture / constitution |
 | Phase 0 基础设施 | ✅ 完成（2026-07-26 验收） | 环境 + DB schema + 前后端骨架（见 reports/phase-0-validation.md） |
 | Phase 1 MVP | ✅ 完成（2026-07-28 验收，带条件） | YOLO26-pose + 规则引擎 + 评分 + 前后端 + 端到端闭环（见 reports/phase-1-validation.md v1.2 + ADR 0005 v1.1） |
-| Phase 2 核心 | ✅ 启动中（2026-07-28 ADR 0007，1.6d 通过 + 1.2f 条件通过 + 补强方案 ADR 0008） | 数据飞轮 + 16 行为 + USPCA + 1.2f 补强 |
-| Phase 3 专业 | ⏳ | ST-GCN+BC + 多犬 + 3D + FCI-IGP |
+| Phase 2 核心 | ✅ 完成（2026-07-30 验收，见 reports/phase-2-validation.md + ADR 0010） | 数据飞轮 + 16 行为 + USPCA + 1.2f 补强 |
+| Phase 3 专业 | ⏳ 启动中（2026-07-30 ADR 0010 确认升级） | ST-GCN+BC + 多犬 + 3D + FCI-IGP + Jetson + 用户权限 |
 | Phase 4 前沿 | ⏳ 按需 | LLM / Transformer-Mamba / RL |
 
 ## 8. 防漂移规则
@@ -182,7 +182,7 @@
 - ✅ 1.6d 真实序列验证（InterPet4D kp_world 226/226 + 9/9 姿态指标变异，2026-07-28 通过，见 `reports/phase-2-prereq-1.6d-validation.md`）
 - ✅ 1.2f 真实数据复核（InterPet4D v1 无视频/标签，采用三层降级验证: 合成 92.9% + kp_world 管线 100% + 真实视频延后，2026-07-28 条件通过，见 `reports/phase-2-prereq-1.2f-validation.md` v1.1 + ADR 0006 v1.1）
 - ⏳ YouTube 玩球视频物体检测验证（1.6d 补充，Phase 2.0c 内推进）
-- ⏳ 1.2f 真实视频补强（Animal Kingdom video.tar.gz 已下载完成 15.59GB + 犬类视频提取完成 211 个/111.2MB + image.tar.gz 下载已停止非关键 + YouTube 自标为主路径，Label Studio 已部署就绪 project id=1，待人工标注，Phase 2.0a-b 内推进，见 ADR 0008 v1.5）→ **v2.0 收敛：2.0 降级为后台并行任务，不阻塞 2.1/2.2/2.3 主线，见 phase-2.md v2.0**
+- ✅ 1.2f 真实视频补强（双轨验证通过 2026-07-30: 轨道 A dog-pose val mAP50=92.2% + 部署一致性 0.19% + 轨道 B 合成行为 96.3%；AK 数据域不匹配已证实 YOLO 检测率 0%-19%，image.tar.gz 42GB 取消下载；YouTube 5 视频 + LS project id=1 待人工标注为后台并行非阻塞项，见 ADR 0008 v1.6 + reports/phase-2.0c-1_2f-dogpose-val-map.md）
 - ✅ Phase 2 范围收敛（2026-07-29 sliver-vibe-coding 项目体检）：6 子阶段 → 3 核心（2.1 数据飞轮 + 2.2 16 行为 + 2.3 USPCA）+ 1 后台（2.0 数据补强）+ 1 收尾（2.6 系统集成）；2.4 多租户延后 Phase 3；2.5 训练历史合并 2.6；时间约束 6 周 → 3-4 周，见 phase-2.md v2.0
 - ✅ 用户决策升级 Phase 2（2026-07-28 ADR 0007 确认升级，Case A + Case B 并行）
 
@@ -203,3 +203,5 @@
 | v1.10 | 2026-07-29 | §9 未解决问题更新: 1.2f 补强 — Animal Kingdom video.tar.gz 下载完成（15.59 GB，gzip 完整性验证通过，curl + Clash 代理断点续传）。见 ADR 0008 v1.4 |
 | v1.11 | 2026-07-29 | §9 未解决问题更新: 1.2f 补强 — video.tar.gz 犬类视频提取完成（211 个视频，111.2 MB，25 种行为: Wolf 142/Wild Dog 35/Dog 31/Dingo Dog 2/African Painted Dog 1）。image.tar.gz 后台下载启动（42GB，Google Drive 配额限制，每小时重试最多 24h）。见 ADR 0008 v1.5 |
 | v1.12 | 2026-07-29 | **sliver-vibe-coding 项目体检收敛**：①清理漂移（_browser_profile 删除 + reports/_ls_*.png 移到 docs/screenshots/ + scripts/_setup_ls_project.py 重命名为 setup_label_studio.py + image.tar.gz 后台下载停止）；②Phase 2 范围收敛（phase-2.md v2.0）：6 子阶段 → 3 核心 + 1 后台 + 1 收尾，2.0 降级为后台并行任务（不阻塞 2.1/2.2/2.3 主线），2.4 多租户延后 Phase 3，2.5 训练历史合并 2.6，时间约束 6 周 → 3-4 周；③§9 新增 Phase 2 范围收敛 ✅ 解决项 |
+| v1.13 | 2026-07-30 | **1.2f 数据源问题彻底解决**：①**AK 数据域不匹配诊断**（YOLO26-pose 在 AK 野生动物 Wolf/Wild Dog 上检测率 0%-19%，不适合项目模型行为级验证）；②**image.tar.gz 42GB 正式取消下载**（同源野生动物图像无价值，用户确认）；③**1.2f 验证数据源切换**（dog-pose val 1703 张同域数据）；④**双轨验证通过**（轨道 A 姿态级 mAP50=92.2% + 部署一致性 0.19% + 轨道 B 行为级 96.3%）；⑤§9 未解决问题: 1.2f 真实视频补强 ⏳→✅。见 ADR 0008 v1.6 + reports/phase-2.0c-1_2f-dogpose-val-map.md + phase-2.md v2.6 |
+| v1.14 | 2026-07-30 | **Phase 2 正式关闭 + Phase 3 启动**：①**Phase 2 验收报告归档** `reports/phase-2-validation.md` v1.0（§6.1-§6.8 全部证据 + v2.0 范围收敛说明 + 1.2f 双轨验证）；②**ADR 0010 创建**（Phase 2 → Phase 3 升级决策，含 v2.0 收敛说明：用户权限延后 Phase 3 + 训练历史合并 2.6 + 1.2f 数据源彻底解决）；③§0 当前阶段 + §7 阶段映射更新（Phase 2 ✅ 完成，Phase 3 ⏳ 启动中）；④phase-2.md v2.7 + stage-plan.md 同步。Phase 3 范围：ST-GCN+BC + 多犬 + 3D + FCI-IGP + Jetson + 用户权限 + 训练历史对比 |

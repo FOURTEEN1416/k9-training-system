@@ -145,7 +145,9 @@ class PoseInferenceEngine:
             raise FileNotFoundError(f"模型文件不存在: {model_path}")
 
         print(f"[pose] 加载模型: {model_path}", flush=True)
-        self.model = YOLO(model_path)
+        # 显式传 task='pose'：ONNX/Engine 模型无 task 元数据，
+        # ultralytics 会回退到 'detect' 导致 keypoints 为 None（Phase 2.0c bug 修复）
+        self.model = YOLO(model_path, task="pose")
 
     def infer_video(
         self,

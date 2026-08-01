@@ -44,6 +44,7 @@ from typing import Any
 import numpy as np
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT_ROOT))
 DEFAULT_DATA_DIR = PROJECT_ROOT / "data" / "interpet4d"
 DEFAULT_MODEL_PATH = PROJECT_ROOT / "runs" / "train-2" / "weights" / "best.onnx"
 REPORTS_DIR = PROJECT_ROOT / "reports"

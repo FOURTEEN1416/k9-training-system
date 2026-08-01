@@ -35,9 +35,14 @@ _PROJECT_ROOT = Path(__file__).resolve().parents[3]
 _SCORING_CONFIGS_DIR = _PROJECT_ROOT / "backend" / "ml" / "scoring" / "configs"
 
 # 场景 → YAML 文件名映射
+# Phase 1: puppy_selection / obedience_trial
+# Phase 2.2e: working_dog_trial（16 行为 7 维）
+# Phase 2.3b: uspca_patrol（USPCA PDI 5 维）
 _SCENE_TO_FILE = {
     "puppy_selection": "puppy_selection.yaml",
     "obedience_trial": "obedience_trial.yaml",
+    "working_dog_trial": "working_dog_trial.yaml",
+    "uspca_patrol": "uspca_patrol.yaml",
 }
 
 _VALID_SCENES = set(_SCENE_TO_FILE.keys())

@@ -1,0 +1,83 @@
+{
+  "phase": "3.2c",
+  "video_path": "data/uploads/_warmup.mp4",
+  "model_path": "runs/train-2/weights/best.pt",
+  "timestamp": "2026-07-30 18:23:03",
+  "note": "ReID 真正启用需 OSNet 权重下载（Google Drive id=112EMUfBPYeYg70w-syK6V6Mx8-Qb9Q1M，28MB）。当前环境 Clash 代理未运行导致下载失败，MultiDogTracker 自动降级为 with_reid=False 继续追踪。代码层 with_reid=True 启用机制已验证（单元测试 test_with_reid_default_true 通过）。当 Clash 恢复后，重跑此脚本即可对比 ReID 启用前后效果。",
+  "baseline_no_reid": {
+    "init_log": {
+      "requested_with_reid": false,
+      "actual_with_reid": false,
+      "tracker_class": "OccluBoost",
+      "elapsed_seconds": 5.38
+    },
+    "metrics": {
+      "num_dogs": 1,
+      "total_frames": 30,
+      "track_ids": [
+        0
+      ],
+      "avg_coverage_pct": 83.3,
+      "avg_track_length": 25.0,
+      "per_track": [
+        {
+          "track_id": 0,
+          "num_frames": 25,
+          "coverage_pct": 83.3,
+          "frame_range": [
+            3,
+            29
+          ]
+        }
+      ]
+    },
+    "id_switch": {
+      "total_frames": 30,
+      "total_events": 0,
+      "confirmed_events": 0,
+      "switch_rate": 0.0,
+      "confirmed_switch_rate": 0.0,
+      "unique_track_pairs": [],
+      "should_trigger_reid_finetune": false,
+      "trigger_threshold": 0.1
+    }
+  },
+  "with_reid_enabled": {
+    "init_log": {
+      "requested_with_reid": true,
+      "actual_with_reid": false,
+      "tracker_class": "OccluBoost",
+      "elapsed_seconds": 1.45
+    },
+    "metrics": {
+      "num_dogs": 1,
+      "total_frames": 30,
+      "track_ids": [
+        0
+      ],
+      "avg_coverage_pct": 83.3,
+      "avg_track_length": 25.0,
+      "per_track": [
+        {
+          "track_id": 0,
+          "num_frames": 25,
+          "coverage_pct": 83.3,
+          "frame_range": [
+            3,
+            29
+          ]
+        }
+      ]
+    },
+    "id_switch": {
+      "total_frames": 30,
+      "total_events": 0,
+      "confirmed_events": 0,
+      "switch_rate": 0.0,
+      "confirmed_switch_rate": 0.0,
+      "unique_track_pairs": [],
+      "should_trigger_reid_finetune": false,
+      "trigger_threshold": 0.1
+    }
+  }
+}

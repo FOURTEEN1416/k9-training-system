@@ -1,0 +1,60 @@
+{
+  "timestamp": "2026-07-29 13:45:35 UTC",
+  "source": "synthetic",
+  "phase": "p1",
+  "total_samples": 40,
+  "correct": 39,
+  "accuracy": 0.975,
+  "trigger_phase_1_3": false,
+  "p1_pass": true,
+  "per_behavior": {
+    "track": {
+      "samples": 6,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "alert_sit": {
+      "samples": 4,
+      "precision": 0.8,
+      "recall": 1.0,
+      "f1": 0.888888888888889
+    },
+    "alert_down": {
+      "samples": 4,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "apprehend": {
+      "samples": 6,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "escort": {
+      "samples": 6,
+      "precision": 0.375,
+      "recall": 1.0,
+      "f1": 0.5454545454545454
+    },
+    "obstacle": {
+      "samples": 4,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "recall": {
+      "samples": 4,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0
+    },
+    "watch": {
+      "samples": 6,
+      "precision": 0.5555555555555556,
+      "recall": 0.8333333333333334,
+      "f1": 0.6666666666666667
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "video_path": "data/uploads/_warmup.mp4",
+  "model_path": "runs/train-2/weights/best.pt",
+  "reid_model": "osnet_x1_0",
+  "tracker_backend": "OccluBoost",
+  "total_frames": 30,
+  "fps": 30.0,
+  "qualitative": {
+    "num_dogs": 1,
+    "total_frames": 30,
+    "track_ids": [
+      0
+    ],
+    "avg_coverage": 83.3,
+    "avg_track_length": 25.0,
+    "id_switch_estimate": 2,
+    "per_track": [
+      {
+        "track_id": 0,
+        "num_frames": 25,
+        "coverage": 83.3,
+        "frame_range": [
+          3,
+          29
+        ],
+        "gaps": 2
+      }
+    ]
+  },
+  "quantitative": null
+}

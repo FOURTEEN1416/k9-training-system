@@ -172,3 +172,55 @@ class ScoringEvaluateResponse(BaseModel):
     scene: str
     card_name: str
     card_version: str
+
+
+# === 标注管理（数据飞轮 2.1b） ===
+
+class AnnotationTaskCreate(BaseModel):
+    """创建标注任务请求。"""
+
+    video_id: int
+    handler_id: Optional[int] = None
+    annotation_types: Optional[list[str]] = None  # ["keypoint", "behavior", "bbox"]
+
+
+class AnnotationTaskRead(ORMModel):
+    """标注任务响应。"""
+
+    id: int
+    video_id: int
+    handler_id: Optional[int] = None
+    ls_project_id: Optional[int] = None
+    ls_task_id: Optional[int] = None
+    status: str
+    total_frames: Optional[int] = None
+    annotated_frames: int
+    annotation_types: Optional[list] = None
+    error_message: Optional[str] = None
+    progress: float
+    created_at: datetime
+    updated_at: datetime
+
+
+class AnnotationRead(ORMModel):
+    """标注数据响应。"""
+
+    id: int
+    task_id: int
+    video_id: int
+    frame_idx: Optional[int] = None
+    annotation_type: str
+    source: str
+    data_json: dict
+    confidence: Optional[float] = None
+    created_at: datetime
+
+
+class LabelStudioSyncResult(BaseModel):
+    """LS 标注同步结果。"""
+
+    project_id: int
+    synced_tasks: int
+    synced_annotations: int
+    completed_tasks: int
+    errors: list[str] = []

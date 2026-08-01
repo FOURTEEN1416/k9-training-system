@@ -118,3 +118,7 @@ pg_hba_*.bak
 # ===== TRAE / AI 工具 =====
 .trae/
 .aider*
+
+# ===== 第三方参考项目 / vendored 库（不入库） =====
+external/
+.pytest_cache/

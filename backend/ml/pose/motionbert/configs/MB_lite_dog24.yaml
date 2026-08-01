@@ -1,0 +1,59 @@
+# MotionBERT-Lite 24 关键点犬姿态微调配置（Phase 3.3c）
+# Owner: ML 开发
+# 基于: external/MotionBERT/configs/pose3d/MB_ft_h36m_global_lite.yaml (17→24 适配)
+
+# === 模型架构（MB_lite）===
+backbone: DSTformer
+dim_in: 3
+dim_out: 3
+dim_feat: 256
+dim_rep: 512
+depth: 5
+num_heads: 8
+mlp_ratio: 4
+num_joints: 24  # ← 17→24 适配核心（pos_embed 重初始化）
+maxlen: 243
+att_fuse: True
+qkv_bias: True
+drop_rate: 0.0
+attn_drop_rate: 0.0
+drop_path_rate: 0.0
+
+# === 训练 ===
+epochs: 30
+batch_size: 64
+learning_rate: 5.0e-4
+weight_decay: 0.01
+lr_decay: 0.99
+checkpoint_frequency: 10
+
+# === 数据（InterPet4D 合成 2D-3D 配对）===
+window_size: 27  # 与 lifting_pairing.DEFAULT_WINDOW_SIZE 一致
+window_stride: 13  # 50% 重叠
+num_cameras: 8
+projection_mode: orthographic
+camera_distance: 3.0
+min_kp_weight: 0.3
+min_valid_kp_ratio: 0.5
+val_ratio: 0.2
+random_seed: 42
+
+# === 损失（num_joints 无关）===
+# 只启用 MPJPE + scale + velocity（H36M 17 关节硬编码的 limb/angle 损失禁用）
+lambda_3d_pos: 1.0
+lambda_3d_velocity: 20.0
+lambda_scale: 0.5
+lambda_lv: 0.0  # 禁用（H36M 17 关节硬编码）
+lambda_lg: 0.0  # 禁用
+lambda_a: 0.0   # 禁用
+lambda_av: 0.0  # 禁用
+
+# === 推理 ===
+flip: True
+rootrel: True
+no_conf: False
+
+# === 路径 ===
+smal_dir: data/interpet4d/smal_npy
+pretrained_path: data/models/MB_lite_pose3d_ft.bin
+checkpoint_dir: data/models/motionbert_dog24

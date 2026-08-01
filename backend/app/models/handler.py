@@ -9,6 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
+    from backend.app.models.annotation import AnnotationTask
     from backend.app.models.dog import Dog
     from backend.app.models.training_session import TrainingSession
     from backend.app.models.video import Video
@@ -53,6 +54,9 @@ class Handler(TimestampMixin, Base):
         "TrainingSession", back_populates="handler"
     )
     videos: Mapped[list["Video"]] = relationship("Video", back_populates="handler")
+    annotation_tasks: Mapped[list["AnnotationTask"]] = relationship(
+        "AnnotationTask", back_populates="handler"
+    )
 
     def __repr__(self) -> str:
         return f"<Handler id={self.id} name={self.name!r} role={self.role}>"

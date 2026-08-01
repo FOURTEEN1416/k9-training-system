@@ -32,6 +32,7 @@ from backend.ml.scoring.conditions import (
 CONFIGS_DIR = Path(__file__).resolve().parents[3] / "backend" / "ml" / "scoring" / "configs"
 PUPPY_YAML = CONFIGS_DIR / "puppy_selection.yaml"
 OBEDIENCE_YAML = CONFIGS_DIR / "obedience_trial.yaml"
+USPCA_YAML = CONFIGS_DIR / "uspca_patrol.yaml"
 
 pytestmark = pytest.mark.fast
 
@@ -546,4 +547,209 @@ class TestVerdictThresholds:
         result = engine.evaluate(ctx)
         assert result.total_score < 60  # borderline 阈值
         assert result.verdict == "fail"
+        assert result.passed is False
+
+
+# ============================================================
+# 6. USPCA PDI 5 维评分（Phase 2.3b）
+# ============================================================
+
+
+class TestUSPCAPatrolScoring:
+    """USPCA PDI 巡逻犬认证 5 维评分端到端测试。
+
+    依据: RESEARCH_STANDARDS.md §2.2 USPCA PDI 详解
+    5 维: 准确度(0.30) + 延迟(0.20) + 保持(0.20) + 搜索效率(0.15) + 注意力(0.15)
+    """
+
+    @pytest.fixture
+    def engine(self) -> ScoringEngine:
+        ScoringEngine.invalidate(USPCA_YAML)
+        return ScoringEngine.from_yaml(USPCA_YAML)
+
+    def test_scene_is_uspca_patrol(self, engine: ScoringEngine) -> None:
+        """评分卡场景标识应为 uspca_patrol。"""
+        assert engine.spec.scene == "uspca_patrol"
+
+    def test_five_dimensions_only(self, engine: ScoringEngine) -> None:
+        """USPCA 5 维: 不含 courage/gait（与 working_dog_trial 7 维区分）。"""
+        dim_ids = {d.id for d in engine.spec.dimensions}
+        assert dim_ids == {
+            "accuracy",
+            "latency",
+            "duration",
+            "search_efficiency",
+            "attention",
+        }
+        # 不应包含 working_dog_trial 的 courage / gait
+        assert "courage" not in dim_ids
+        assert "gait" not in dim_ids
+
+    def test_weights_sum_to_one(self, engine: ScoringEngine) -> None:
+        """5 维权重之和 = 1.0。"""
+        total = sum(d.weight for d in engine.spec.dimensions)
+        assert abs(total - 1.0) < 0.001
+
+    def test_thresholds_uspca_aligned(self, engine: ScoringEngine) -> None:
+        """USPCA PDI 及格线 70%+ 缓冲 → pass=75。"""
+        assert engine.spec.thresholds.pass_ == 75
+        assert engine.spec.thresholds.borderline == 60
+
+    def test_excellent_patrol_dog(self, engine: ScoringEngine) -> None:
+        """5 维全部优秀 → 总分 ≥ 85，verdict=pass。"""
+        ctx = ScoringContext(
+            signals={
+                "action_correct": 20,
+                "action_count": 20,             # 1.0 > 0.95 → 优秀 90
+                "command_to_action_latency": 0.3,  # < 0.5 → 优秀 90
+                "action_duration": 35.0,        # > 30.0 → 优秀 90
+                "search_coverage": 0.90,        # > 0.85
+                "search_speed": 0.6,            # > 0.5
+                "target_found": True,           # → 优秀 90
+                "focus_ratio": 0.90,            # > 0.80
+                "unnecessary_movement_count": 0,  # < 2 → 高 90
+            },
+            scene="uspca_patrol",
+        )
+        result = engine.evaluate(ctx)
+        assert result.total_score >= 85
+        assert result.verdict == "pass"
+        assert result.passed is True
+        assert result.dimension_labels["accuracy"] == "优秀"
+        assert result.dimension_labels["search_efficiency"] == "优秀"
+        assert result.dimension_labels["attention"] == "高"
+
+    def test_failing_patrol_dog(self, engine: ScoringEngine) -> None:
+        """5 维全部不合格 → 总分 ≤ 30，verdict=fail。"""
+        ctx = ScoringContext(
+            signals={
+                "action_correct": 8,
+                "action_count": 20,             # 0.4 <= 0.60 → 不合格 30
+                "command_to_action_latency": 4.0,  # >= 3.0 → 不合格 30
+                "action_duration": 2.0,         # <= 5.0 → 不合格 30
+                "search_coverage": 0.20,        # <= 0.40
+                "search_speed": 0.1,
+                "target_found": False,          # → 不合格 30
+                "focus_ratio": 0.30,            # <= 0.50 → 低 30
+                "unnecessary_movement_count": 10,
+            },
+            scene="uspca_patrol",
+        )
+        result = engine.evaluate(ctx)
+        assert result.total_score <= 30
+        assert result.verdict == "fail"
+        assert result.passed is False
+
+    def test_uspca_latency_3s_threshold(self, engine: ScoringEngine) -> None:
+        """USPCA 扣分规则: 指令后 > 3 秒未响应扣 2-5 分 → latency_fail 阈值 3.0s。"""
+        # 2.9s → 合格（< 3.0）
+        ctx_pass = ScoringContext(
+            signals={"command_to_action_latency": 2.9},
+            scene="uspca_patrol",
+        )
+        result_pass = engine.evaluate(ctx_pass)
+        assert result_pass.dimension_labels["latency"] == "合格"
+        assert result_pass.dimension_scores["latency"] == 60
+
+        # 3.0s → 不合格（>= 3.0）
+        ctx_fail = ScoringContext(
+            signals={"command_to_action_latency": 3.0},
+            scene="uspca_patrol",
+        )
+        result_fail = engine.evaluate(ctx_fail)
+        assert result_fail.dimension_labels["latency"] == "不合格"
+        assert result_fail.dimension_scores["latency"] == 30
+
+    def test_uspca_duration_5s_threshold(self, engine: ScoringEngine) -> None:
+        """USPCA 扣分规则: 动作保持 < 5 秒扣 2-4 分 → duration_fail 阈值 5.0s。"""
+        # 5.1s → 合格（> 5.0）
+        ctx_pass = ScoringContext(
+            signals={"action_duration": 5.1},
+            scene="uspca_patrol",
+        )
+        result_pass = engine.evaluate(ctx_pass)
+        assert result_pass.dimension_labels["duration"] == "合格"
+
+        # 5.0s → 不合格（<= 5.0）
+        ctx_fail = ScoringContext(
+            signals={"action_duration": 5.0},
+            scene="uspca_patrol",
+        )
+        result_fail = engine.evaluate(ctx_fail)
+        assert result_fail.dimension_labels["duration"] == "不合格"
+
+    def test_search_efficiency_with_target_found(self, engine: ScoringEngine) -> None:
+        """target_found=True 即使覆盖率低也能达到合格。"""
+        ctx = ScoringContext(
+            signals={
+                "search_coverage": 0.30,  # <= 0.40
+                "search_speed": 0.1,
+                "target_found": True,     # search_pass 命中（or target_found）
+            },
+            scene="uspca_patrol",
+        )
+        result = engine.evaluate(ctx)
+        assert result.dimension_labels["search_efficiency"] == "合格"
+        assert result.dimension_scores["search_efficiency"] == 60
+
+    def test_attention_with_unnecessary_movement(self, engine: ScoringEngine) -> None:
+        """USPCA 扣分: 不必要移动/吠叫扣 1-2 分 → attention_high 要求 < 2。"""
+        # 高聚焦 + 1 次不必要移动 → 高
+        ctx_high = ScoringContext(
+            signals={
+                "focus_ratio": 0.85,
+                "unnecessary_movement_count": 1,  # < 2
+            },
+            scene="uspca_patrol",
+        )
+        result_high = engine.evaluate(ctx_high)
+        assert result_high.dimension_labels["attention"] == "高"
+
+        # 高聚焦 + 2 次不必要移动 → 中（不满足 < 2，回退到 focus_ratio > 0.50）
+        ctx_medium = ScoringContext(
+            signals={
+                "focus_ratio": 0.85,
+                "unnecessary_movement_count": 2,  # 不 < 2
+            },
+            scene="uspca_patrol",
+        )
+        result_medium = engine.evaluate(ctx_medium)
+        assert result_medium.dimension_labels["attention"] == "中"
+
+    def test_scene_mismatch_raises(self, engine: ScoringEngine) -> None:
+        """场景不匹配应抛出 ValueError。"""
+        ctx = ScoringContext(signals={}, scene="obedience_trial")
+        with pytest.raises(ValueError, match="场景不匹配"):
+            engine.evaluate(ctx)
+
+    def test_missing_signals_use_default(self, engine: ScoringEngine) -> None:
+        """所有信号缺失 → 命中各维度的 default True 规则（待评估 40）。"""
+        ctx = ScoringContext(signals={}, scene="uspca_patrol")
+        result = engine.evaluate(ctx)
+        # 5 维都命中 default True → 40 分
+        assert result.total_score == 40.0
+        assert result.verdict == "fail"  # 40 < 60 borderline
+        for label in result.dimension_labels.values():
+            assert label == "待评估"
+
+    def test_borderline_dog(self, engine: ScoringEngine) -> None:
+        """中等水平犬 → verdict=borderline（60 <= 总分 < 75）。"""
+        ctx = ScoringContext(
+            signals={
+                "action_correct": 14,
+                "action_count": 20,             # 0.70 > 0.60 → 合格 60
+                "command_to_action_latency": 2.0,  # < 3.0 → 合格 60
+                "action_duration": 8.0,         # > 5.0 → 合格 60
+                "search_coverage": 0.50,        # > 0.40 → 合格 60
+                "search_speed": 0.4,
+                "target_found": False,
+                "focus_ratio": 0.60,            # > 0.50 → 中 70
+                "unnecessary_movement_count": 3,
+            },
+            scene="uspca_patrol",
+        )
+        result = engine.evaluate(ctx)
+        # 60*0.30 + 60*0.20 + 60*0.20 + 60*0.15 + 70*0.15 = 18+12+12+9+10.5 = 61.5
+        assert 60 <= result.total_score < 75
+        assert result.verdict == "borderline"
         assert result.passed is False

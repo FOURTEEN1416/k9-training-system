@@ -57,6 +57,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SCORING_CONFIGS_DIR = PROJECT_ROOT / "backend" / "ml" / "scoring" / "configs"
 PUPPY_YAML = SCORING_CONFIGS_DIR / "puppy_selection.yaml"
 OBEDIENCE_YAML = SCORING_CONFIGS_DIR / "obedience_trial.yaml"
+USPCA_YAML = SCORING_CONFIGS_DIR / "uspca_patrol.yaml"
 
 # 默认模型路径（ONNX Runtime GPU 推理，Phase 1.1 实测最快）
 # 优先 onnx，回退 pt
@@ -162,6 +163,11 @@ def ingest_video(self, video_id: int) -> dict:
                 episodes, signals, scoring_result = _run_puppy_pipeline(
                     kpts_seq, detection_result,
                     meta.get("fps", 30.0), meta.get("duration_sec", 0.0),
+                )
+            elif scene == "uspca_patrol":
+                # Phase 2.3/2.6: USPCA 巡逻犬 16 行为 + 5 维评分
+                episodes, signals, scoring_result = _run_uspca_pipeline(
+                    kpts_seq, meta.get("fps", 30.0), meta.get("duration_sec", 0.0)
                 )
             else:
                 raise ValueError(f"未知 scene: {scene}")
@@ -329,6 +335,100 @@ def _signals_from_obedience_episodes(episodes, fps: float) -> dict:
         "action_duration": float(total_duration),
         "focus_ratio": focus_ratio,
         "gait_score": gait_score,
+    }
+
+
+# ============================================================
+# USPCA 巡逻犬 pipeline（Phase 2.3/2.6: 16 行为 + 5 维评分）
+# ============================================================
+
+
+def _run_uspca_pipeline(
+    kpts_seq: np.ndarray,
+    fps: float,
+    duration_sec: float,
+):
+    """USPCA 巡逻犬认证: 16 行为规则引擎 → signals → 5 维评分.
+
+    Returns:
+        (episodes, signals, ScoringResult)
+    """
+    # 1. 规则引擎识别 16 类行为（P0 8 + P1 8）
+    rule_engine = RuleEngine()
+    episodes = rule_engine.recognize(kpts_seq, fps=fps)
+
+    # 2. 从 episodes 提取 USPCA 5 维信号
+    signals = _signals_from_uspca_episodes(episodes, fps, duration_sec)
+
+    # 3. USPCA 5 维评分
+    scoring_engine = ScoringEngine.get(USPCA_YAML)
+    ctx = ScoringContext(signals=signals, scene="uspca_patrol")
+    result = scoring_engine.evaluate(ctx)
+
+    return episodes, signals, result
+
+
+def _signals_from_uspca_episodes(episodes, fps: float, duration_sec: float) -> dict:
+    """从 16 行为 episodes 提取 USPCA 5 维评分信号.
+
+    与 uspca_patrol.yaml 信号对齐:
+        - action_correct / action_count: 准确度（confidence >= 0.80 视为正确）
+        - command_to_action_latency: 延迟（第一个行为起始时间）
+        - action_duration: 保持（行为总持续时长）
+        - search_coverage / search_speed / target_found: 搜索效率
+        - focus_ratio / unnecessary_movement_count: 注意力
+    """
+    if not episodes:
+        return {
+            "action_correct": 0,
+            "action_count": 0,
+            "command_to_action_latency": 99.0,
+            "action_duration": 0.0,
+            "search_coverage": 0.0,
+            "search_speed": 0.0,
+            "target_found": False,
+            "focus_ratio": 0.0,
+            "unnecessary_movement_count": 0,
+        }
+
+    action_count = len(episodes)
+    action_correct = sum(1 for e in episodes if e.confidence >= 0.80)
+    first_start_sec = episodes[0].start_frame / fps if fps > 0 else 0.0
+    total_duration = sum(
+        (e.end_frame - e.start_frame + 1) / fps if fps > 0 else 0.0
+        for e in episodes
+    )
+    focus_ratio = float(np.mean([e.confidence for e in episodes]))
+
+    # 搜索效率: 从 track/search 相关行为估算
+    # P1 行为 track（追踪）反映搜索能力
+    track_episodes = [e for e in episodes if e.behavior == "track"]
+    if track_episodes and duration_sec > 0:
+        track_duration = sum(
+            (e.end_frame - e.start_frame + 1) / fps for e in track_episodes if fps > 0
+        )
+        search_coverage = min(1.0, track_duration / duration_sec)
+        search_speed = len(track_episodes) / duration_sec if duration_sec > 0 else 0.0
+        target_found = any(e.confidence >= 0.7 for e in track_episodes)
+    else:
+        search_coverage = 0.3  # 默认中性值（无 track 行为时）
+        search_speed = 0.1
+        target_found = False
+
+    # 注意力: bark（吠叫）视为不必要移动/噪音
+    bark_episodes = [e for e in episodes if e.behavior == "bark"]
+    unnecessary_movement_count = len(bark_episodes)
+
+    return {
+        "action_correct": action_correct,
+        "action_count": action_count,
+        "command_to_action_latency": float(first_start_sec),
+        "action_duration": float(total_duration),
+        "search_coverage": float(search_coverage),
+        "search_speed": float(search_speed),
+        "target_found": bool(target_found),
+        "focus_ratio": focus_ratio,
+        "unnecessary_movement_count": unnecessary_movement_count,
     }
 
 

@@ -4,6 +4,9 @@
 """
 
 from backend.app.models.base import Base, TimestampMixin
+from backend.app.models.annotation import (
+    Annotation, AnnotationSource, AnnotationTask, AnnotationTaskStatus, AnnotationType,
+)
 from backend.app.models.behavior import Behavior, BehaviorClass, BehaviorDetector
 from backend.app.models.behavior_vector import BehaviorVector, BEHAVIOR_VECTOR_DIM
 from backend.app.models.dog import Dog, Gender, TrainingStage
@@ -27,6 +30,8 @@ __all__ = [
     "Behavior",
     "BehaviorVector",
     "Score",
+    "AnnotationTask",
+    "Annotation",
     # 枚举
     "UserRole",
     "Gender",
@@ -37,6 +42,9 @@ __all__ = [
     "ModelFramework",
     "BehaviorClass",
     "BehaviorDetector",
+    "AnnotationTaskStatus",
+    "AnnotationType",
+    "AnnotationSource",
     # 常量
     "NUM_KEYPOINTS",
     "BEHAVIOR_VECTOR_DIM",

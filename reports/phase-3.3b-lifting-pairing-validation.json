@@ -1,0 +1,133 @@
+{
+  "phase": "3.3b",
+  "timestamp": "2026-07-30 18:53:08",
+  "modules": {
+    "interpet4d_loader": "backend/ml/pose/interpet4d_loader.py",
+    "camera_projection": "backend/ml/pose/camera_projection.py",
+    "lifting_pairing": "backend/ml/pose/lifting_pairing.py"
+  },
+  "stage_1_data_loading": {
+    "status": "PASS",
+    "total_clips": 226,
+    "sample_clip_id": "interpet_dog01_p01_take01_ego_001",
+    "sample_kp_world_shape": [
+      326,
+      24,
+      3
+    ],
+    "sample_num_frames": 326,
+    "dataset_stats_sample": {
+      "total_clips": 10,
+      "total_frames": 6122,
+      "num_dogs": 1,
+      "num_participants": 1,
+      "dog_ids": [
+        "dog01"
+      ],
+      "frame_count_stats": {
+        "min": 326,
+        "max": 1041,
+        "mean": 612.2
+      },
+      "kp_weight_stats": {
+        "min": 0.3674,
+        "max": 0.4297,
+        "mean": 0.412
+      }
+    }
+  },
+  "stage_2_camera_projection": {
+    "status": "PASS",
+    "num_cameras": 8,
+    "orthographic_shape": [
+      8,
+      326,
+      24,
+      2
+    ],
+    "orthographic_range": [
+      -0.937,
+      1.5768
+    ],
+    "perspective_shape": [
+      8,
+      326,
+      24,
+      2
+    ],
+    "perspective_range": [
+      -1.2429,
+      0.681
+    ],
+    "camera_consistency": true
+  },
+  "stage_3_normalization": {
+    "status": "PASS",
+    "bone_length_scale": 0.2112,
+    "root_centering_error": 0.0,
+    "round_trip_max_error": 3e-08,
+    "bbox_scale": 0.592,
+    "none_scale": 1.0
+  },
+  "stage_4_pairing_construction": {
+    "status": "PASS",
+    "clip_id": "interpet_dog01_p01_take01_ego_001",
+    "num_frames": 326,
+    "num_cameras": 4,
+    "expected_windows": 24,
+    "num_samples": 96,
+    "sample_2d_shape": [
+      27,
+      24,
+      2
+    ],
+    "sample_3d_shape": [
+      27,
+      24,
+      3
+    ]
+  },
+  "stage_5_dataset_construction": {
+    "status": "PASS",
+    "dataset_2d_shape": [
+      1824,
+      27,
+      24,
+      2
+    ],
+    "dataset_3d_shape": [
+      1824,
+      27,
+      24,
+      3
+    ],
+    "num_samples": 1824,
+    "num_clips": 10,
+    "kp_3d_stats": {
+      "min": -2.1164,
+      "max": 2.1404,
+      "mean": -0.1667,
+      "std": 0.6011
+    },
+    "kp_2d_stats": {
+      "min": -1.2453,
+      "max": 1.8594,
+      "mean": 0.1908,
+      "std": 0.402
+    },
+    "split": {
+      "num_train": 1540,
+      "num_val": 284,
+      "num_train_clips": 8,
+      "num_val_clips": 2,
+      "clip_leakage": false
+    }
+  },
+  "stage_6_determinism": {
+    "status": "PASS",
+    "identical": true,
+    "max_diff": 0.0
+  },
+  "overall_status": "PASS",
+  "elapsed_seconds": 2.29
+}

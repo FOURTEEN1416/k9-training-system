@@ -55,3 +55,48 @@ def _patch_ultralytics_check_font() -> None:
 
 # 模块导入时自动 patch
 _patch_ultralytics_check_font()
+
+
+# Phase 3.3b 3D 姿态重建数据配对模块
+from backend.ml.pose.interpet4d_loader import (
+    InterPet4DClip,
+    load_clip,
+    list_clips,
+    load_all_clips,
+    get_dataset_statistics as get_interpet4d_statistics,
+)
+from backend.ml.pose.camera_projection import (
+    SyntheticCamera,
+    project_3d_to_2d,
+    generate_synthetic_cameras,
+    project_clip_to_2d,
+)
+from backend.ml.pose.lifting_pairing import (
+    LiftingSample,
+    normalize_3d_keypoints,
+    denormalize_3d_keypoints,
+    build_pairs_from_clip,
+    build_dataset as build_lifting_dataset,
+    train_val_split as lifting_train_val_split,
+)
+
+__all__ = [
+    # InterPet4D 数据加载
+    "InterPet4DClip",
+    "load_clip",
+    "list_clips",
+    "load_all_clips",
+    "get_interpet4d_statistics",
+    # 合成相机投影
+    "SyntheticCamera",
+    "project_3d_to_2d",
+    "generate_synthetic_cameras",
+    "project_clip_to_2d",
+    # 2D-3D 配对构建
+    "LiftingSample",
+    "normalize_3d_keypoints",
+    "denormalize_3d_keypoints",
+    "build_pairs_from_clip",
+    "build_lifting_dataset",
+    "lifting_train_val_split",
+]

@@ -69,6 +69,12 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",
     )
 
+    # === Label Studio（数据飞轮标注平台） ===
+    ls_url: str = "http://127.0.0.1:8080"
+    ls_email: str = "admin@k9.local"
+    ls_password: str = "k9admin2026"
+    ls_project_id: int = 1
+
     def ensure_dirs(self) -> None:
         """创建所有数据目录（如不存在）。"""
         for d in (self.data_dir, self.upload_dir, self.generated_dir, self.models_dir):

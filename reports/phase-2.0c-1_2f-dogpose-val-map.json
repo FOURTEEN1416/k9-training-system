@@ -1,0 +1,23 @@
+{
+  "validation_date": "2026-07-30 09:34:54",
+  "model": "D:\\Desktop\\k9-training-system\\runs\\train-2\\weights\\best.onnx",
+  "data_source": "dog-pose val (1703 images)",
+  "train_baseline_map50": 0.9239,
+  "criteria": {
+    "absolute_map50": 0.85,
+    "deploy_delta": 0.02
+  },
+  "metrics": {
+    "box_map50": 0.9911,
+    "box_map50_95": 0.8617,
+    "pose_map50": 0.922,
+    "pose_map50_95": 0.5177,
+    "deploy_delta": 0.0019
+  },
+  "elapsed_seconds": 614.34,
+  "pass": {
+    "absolute_map50": true,
+    "deploy_consistent": true,
+    "overall": true
+  }
+}
