@@ -169,13 +169,20 @@
     - Stage 4 配对构建: 单 clip 96 样本（24 windows × 4 cameras）+ 形状全通过
     - Stage 5 数据集构建: 10 clips × 4 cameras = 1824 样本 + train/val 1540:284 无泄漏
     - Stage 6 可复现性: 两次构建 identical=True, max_diff=0.0
-- ⏳ **3.3c** MotionBERT 17→24 关键点适配
+- ✅ **3.3c** MotionBERT 17→24 关键点适配（2026-08-01）
   - DSTformer 架构对关键点数量 agnostic，仅改输入/输出投影层 + 关节 embedding
-  - InterPet4D 微调 → ONNX 导出 → 集成 `backend/ml/pose/` lifting 模块
-- ⏳ **3.3d** 3D 姿态重建精度评估
-  - 目标：MPJPE ≤ 50mm（MotionBERT-Lite H36M finetune 37.2mm）
-  - 评估脚本：`scripts/eval_3d_pose.py`
-  - 未达标触发 AGENTS.md §5.2 自研决策
+  - `model.py` — DSTformerWrapper + 17→24 权重迁移（259/260 层匹配，仅 pos_embed 丢弃）
+  - `train.py` — InterPet4D 微调（225 clips × 8 cameras = 82008 样本，Epoch 12 最佳）
+  - `inference.py` — MotionBERTLifter（PyTorch + ONNX 双后端 + 滑动窗口推理）
+  - `export_onnx.py` — ONNX 导出 + 一致性验证（max_diff=1.76e-05）
+  - 微调权重：`data/models/motionbert_dog24/best_epoch.bin` (61MB)
+  - ONNX：`data/models/motionbert_dog24/motionbert_dog24.onnx` (61.31MB)
+- ✅ **3.3d** 3D 姿态重建精度评估（2026-08-01）
+  - MPJPE = **21.74mm**（阈值 ≤ 50mm ✅，H36M 基线 37.2mm）
+  - P-MPJPE = 20.67mm
+  - 评估脚本：`scripts/eval_3d_pose.py`（与训练相同数据路径 build_datasets）
+  - 验证集 2072 样本（30 clips），评估 MPJPE(norm)=0.0994（训练日志 0.1512）
+  - 报告：`reports/phase-3.3d-3d-pose-eval.json`
 
 ### Phase 3.4 FCI-IGP 标准映射（P1，主线）
 

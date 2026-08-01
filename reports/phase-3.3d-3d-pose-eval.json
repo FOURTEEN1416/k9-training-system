@@ -1,0 +1,15 @@
+{
+  "checkpoint": "data/models/motionbert_dog24/best_epoch.bin",
+  "best_epoch": 12,
+  "train_val_mpjpe_normalized": 0.15119657232186945,
+  "val_samples": 2072,
+  "mpjpe_normalized": 0.099399,
+  "p_mpjpe_normalized": 0.094477,
+  "mean_scale": 0.218759,
+  "mpjpe_mm": 21.74,
+  "p_mpjpe_mm": 20.67,
+  "threshold_mm": 50.0,
+  "h36m_baseline_mm": 37.2,
+  "passed": true,
+  "elapsed_seconds": 27.2
+}
