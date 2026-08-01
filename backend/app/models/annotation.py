@@ -145,8 +145,9 @@ class Annotation(TimestampMixin, Base):
         Enum(AnnotationType, name="annotation_type"), nullable=False, index=True
     )
 
-    # 标注来源
+    # 标注来源（DB 列名为 annotation_source，与迁移 b2c3d4e5f6a7 一致）
     source: Mapped[AnnotationSource] = mapped_column(
+        "annotation_source",
         Enum(AnnotationSource, name="annotation_source"),
         nullable=False,
         default=AnnotationSource.HUMAN,

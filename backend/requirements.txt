@@ -30,7 +30,7 @@ flower==2.0.1
 # === ML / CV（Phase 0 仅安装轻量，YOLO26 等大包留到 Phase 1） ===
 numpy==2.2.1
 pillow==11.0.0
-opencv-python-headless==4.10.0.84
+opencv-python==5.0.0.93  # ultralytics 导入时访问 cv2.imshow/imwrite，必须用非 headless 版
 ultralytics==8.4.107
 
 # === 工具 ===
