@@ -2,13 +2,13 @@
 
 > 工作犬训练机器视觉识别系统的 Agent 行为宪法
 > 基于 sliver-vibe-coding agent-constitution 框架
-> 状态: ✅ v1.9
-> 日期: 2026-07-29
+> 状态: ✅ v1.15
+> 日期: 2026-08-01
 
 ## 0. 项目身份
 
 **项目**：工作犬训练机器视觉识别系统（K9 Training Vision System）
-**当前阶段**：Phase 3 启动中（2026-07-30 ADR 0010 确认升级，Phase 2 核心 ✅ 完成 + 1.2f 数据源问题彻底解决）
+**当前阶段**：Phase 3 启动中（2026-07-30 ADR 0010 确认升级，Phase 2 核心 ✅ 完成 + 1.2f 数据源问题彻底解决；2026-08-01 sliver-vibe-coding 接管审计修复运行时阻断，新鲜验证通过：401 单元测试 + 9/9 端到端 USPCA 闭环）
 **Truth root**：`dev-docs/`
 **主语言**：中文（代码注释遵循用户最新消息语言）
 
@@ -185,6 +185,7 @@
 - ✅ 1.2f 真实视频补强（双轨验证通过 2026-07-30: 轨道 A dog-pose val mAP50=92.2% + 部署一致性 0.19% + 轨道 B 合成行为 96.3%；AK 数据域不匹配已证实 YOLO 检测率 0%-19%，image.tar.gz 42GB 取消下载；YouTube 5 视频 + LS project id=1 待人工标注为后台并行非阻塞项，见 ADR 0008 v1.6 + reports/phase-2.0c-1_2f-dogpose-val-map.md）
 - ✅ Phase 2 范围收敛（2026-07-29 sliver-vibe-coding 项目体检）：6 子阶段 → 3 核心（2.1 数据飞轮 + 2.2 16 行为 + 2.3 USPCA）+ 1 后台（2.0 数据补强）+ 1 收尾（2.6 系统集成）；2.4 多租户延后 Phase 3；2.5 训练历史合并 2.6；时间约束 6 周 → 3-4 周，见 phase-2.md v2.0
 - ✅ 用户决策升级 Phase 2（2026-07-28 ADR 0007 确认升级，Case A + Case B 并行）
+- ✅ 运行时阻断修复（2026-08-01 sliver-vibe-coding 接管审计）：①cv2 冲突——`.venv` 同时安装 opencv-python-headless 4.14 + opencv-python 5.0，Python 取 headless 版缺 imshow/imwrite，导致 ultralytics 导入崩溃 → API 完全无法启动，修复：卸载 headless 保留 opencv-python，同步 requirements.txt；②annotation 列名不匹配——模型 `source` 属性未映射到 DB 列 `annotation_source`（迁移 b2c3d4e5f6a7），查询报列不存在，修复：`mapped_column("annotation_source", ...)` 显式映射；新鲜验证：401 单元测试通过 + phase2_6_e2e_test 9/9 通过（USPCA 闭环 + 延迟 0.88x + PDF 报告）
 
 ## 10. 修订历史
 
@@ -205,3 +206,4 @@
 | v1.12 | 2026-07-29 | **sliver-vibe-coding 项目体检收敛**：①清理漂移（_browser_profile 删除 + reports/_ls_*.png 移到 docs/screenshots/ + scripts/_setup_ls_project.py 重命名为 setup_label_studio.py + image.tar.gz 后台下载停止）；②Phase 2 范围收敛（phase-2.md v2.0）：6 子阶段 → 3 核心 + 1 后台 + 1 收尾，2.0 降级为后台并行任务（不阻塞 2.1/2.2/2.3 主线），2.4 多租户延后 Phase 3，2.5 训练历史合并 2.6，时间约束 6 周 → 3-4 周；③§9 新增 Phase 2 范围收敛 ✅ 解决项 |
 | v1.13 | 2026-07-30 | **1.2f 数据源问题彻底解决**：①**AK 数据域不匹配诊断**（YOLO26-pose 在 AK 野生动物 Wolf/Wild Dog 上检测率 0%-19%，不适合项目模型行为级验证）；②**image.tar.gz 42GB 正式取消下载**（同源野生动物图像无价值，用户确认）；③**1.2f 验证数据源切换**（dog-pose val 1703 张同域数据）；④**双轨验证通过**（轨道 A 姿态级 mAP50=92.2% + 部署一致性 0.19% + 轨道 B 行为级 96.3%）；⑤§9 未解决问题: 1.2f 真实视频补强 ⏳→✅。见 ADR 0008 v1.6 + reports/phase-2.0c-1_2f-dogpose-val-map.md + phase-2.md v2.6 |
 | v1.14 | 2026-07-30 | **Phase 2 正式关闭 + Phase 3 启动**：①**Phase 2 验收报告归档** `reports/phase-2-validation.md` v1.0（§6.1-§6.8 全部证据 + v2.0 范围收敛说明 + 1.2f 双轨验证）；②**ADR 0010 创建**（Phase 2 → Phase 3 升级决策，含 v2.0 收敛说明：用户权限延后 Phase 3 + 训练历史合并 2.6 + 1.2f 数据源彻底解决）；③§0 当前阶段 + §7 阶段映射更新（Phase 2 ✅ 完成，Phase 3 ⏳ 启动中）；④phase-2.md v2.7 + stage-plan.md 同步。Phase 3 范围：ST-GCN+BC + 多犬 + 3D + FCI-IGP + Jetson + 用户权限 + 训练历史对比 |
+| v1.15 | 2026-08-01 | **sliver-vibe-coding 接管审计 + 运行时阻断修复**：①**接管只读审计**（不依赖现有报告，基于实际代码/运行时证据）：发现 API 无法启动（ultralytics/cv2 冲突）+ 30+ 文件未提交无备份 + 文档漂移；②**Git 检查点保护**（commit 3d49f54，102 文件 +22302 行，external/ 加入 .gitignore）；③**运行时阻断修复**（commit 956f8e6）：cv2 冲突（卸载 opencv-python-headless）+ annotation 列名不匹配（mapped_column 显式映射）；④**新鲜验证通过**：401 单元测试 + 2 skipped + 0 failed + phase2_6_e2e_test 9/9 通过（USPCA 闭环 + 延迟 0.88x + PDF 报告）；⑤§0 当前阶段 + §9 新增运行时阻断修复记录 |

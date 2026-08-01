@@ -1,0 +1,33 @@
+# K9 Training Vision System - 项目配置
+# Phase 2+ 迁移至 pyproject.toml（AGENTS.md §4.2）
+# 依赖安装仍通过 requirements.txt（含完整版本锁定），本文件提供项目元数据 + 工具配置
+
+[project]
+name = "k9-training-system"
+version = "0.1.0"
+description = "工作犬训练机器视觉识别系统"
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+markers = [
+    "slow: 需要 GPU 或模型下载的慢测试",
+    "fast: 无需 GPU 的快速测试",
+    "integration: 集成测试（需要真实视频/数据库）",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
