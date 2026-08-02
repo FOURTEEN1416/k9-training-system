@@ -39,6 +39,7 @@ from backend.app.models.handler import Handler
 from backend.app.models.keypoint import Keypoint
 from backend.app.models.video import Video, VideoStatus
 from backend.app.services.report import ReportInput, generate_report
+from backend.ml.behavior import BehaviorRecognizer, DeployMode
 from backend.ml.behavior.object_detector import (
     ObjectDetector,
     VideoDetectionResult,
@@ -58,6 +59,7 @@ SCORING_CONFIGS_DIR = PROJECT_ROOT / "backend" / "ml" / "scoring" / "configs"
 PUPPY_YAML = SCORING_CONFIGS_DIR / "puppy_selection.yaml"
 OBEDIENCE_YAML = SCORING_CONFIGS_DIR / "obedience_trial.yaml"
 USPCA_YAML = SCORING_CONFIGS_DIR / "uspca_patrol.yaml"
+FCI_IGP_YAML = SCORING_CONFIGS_DIR / "fci_igp.yaml"
 
 # 默认模型路径（ONNX Runtime GPU 推理，Phase 1.1 实测最快）
 # 优先 onnx，回退 pt
@@ -88,6 +90,70 @@ def _pose_engine_singleton() -> PoseInferenceEngine:
 
 
 _pose_engine: Optional[PoseInferenceEngine] = None
+
+
+# ST-GCN+BC 模型路径候选（Phase 3.1e 双轨部署）
+STGCN_BC_ONNX_CANDIDATES = [
+    PROJECT_ROOT / "data" / "models" / "stgcn_bc" / "stgcn_bc_dog24.onnx",
+]
+STGCN_BC_CHECKPOINT_CANDIDATES = [
+    PROJECT_ROOT / "runs" / "stgcn_bc_synthetic" / "best.pt",
+]
+
+
+def _resolve_stgcn_bc_path() -> tuple[Optional[str], Optional[str]]:
+    """解析 ST-GCN+BC 模型路径.
+
+    Returns:
+        (onnx_path, checkpoint_path) — 优先 ONNX，回退 checkpoint，全无返回 (None, None)
+    """
+    for p in STGCN_BC_ONNX_CANDIDATES:
+        if p.exists():
+            return (str(p), None)
+    for p in STGCN_BC_CHECKPOINT_CANDIDATES:
+        if p.exists():
+            return (None, str(p))
+    return (None, None)
+
+
+# 部署模式（可通过 settings.behavior_deploy_mode 配置切换）
+# shadow: 影子模式（ST-GCN+BC 推理 + 规则引擎返回，仅记录对比）
+# primary_stgcn: ST-GCN+BC 主 + 规则引擎备（失败降级）
+# rule_only: 仅规则引擎（ST-GCN+BC 不可用）
+_behavior_recognizer: Optional[BehaviorRecognizer] = None
+
+
+def _behavior_recognizer_singleton() -> BehaviorRecognizer:
+    """单例 BehaviorRecognizer（双轨部署入口）.
+
+    自动检测 ST-GCN+BC 模型可用性：
+        - 模型存在 → SHADOW 模式（默认，安全过渡）
+        - 模型不存在 → RULE_ONLY 模式（降级到规则引擎）
+    """
+    global _behavior_recognizer
+    if _behavior_recognizer is None:
+        onnx_path, ckpt_path = _resolve_stgcn_bc_path()
+        mode_str = getattr(settings, "behavior_deploy_mode", "shadow")
+
+        if onnx_path is None and ckpt_path is None:
+            logger.info("[worker] ST-GCN+BC 模型不可用，使用 RULE_ONLY 模式")
+            _behavior_recognizer = BehaviorRecognizer(mode=DeployMode.RULE_ONLY)
+        else:
+            from backend.ml.behavior.stgcn_bc.inference import STGCNBCInferer
+
+            if onnx_path:
+                inferer = STGCNBCInferer(onnx_path=onnx_path)
+                logger.info(f"[worker] ST-GCN+BC ONNX 后端: {onnx_path}")
+            else:
+                inferer = STGCNBCInferer(checkpoint_path=ckpt_path)
+                logger.info(f"[worker] ST-GCN+BC PyTorch 后端: {ckpt_path}")
+
+            _behavior_recognizer = BehaviorRecognizer(
+                mode=DeployMode(mode_str),
+                stgcn_inferer=inferer,
+            )
+            logger.info(f"[worker] 行为识别部署模式: {mode_str}")
+    return _behavior_recognizer
 
 
 # ============================================================
@@ -167,6 +233,11 @@ def ingest_video(self, video_id: int) -> dict:
             elif scene == "uspca_patrol":
                 # Phase 2.3/2.6: USPCA 巡逻犬 16 行为 + 5 维评分
                 episodes, signals, scoring_result = _run_uspca_pipeline(
+                    kpts_seq, meta.get("fps", 30.0), meta.get("duration_sec", 0.0)
+                )
+            elif scene == "fci_igp":
+                # Phase 3.1e/3.4: FCI-IGP 国际工作犬 22 行为 + 7 维评分
+                episodes, signals, scoring_result = _run_fci_igp_pipeline(
                     kpts_seq, meta.get("fps", 30.0), meta.get("duration_sec", 0.0)
                 )
             else:
@@ -275,14 +346,16 @@ def _save_keypoints(db, video_id: int, frames) -> None:
 
 
 def _run_obedience_pipeline(kpts_seq: np.ndarray, fps: float):
-    """科目测评: rule_engine → behaviors → signals → 评分.
+    """科目测评: behavior_recognizer → behaviors → signals → 评分.
+
+    Phase 3.1e: 双轨部署（ST-GCN+BC 影子 + 规则引擎返回）
 
     Returns:
         (episodes, signals, ScoringResult)
     """
-    # 1. 规则引擎识别 8 类行为
-    rule_engine = RuleEngine()
-    episodes = rule_engine.recognize(kpts_seq, fps=fps)
+    # 1. 行为识别（双轨路由：shadow/vote/primary_stgcn/rule_only）
+    recognizer = _behavior_recognizer_singleton()
+    episodes = recognizer.recognize(kpts_seq, fps=fps)
 
     # 2. 从 episodes 计算 signals（与 obedience_trial.yaml 信号对齐）
     signals = _signals_from_obedience_episodes(episodes, fps)
@@ -348,14 +421,16 @@ def _run_uspca_pipeline(
     fps: float,
     duration_sec: float,
 ):
-    """USPCA 巡逻犬认证: 16 行为规则引擎 → signals → 5 维评分.
+    """USPCA 巡逻犬认证: 16 行为识别 → signals → 5 维评分.
+
+    Phase 3.1e: 双轨部署（ST-GCN+BC 影子 + 规则引擎返回）
 
     Returns:
         (episodes, signals, ScoringResult)
     """
-    # 1. 规则引擎识别 16 类行为（P0 8 + P1 8）
-    rule_engine = RuleEngine()
-    episodes = rule_engine.recognize(kpts_seq, fps=fps)
+    # 1. 行为识别（双轨路由）
+    recognizer = _behavior_recognizer_singleton()
+    episodes = recognizer.recognize(kpts_seq, fps=fps)
 
     # 2. 从 episodes 提取 USPCA 5 维信号
     signals = _signals_from_uspca_episodes(episodes, fps, duration_sec)
@@ -433,6 +508,50 @@ def _signals_from_uspca_episodes(episodes, fps: float, duration_sec: float) -> d
 
 
 # ============================================================
+# FCI-IGP 国际工作犬 pipeline（Phase 3.1e/3.4: 22 行为 + 7 维评分）
+# ============================================================
+
+
+def _run_fci_igp_pipeline(
+    kpts_seq: np.ndarray,
+    fps: float,
+    duration_sec: float,
+):
+    """FCI-IGP 国际工作犬认证: 22 行为识别 → signals → 7 维评分.
+
+    Phase 3.1e: 双轨部署（ST-GCN+BC 主 + 规则引擎备）
+    Phase 3.4: FCI-IGP 7 维评分卡（accuracy/latency/duration/search/attention/courage/gait）
+
+    Returns:
+        (episodes, signals, ScoringResult)
+    """
+    # 1. 行为识别（双轨路由：FCI-IGP 场景优先 ST-GCN+BC 覆盖 22 类）
+    recognizer = _behavior_recognizer_singleton()
+    episodes = recognizer.recognize(kpts_seq, fps=fps)
+
+    # 2. 从 episodes 提取 FCI-IGP 7 维信号
+    signals = _signals_from_fci_igp_episodes(episodes, fps, duration_sec)
+
+    # 3. FCI-IGP 7 维评分
+    scoring_engine = ScoringEngine.get(FCI_IGP_YAML)
+    ctx = ScoringContext(signals=signals, scene="fci_igp")
+    result = scoring_engine.evaluate(ctx)
+
+    return episodes, signals, result
+
+
+def _signals_from_fci_igp_episodes(episodes, fps: float, duration_sec: float) -> dict:
+    """从 22 行为 episodes 提取 FCI-IGP 7 维评分信号（委托到独立模块）.
+
+    实际实现已提取到 backend/ml/behavior/fci_igp_signals.py，
+    消除 celery 依赖以提升单元测试可测试性。
+    """
+    from backend.ml.behavior.fci_igp_signals import signals_from_fci_igp_episodes
+
+    return signals_from_fci_igp_episodes(episodes, fps, duration_sec)
+
+
+# ============================================================
 # 幼犬选育 pipeline（Phase 1.6: 真实信号提取）
 # ============================================================
 
@@ -499,9 +618,13 @@ def _run_puppy_pipeline(
 # ============================================================
 
 
-# P0 行为 → BehaviorClass 枚举映射
-# rule_engine 输出小写字符串（如 "sit"），BehaviorClass 枚举成员名大写（如 SIT）
+# P0 + P1 行为 → BehaviorClass 枚举映射（16 类）
+# rule_engine / ST-GCN+BC 输出小写字符串（如 "sit"），BehaviorClass 枚举成员名大写（如 SIT）
+# 注意: P2 高级 6 类（guard/release/retrieve/jump/scale/search_blind）在 constants.py
+# 与 BehaviorClass 枚举（FOOD_DRIVE/COURAGE/...）命名不一致，需 ADR 决策对齐
+# 暂未映射，_save_behaviors 会跳过未映射行为（line 524-527 已有逻辑）
 _BEHAVIOR_STRING_TO_ENUM = {
+    # P0 基础 8 类
     "sit": BehaviorClass.SIT,
     "down": BehaviorClass.DOWN,
     "stand": BehaviorClass.STAND,
@@ -510,11 +633,23 @@ _BEHAVIOR_STRING_TO_ENUM = {
     "stay": BehaviorClass.STAY,
     "bark": BehaviorClass.BARK,
     "bite": BehaviorClass.BITE,
+    # P1 训练专项 8 类（Phase 2 扩展）
+    "track": BehaviorClass.TRACK,
+    "alert_sit": BehaviorClass.ALERT_SIT,
+    "alert_down": BehaviorClass.ALERT_DOWN,
+    "apprehend": BehaviorClass.APPREHEND,
+    "escort": BehaviorClass.ESCORT,
+    "obstacle": BehaviorClass.OBSTACLE,
+    "recall": BehaviorClass.RECALL,
+    "watch": BehaviorClass.WATCH,
 }
 
 
 def _save_behaviors(db, video_id: int, episodes, fps: float) -> None:
-    """写入 behaviors 表."""
+    """写入 behaviors 表.
+
+    Phase 3.1e: 根据 episode.metadata["detector"] 判断检测器类型
+    """
     # 先删除旧行（重试场景）
     db.query(Behavior).filter(Behavior.video_id == video_id).delete()
     db.commit()
@@ -524,13 +659,21 @@ def _save_behaviors(db, video_id: int, episodes, fps: float) -> None:
         behavior_enum = _BEHAVIOR_STRING_TO_ENUM.get(ep.behavior)
         if behavior_enum is None:
             # 未在枚举中映射的行为跳过（避免写入失败）
+            # P2 高级 6 类（guard/release/...）因命名不一致暂未映射
+            logger.debug(f"[worker] 跳过未映射行为: {ep.behavior}")
             continue
         start_sec = ep.start_frame / fps if fps > 0 else 0.0
         end_sec = ep.end_frame / fps if fps > 0 else 0.0
+        # 检测器类型：从 metadata 读取，默认 RULE
+        detector_str = (ep.metadata or {}).get("detector", "rule")
+        if detector_str == "stgcn_bc":
+            detector = BehaviorDetector.STGCN_BC
+        else:
+            detector = BehaviorDetector.RULE
         objs.append(Behavior(
             video_id=video_id,
             behavior_class=behavior_enum,
-            detector=BehaviorDetector.RULE,
+            detector=detector,
             start_frame=ep.start_frame,
             end_frame=ep.end_frame,
             start_sec=start_sec,

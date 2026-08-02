@@ -33,11 +33,13 @@ SCENE_PUPPY_SELECTION = "puppy_selection"
 SCENE_OBEDIENCE_TRIAL = "obedience_trial"
 SCENE_WORKING_DOG_TRIAL = "working_dog_trial"
 SCENE_USPCA_PATROL = "uspca_patrol"
+SCENE_FCI_IGP = "fci_igp"  # Phase 3.4: FCI-IGP 国际工作犬
 VALID_SCENES = (
     SCENE_PUPPY_SELECTION,
     SCENE_OBEDIENCE_TRIAL,
     SCENE_WORKING_DOG_TRIAL,
     SCENE_USPCA_PATROL,
+    SCENE_FCI_IGP,
 )
 
 

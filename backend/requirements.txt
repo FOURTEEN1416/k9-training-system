@@ -70,7 +70,8 @@ scipy==1.15.0
 pandas==2.2.3
 
 # === 视频处理（Phase 1.0 视频解码/抽帧） ===
-# opencv-python-headless 已在 Phase 0 安装
+# 注：opencv-python-headless 已于 2026-08-01 卸载（与 opencv-python 5.0 共存导致 cv2.imshow/imwrite 缺失，
+#      ultralytics 导入崩溃）。统一使用上方 opencv-python==5.0.0.93 非 headless 版。
 
 # === PDF 报告图片嵌入（Phase 1.4） ===
 matplotlib==3.10.0

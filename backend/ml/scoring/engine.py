@@ -1,14 +1,16 @@
 """评分引擎核心.
 
 Owner: ML 开发（见 AGENTS.md §2.2）
-Phase: 1.4b
+Phase: 1.4b（Phase 3.4b 扩展 FCI-IGP DQ 硬约束 + 5 级评级）
 依据: dev-docs/complex-features/scoring-card-schema.md §5
+      dev-docs/research/RESEARCH_FCI_IGP_STANDARD.md §3.2 + §1.4
 
 特性:
     1. YAML 配置化: 从 YAML 加载评分卡，训导员可改阈值/权重
     2. 热加载: ScoringEngine.get() 单例 + mtime 检测，修改 YAML 后下次自动重载
     3. 可解释: 每条评分给出命中规则 + 标签 + 人类可读说明
     4. 双场景: 选育 3 维 + 科目 5 维，场景隔离
+    5. FCI-IGP 扩展: DQ 硬约束（force_fail）+ 5 级评级（Excellent/Very Good/Good/Satisfactory/Insufficient）
 
 用法:
     from backend.ml.scoring import ScoringEngine, ScoringContext
@@ -35,10 +37,27 @@ from pydantic import ValidationError
 from backend.ml.scoring.conditions import ConditionError, evaluate_condition
 from backend.ml.scoring.schema import (
     DimensionResult,
+    DisqualificationSpec,
+    FciRating,
     ScoringCardSpec,
     ScoringContext,
     ScoringResult,
 )
+
+
+# FCI-IGP 5 级评级阈值（百分制，RESEARCH_FCI_IGP_STANDARD.md §1.4）
+# Excellent    96-100
+# Very Good    90-95.5
+# Good         80-89.5
+# Satisfactory 70-79.5
+# Insufficient 0-69.5
+_RATING_THRESHOLDS: list[tuple[float, FciRating]] = [
+    (96.0, "Excellent"),
+    (90.0, "Very Good"),
+    (80.0, "Good"),
+    (70.0, "Satisfactory"),
+    (0.0, "Insufficient"),
+]
 
 
 class ScoringEngine:
@@ -153,9 +172,24 @@ class ScoringEngine:
 
         total_score = self._aggregate(dimension_results)
 
-        # 判定
+        # Phase 3.4b: DQ 硬约束检查（fci_igp 场景）
+        dq_hit = self._check_disqualifications(ctx.signals)
+        disqualified = dq_hit is not None
+
+        # 判定（DQ 优先 → 强制 fail）
         thresholds = self.spec.thresholds
-        if total_score >= thresholds.pass_:
+        if disqualified:
+            verdict = "fail"
+            passed = False
+            # DQ 触发：总分清零（对齐 FCI "已得分清零" 规则）
+            total_score = 0.0
+            dq_spec = next(d for d in self.spec.disqualifications if d.id == dq_hit)
+            explanation.insert(
+                0,
+                f"⚠️ DQ 触发: {dq_spec.label}（规则 {dq_hit}）→ "
+                f"整段不合格，已得分清零（对齐 FCI-IGP 2025 §3.2）",
+            )
+        elif total_score >= thresholds.pass_:
             verdict = "pass"
             passed = True
         elif total_score >= thresholds.borderline:
@@ -165,10 +199,16 @@ class ScoringEngine:
             verdict = "fail"
             passed = False
 
+        # Phase 3.4b: FCI-IGP 5 级评级（仅 fci_igp 场景）
+        rating = None
+        if self.spec.scene == "fci_igp":
+            rating = self._compute_fci_rating(total_score, disqualified)
+
         explanation.insert(
             0,
             f"总分 {total_score:.1f}（{verdict}）："
-            f"合格线 {thresholds.pass_}，基本合格线 {thresholds.borderline}",
+            f"合格线 {thresholds.pass_}，基本合格线 {thresholds.borderline}"
+            + (f"，评级 {rating}" if rating else ""),
         )
 
         return ScoringResult(
@@ -182,7 +222,50 @@ class ScoringEngine:
             scene=self.spec.scene,
             card_name=self.spec.name,
             card_version=self.spec.version,
+            disqualified=disqualified,
+            disqualification_hit=dq_hit,
+            rating=rating,
         )
+
+    def _check_disqualifications(
+        self, signals: dict
+    ) -> str | None:
+        """检查 DQ 硬约束，返回首个命中的 DQ 规则 ID（无则 None）.
+
+        FCI-IGP 2025 §3.2 DQ 情形:
+            - 枪怯 (gun-shy): gunshot_reaction == 'shy'
+            - 不放口 (no release): release_command_count >= 2 and not sleeve_released
+            - 衔取不吐 (retrieve): retrieve_release_command_count >= 3 and not dumbbell_released
+        """
+        for dq in self.spec.disqualifications:
+            try:
+                if evaluate_condition(dq.condition, signals):
+                    return dq.id
+            except ConditionError:
+                # DQ 条件表达式错误 → 跳过该 DQ（保守不触发）
+                continue
+        return None
+
+    def _compute_fci_rating(
+        self, total_score: float, disqualified: bool
+    ) -> FciRating:
+        """计算 FCI-IGP 5 级评级.
+
+        依据 RESEARCH_FCI_IGP_STANDARD.md §1.4:
+            Excellent    96-100%
+            Very Good    90-95.5%
+            Good         80-89.5%
+            Satisfactory 70-79.5%
+            Insufficient 0-69.5%
+
+        DQ 触发时直接为 Insufficient（不论原分数）。
+        """
+        if disqualified:
+            return "Insufficient"
+        for threshold, rating in _RATING_THRESHOLDS:
+            if total_score >= threshold:
+                return rating
+        return "Insufficient"  # 兜底（理论上不会到达）
 
     def _evaluate_dimension(self, dim, signals: dict) -> DimensionResult:
         """评估单个维度：按顺序匹配规则，首个命中生效。"""
@@ -224,10 +307,14 @@ class ScoringEngine:
         )
 
     def _aggregate(self, results: list[DimensionResult]) -> float:
-        """聚合各维度得分。"""
+        """聚合各维度得分.
+
+        注意: weighted_sum 模式下浮点累加可能产生 69.9999... 类误差，
+        round 到 2 位小数避免评级阈值边界误判（FCI-IGP 70/80/90/96 阈值）。
+        """
         if self.spec.aggregation == "max":
             return float(max(r.score for r in results))
         if self.spec.aggregation == "min":
             return float(min(r.score for r in results))
-        # 默认 weighted_sum
-        return sum(r.score * r.weight for r in results)
+        # 默认 weighted_sum（round 避免浮点精度边界误判）
+        return round(sum(r.score * r.weight for r in results), 2)

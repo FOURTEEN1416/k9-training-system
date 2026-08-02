@@ -1,11 +1,11 @@
 # Phase 1 — MVP 阶段计划
 
 > 阶段: Phase 1 MVP
-> 状态: ⏳ 启动中（2026-07-27 立项研讨后重写）
+> 状态: ✅ 完成（2026-07-28 验收通过，带条件；v1.2 修订 1.6d/1.2f 前置条件达成，见 [reports/phase-1-validation.md](../../reports/phase-1-validation.md) + ADR 0005 v1.1）
 > Owner: Phase 1 MVP
 > 入口条件: Phase 0 验收通过 ✅ + 立项研讨完成 ✅
-> 出口条件: 见 §6 验收清单（全部通过）
-> 时间约束: 3-4 周单人全职
+> 出口条件: 见 §6 验收清单（全部通过，详见验收报告）
+> 时间约束: 3-4 周单人全职（实际 2026-07-26 → 2026-07-28 验收）
 > 依据: [RESEARCH_PUPPY_SELECTION_BEHAVIOR.md](../research/RESEARCH_PUPPY_SELECTION_BEHAVIOR.md) + [RESEARCH_PUBLIC_WORKING_DOG_VIDEOS.md](../research/RESEARCH_PUBLIC_WORKING_DOG_VIDEOS.md) + [RESEARCH_SCORING_RULE_ENGINE.md](../research/RESEARCH_SCORING_RULE_ENGINE.md)
 
 ## 1. 阶段目标

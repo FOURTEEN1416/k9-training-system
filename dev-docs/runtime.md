@@ -1,7 +1,7 @@
 # Runtime Baseline — 运行时基线 Truth
 
 > Truth source: Phase 0 启动时实测形成；ADR 0002 修正后基线
-> 状态: ✅ Phase 0 基线已建立（2026-07-26）
+> 状态: ✅ Phase 0 基线已建立（v1.3，2026-08-02 Phase 3.1e ST-GCN+BC 部署集成完成 + SHADOW 模式上线）
 > Owner: Phase 0 基础设施
 > 修改触发: 运行时栈任何组件版本变更、硬件变更、服务端口变更
 
@@ -28,15 +28,23 @@
 | 包 | 版本 | 用途 | 验证状态 |
 |----|------|------|---------|
 | torch | 2.11.0+cu128 | PyTorch + CUDA 12.8 | ✅ `torch.cuda.is_available()=True`, `device_cap=(12,0)` |
-| numpy | 2.2.1 | 数值计算 | ⏳ 随 pip install 安装 |
-| fastapi | 0.115.6 | Web 框架 | ⏳ Phase 0 验收验证 |
-| uvicorn[standard] | 0.34.0 | ASGI 服务器 | ⏳ Phase 0 验收验证 |
-| SQLAlchemy[asyncio] | 2.0.36 | ORM | ⏳ Phase 0 验收验证 |
-| asyncpg | 0.30.0 | 异步 PG 驱动 | ⏳ Phase 0 验收验证 |
-| alembic | 1.14.0 | 数据库迁移 | ⏳ Phase 0 验收验证 |
-| celery[redis] | 5.4.0 | 异步任务队列 | ⏳ Phase 0 验收验证 |
-| redis | 5.2.1 | Redis 客户端 | ⏳ Phase 0 验收验证 |
-| ultralytics | 8.3.55 | YOLO26-pose | ⏳ Phase 0 验收验证（仅 import，权重在 Phase 1） |
+| numpy | 2.2.1 | 数值计算 | ✅ Phase 0 验收通过 |
+| fastapi | 0.115.6 | Web 框架 | ✅ Phase 0 验收通过 |
+| uvicorn[standard] | 0.34.0 | ASGI 服务器 | ✅ Phase 0 验收通过 |
+| SQLAlchemy[asyncio] | 2.0.36 | ORM | ✅ Phase 0 验收通过 |
+| asyncpg | 0.30.0 | 异步 PG 驱动 | ✅ Phase 0 验收通过 |
+| alembic | 1.14.0 | 数据库迁移 | ✅ Phase 0 验收通过 |
+| celery[redis] | 5.4.0 | 异步任务队列 | ✅ Phase 0 验收通过 |
+| redis | 5.2.1 | Redis 客户端 | ✅ Phase 0 验收通过 |
+| ultralytics | 8.4.107 | YOLO26-pose | ✅ Phase 1+ 验证（v1.1：从 8.3.55 升级，匹配 `requirements.txt`） |
+| opencv-python | 5.0.0.93 | 视频解码/抽帧 | ✅ Phase 1+ 验证（v1.1：非 headless 版，AGENTS.md §9 cv2 冲突修复） |
+| onnxruntime-gpu | 1.20.1 | ONNX 推理 | ✅ Phase 1.1 验证 |
+| tensorrt | 10.8.0.43 | TRT FP16（备选） | ✅ Phase 1.1 验证 |
+| scipy | 1.15.0 | 关键点处理 | ✅ Phase 1.2 验证 |
+| pandas | 2.2.3 | 数据处理 | ✅ Phase 1.2 验证 |
+| matplotlib | 3.10.0 | PDF 报告图片 | ✅ Phase 1.4 验证 |
+| reportlab | 4.2.5 | PDF 生成 | ✅ Phase 1.4 验证 |
+| pgvector | 0.5.0 | 向量扩展 Python 端 | ✅ Phase 0 验证 |
 
 > 完整版本清单见 `backend/requirements.txt`
 
@@ -96,7 +104,7 @@ CELERY_RESULT_BACKEND=redis://127.0.0.1:6379/2
 | 版本 | v22.16.0 |
 | 用途 | 前端构建 |
 
-## 5. 验证证据（2026-07-26）
+## 5. 验证证据（2026-07-26 Phase 0 + 2026-08-01 新鲜验证）
 
 ### 5.1 PyTorch + Blackwell
 
@@ -140,6 +148,19 @@ postgresql-17   Running   Automatic   ✅
 postgresql-15   Running   Automatic   （本项目不使用）
 ```
 
+### 5.4 新鲜验证（2026-08-02，Phase 3.1e ST-GCN+BC 部署集成完成）
+
+- ✅ **500 单元测试通过** + 2 skipped + 0 failed in 100.76s（`pytest backend/tests/`，较 v1.2 的 480 +20 = 3.1e 部署单元测试）
+- ✅ **3.1e 部署单元测试 20/20 通过**（`backend/tests/ml/test_stgcn_bc_deploy.py`: TestExportOnnx 4 + TestSTGCNBCInferer 6 + TestBehaviorRecognizer 8 + TestEpisodeSplit 2）
+- ✅ **端到端 SHADOW 模式新鲜验证通过**（USPCA 视频 2700 帧/90s → video_id=37 → 101.8s → verdict=pass score=81.0 → PDF 4036 bytes）
+  - SHADOW 对比日志：`STGCN=1 RULE=1 common=0 stgcn_only=1 rule_only=1`（双轨均识别 1 个行为）
+  - 延迟分析：SHADOW 双轨仅占 2s（< 2%），瓶颈在 pose 推理 98s（96%），1.13x 略超 1.0x 阈值，将通过 Phase 3.5 Jetson TRT FP16 优化
+- ✅ ST-GCN+BC 合成数据 baseline 训练验证（30 epochs / 1.43M 参数 / best_val_acc=46.97% @ epoch 21 / 边界 F1=58.45%）
+- ✅ MotionBERT 17→24 适配 + InterPet4D 微调验证（best_epoch=12 / MPJPE=21.74mm / P-MPJPE=20.67mm，见 `reports/phase-3.3d-3d-pose-eval.json`）
+- ✅ `scripts/phase2_6_e2e_test.py` 8/9 通过（USPCA 闭环 + 延迟 1.13x 略超标 + PDF 报告）
+- ✅ API 启动验证（`uvicorn backend.app.main:app --port 8001`）—— cv2 冲突修复后通过
+- ✅ Celery Worker 启动验证（`celery -A backend.workers.celery_app worker -l info --pool=solo`）
+
 ## 6. 环境变量约定（`.env`）
 
 `.env` 文件位于项目根目录，被 `.gitignore` 排除。模板：
@@ -169,14 +190,16 @@ MODELS_DIR=d:/Desktop/k9-training-system/data/models_weights
 
 > **注**：实际 `.env` 中密码为真实值；此处仅为示例。`.env` 永不入 Git。
 
-## 7. 未验证项（Phase 0 验收前需验证）
+## 7. 已验证项（Phase 0 验收 + Phase 1-3 增量验证）
 
-- ⏳ FastAPI 启动正常（`uvicorn backend.app.main:app`）
-- ⏳ Celery Worker 启动正常（Windows 兼容性）
-- ⏳ SQLAlchemy 异步连接 PG17 + pgvector 操作正常
-- ⏳ Alembic 迁移初始化正常
-- ⏳ ultralytics 8.3.55 在 PyTorch 2.11+cu128 + sm_120 上 import 正常
-- ⏳ 前端 Vite + Vue3 + Naive UI 启动正常
+> v1.1 修订：原"未验证项（Phase 0 验收前需验证）"全部转为已验证（Phase 0 验收 2026-07-26 + 2026-08-01 新鲜验证）。
+
+- ✅ FastAPI 启动正常（`uvicorn backend.app.main:app`）
+- ✅ Celery Worker 启动正常（Windows 兼容性，`--pool solo`）
+- ✅ SQLAlchemy 异步连接 PG17 + pgvector 操作正常
+- ✅ Alembic 迁移初始化正常（3 个迁移版本：phase0 / phase1_4d / phase2_1a）
+- ✅ ultralytics 8.4.107 在 PyTorch 2.11+cu128 + sm_120 上 import 正常
+- ✅ 前端 Vite + Vue3 启动正常
 
 ## 8. 已知问题
 
@@ -198,16 +221,68 @@ celery -A backend.workers.celery_app worker -l info --pool solo
 
 当前保留双服务运行，不影响本项目。
 
-### 8.3 mmaction2 / TensorRT 延后
+### 8.3 mmaction2 / TensorRT
 
-按 `technical-selection.md` §7：
-- mmaction2 1.2.x + PyTorch 2.11 + Blackwell 兼容性 → Phase 1 验证
-- TensorRT 10.x for CUDA 12.8 Windows 安装 → Phase 1 验证（仅 import 验证，TRT 模型转换在 Phase 1）
+按 `technical-selection.md` §7 + ADR 0006 v1.1：
+- **mmaction2**：Phase 1.3 未触发（1.2f 条件通过维持 PoseC3D 跳过决策），mmcv/mmaction2 未安装。Phase 3+ 如需 ST-GCN 系列可重新评估
+- **TensorRT 10.8.0.43**：Phase 1.1 已安装（PyPI 官方包），实测 YOLO26n-pose + RTX 5060 Blackwell 上 TensorRT 17.05ms vs ONNX 13.39ms，生产用 ONNX Runtime GPU，TensorRT engine 保留作为备选
 
-Phase 0 不安装 mmaction2 / TensorRT，避免环境复杂化。
+### 8.4 opencv-python-headless 冲突（2026-08-01 修复）
+
+**问题**：`.venv` 同时安装 opencv-python-headless 4.14 + opencv-python 5.0，Python 取 headless 版（缺 `imshow`/`imwrite`），导致 ultralytics 导入崩溃，API 完全无法启动。
+
+**修复**：卸载 opencv-python-headless，保留 opencv-python 5.0.0.93。`requirements.txt` 第33行已明确注释"必须用非 headless 版"。
+
+**依据**：AGENTS.md v1.15 §9 运行时阻断修复记录。
+
+### 8.5 Redis 服务启动（2026-08-02 验证）
+
+**问题**：Redis 安装在 `C:\ProgramData\chocolatey\bin\redis-server.exe`，但默认不自动启动。Celery worker 启动时连接 `redis://127.0.0.1:6379/1` 失败（`Error 10061 connecting to 127.0.0.1:6379`），导致端到端推理任务无法调度。
+
+**启动命令**（开发期，前台运行便于观察日志）：
+```bash
+redis-server --port 6379 --daemonize no
+```
+
+**验证**：
+```bash
+redis-cli ping
+# 期望输出: PONG
+```
+
+**生产期建议**：通过 `nssm` 注册为 Windows 服务自动启动（参考 `technical-selection.md` Windows 服务管理约定）。
+
+### 8.6 ST-GCN+BC 部署模式（2026-08-02 上线）
+
+**4 模式路由**（`backend/ml/behavior/router.py::BehaviorRecognizer`）：
+
+| 模式 | 说明 | 适用场景 |
+|------|------|---------|
+| `SHADOW` | ST-GCN+BC 推理 + 规则引擎返回，仅记录对比 | 当前默认（合成模型验证期） |
+| `VOTE` | ST-GCN+BC + 规则引擎投票合并 | 真实数据训练后切换 |
+| `PRIMARY_STGCN` | ST-GCN+BC 主 + 规则引擎备（失败降级） | ST-GCN+BC 准确率 ≥ 85% 后切换 |
+| `RULE_ONLY` | 仅规则引擎（ST-GCN+BC 不可用自动降级） | 模型缺失时降级 |
+
+**配置切换**：通过 `settings.behavior_deploy_mode`（`.env` 未配置时默认 `shadow`）。
+
+**模型路径解析**（`backend/workers/tasks.py::_resolve_stgcn_bc_path`）：
+1. 优先 ONNX：`data/models/stgcn_bc/stgcn_bc_dog24.onnx`
+2. 回退 PyTorch checkpoint：`runs/stgcn_bc_synthetic/best.pt`
+3. 全无：自动降级 `RULE_ONLY` 模式
+
+**ONNX 导出 CLI**：
+```bash
+python scripts/export_stgcn_bc_onnx.py \
+    --checkpoint runs/stgcn_bc_synthetic/best.pt \
+    --output data/models/stgcn_bc/stgcn_bc_dog24.onnx \
+    --opset 17
+```
 
 ## 9. 修订历史
 
 | 版本 | 日期 | 变更 |
 |------|------|------|
 | v1.0 | 2026-07-26 | Phase 0 基线建立：Python 3.12 + PyTorch 2.11+cu128 + PG17.10 + pgvector 0.8.0 + Redis 8.6.3 |
+| v1.1 | 2026-08-01 | ①ultralytics 版本同步 8.3.55→8.4.107（与 `requirements.txt` 一致）；②§3 多个依赖从"⏳ Phase 0 验收验证"转为"✅ 通过"；③§7 未验证项全部转为已验证（Phase 0 验收 + 2026-08-01 新鲜验证）；④§5.4 新增 2026-08-01 新鲜验证证据（401 单元测试 + e2e 9/9）；⑤§8.3 mmaction2/TensorRT 状态同步（mmaction2 未触发安装，TensorRT 已安装）；⑥§8.4 新增 opencv-python-headless 冲突修复记录 |
+| v1.2 | 2026-08-01 | §5.4 新鲜验证更新：①单元测试 401→480（+79，含 ST-GCN+BC 83 测试）；②新增 ST-GCN+BC 合成数据 baseline 训练验证证据（30 epochs / 1.43M 参数 / best_val_acc=46.97% / 边界 F1=58.45%）；③对应 Phase 3.1c + 3.1d 完成（见 phase-3.md v2.5 + AGENTS.md v1.17） |
+| v1.3 | 2026-08-02 | **Phase 3.1e ST-GCN+BC 部署集成完成 + SHADOW 模式上线**：①§5.4 新鲜验证更新：单元测试 480→500（+20，含 3.1e 部署测试 20 个）+ 端到端 SHADOW 模式验证通过（USPCA video_id=37 / 101.8s / score=81.0 / PDF 4036 bytes）；②§8.5 新增 Redis 服务启动指引（chocolatey 安装路径 + 启动命令 + nssm 生产期建议）；③§8.6 新增 ST-GCN+BC 部署模式章节（4 模式路由表 + 配置切换 + 模型路径解析 + ONNX 导出 CLI）；④对应 Phase 3.1e 完成（见 phase-3.md v2.6 + AGENTS.md v1.18） |

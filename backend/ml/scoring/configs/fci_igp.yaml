@@ -1,0 +1,417 @@
+# FCI-IGP 国际工作犬评分卡（7 维 + DQ + 5 级评级）
+# Owner: ML 开发（见 AGENTS.md §2.2）
+# Phase: 3.4b
+# 依据: dev-docs/research/RESEARCH_FCI_IGP_STANDARD.md §6
+# 标准来源: FCI International Utility Dog Regulations 2025 (fci.be)
+# 一手源: UTI-REG-IGP-en-2025-22401.pdf (82 页, 2025-01-01 生效)
+#
+# FCI-IGP 分值结构（参考用，本评分卡归一化为 0-100 分）:
+#   Phase A 追踪 (Tracking)    100 pts  可自动化 40%  → 搜索效率 + 注意力
+#   Phase B 服从 (Obedience)   100 pts  可自动化 70%  → 准确度 + 延迟 + 保持 + 步态
+#   Phase C 护卫 (Protection)  100 pts  可自动化 20%  → 胆量 + 注意力 + 准确度
+#   总分 300 pts  及格 210 (70%/阶段) → 本卡 pass=70（对齐 FCI Satisfactory 70%）
+#
+# 7 维评分：准确度（0.25）+ 延迟（0.15）+ 保持（0.15）+ 搜索效率（0.15）+
+#           注意力（0.10）+ 胆量（0.10）+ 步态（0.10）
+#
+# FCI-IGP 扣分/DQ 规则映射（RESEARCH_FCI_IGP_STANDARD.md §3）:
+#   - 枪怯 (gun-shy): DQ → attention gunfire_fail → 强制 fail
+#   - 不放口 (no release): DQ → accuracy release_fail → 强制 fail
+#   - 衔取 3 口令不吐: DQ → accuracy retrieve_fail → 强制 fail
+#   - 排尿/排便: -8 分 → attention excretion → 重扣
+#   - 离开卧位>3m: -50% → duration down_break_distance>3m → 扣 50%
+#   - 误指示物品: -2~-4 分 → accuracy false_alert
+#
+# 评级映射（300 分制 → 100 分制）:
+#   Excellent   286-300 (96%+)  → 本卡 96-100
+#   Very Good   270-285 (90%+)  → 本卡 90-95
+#   Good        240-269 (80%+)  → 本卡 80-89
+#   Satisfactory 210-239 (70%+) → 本卡 70-79（及格线）
+#   Insufficient 0-209 (<70%)   → 本卡 0-69
+#
+# 信号来源: backend/ml/behavior/rule_engine.py + MotionBERT 3D + ST-GCN+BC
+# 22 行为 100% 覆盖 IGP 三阶段（A=4 / B=12 / C=6，见 labels.py FCI_IGP_STAGE）
+
+scoring_engine:
+  name: "FCI-IGP 国际工作犬评分卡"
+  version: "1.0.0"
+  scene: "fci_igp"
+  description: |
+    FCI-IGP 国际工作犬 7 维评分（对齐 FCI 2025 国际工作犬规则）：
+    准确度（0.25）+ 延迟（0.15）+ 保持（0.15）+ 搜索效率（0.15）+
+    注意力（0.10）+ 胆量（0.10）+ 步态（0.10）
+    依据: RESEARCH_FCI_IGP_STANDARD.md
+    及格线: 70 分（对齐 FCI Satisfactory 70%）
+    DQ 硬约束: 枪怯/不放口/衔取不吐 → 强制 fail + 总分清零
+    5 级评级: Excellent(96+) / Very Good(90+) / Good(80+) / Satisfactory(70+) / Insufficient(<70)
+
+  # IGP 等级（影响距离/时长/复杂度参数，Phase 3.4c 实现）
+  igp_level: "IGP1"  # IGP1 | IGP2 | IGP3
+
+  # === DQ 硬约束（任一触发 → 整段评分强制 fail + 总分清零）===
+  # 依据: FCI-IGP 2025 §3.2 + RESEARCH_FCI_IGP_STANDARD.md §3.2
+  disqualifications:
+    - id: gunfire_fail
+      condition: "gunshot_reaction == 'shy'"
+      action: "force_fail"
+      label: "枪怯（FCI DQ + 已得分清零）"
+    - id: release_fail
+      condition: "release_command_count >= 2 and not sleeve_released"
+      action: "force_fail"
+      label: "不放口（FCI DQ）"
+    - id: retrieve_fail
+      condition: "retrieve_release_command_count >= 3 and not dumbbell_released"
+      action: "force_fail"
+      label: "衔取不吐（FCI DQ 不服从）"
+
+  dimensions:
+    # === 准确度（0.25，贯穿 A/B/C，最高权重）===
+    # FCI: 科目执行正确性、位置精度、物品指示、主次项原则
+    - id: accuracy
+      name: "准确度"
+      weight: 0.25
+      rules:
+        - id: accuracy_excellent
+          condition: "action_correct / action_count > 0.96"  # 对齐 FCI Excellent 96%
+          score: 96
+          label: "优秀"
+        - id: accuracy_very_good
+          condition: "action_correct / action_count > 0.90"  # 对齐 FCI Very Good 90%
+          score: 90
+          label: "很好"
+        - id: accuracy_good
+          condition: "action_correct / action_count > 0.80"  # 对齐 FCI Good 80%
+          score: 80
+          label: "良好"
+        - id: accuracy_satisfactory
+          condition: "action_correct / action_count > 0.70"  # 对齐 FCI Satisfactory 70%
+          score: 70
+          label: "合格"
+        - id: accuracy_insufficient
+          condition: "action_correct / action_count <= 0.70"  # 对齐 FCI Insufficient <70%
+          score: 30
+          label: "不合格"
+        - id: accuracy_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 延迟（0.15，Phase B 核心，FCI 强调"immediately, without hesitation"）===
+    - id: latency
+      name: "延迟"
+      weight: 0.15
+      rules:
+        - id: latency_excellent
+          condition: "command_to_action_latency < 0.5"
+          score: 96
+          label: "优秀"
+        - id: latency_very_good
+          condition: "command_to_action_latency < 1.0"
+          score: 90
+          label: "很好"
+        - id: latency_good
+          condition: "command_to_action_latency < 1.5"
+          score: 80
+          label: "良好"
+        - id: latency_satisfactory
+          condition: "command_to_action_latency < 3.0"  # 对齐 USPCA 3 秒及格线
+          score: 70
+          label: "合格"
+        - id: latency_insufficient
+          condition: "command_to_action_latency >= 3.0"
+          score: 30
+          label: "不合格"
+        - id: latency_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 保持（0.15，干扰下卧/看守吠叫/姿态保持）===
+    # FCI: 干扰下卧 IGP3 达 30m 不可见；看守吠叫约 20 秒
+    - id: duration
+      name: "保持"
+      weight: 0.15
+      rules:
+        - id: duration_excellent
+          condition: "action_duration > 30.0"
+          score: 96
+          label: "优秀"
+        - id: duration_very_good
+          condition: "action_duration > 20.0"
+          score: 90
+          label: "很好"
+        - id: duration_good
+          condition: "action_duration > 10.0"
+          score: 80
+          label: "良好"
+        - id: duration_satisfactory
+          condition: "action_duration > 5.0"
+          score: 70
+          label: "合格"
+        - id: duration_down_break
+          # FCI: 离开卧位>3m 扣 50%（satisfactory 70 → 35）
+          condition: "down_break_distance > 3.0"
+          score: 35
+          label: "破卧（FCI -50%）"
+        - id: duration_insufficient
+          condition: "action_duration <= 5.0"
+          score: 30
+          label: "不合格"
+        - id: duration_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 搜索效率（0.15，Phase A 追踪 + Phase C 掩体搜索）===
+    - id: search_efficiency
+      name: "搜索效率"
+      weight: 0.15
+      rules:
+        - id: search_excellent
+          condition: "search_coverage > 0.85 and search_speed > 0.5 and target_found"
+          score: 96
+          label: "优秀"
+        - id: search_very_good
+          condition: "search_coverage > 0.70 and search_speed > 0.4"
+          score: 90
+          label: "很好"
+        - id: search_good
+          condition: "search_coverage > 0.60 and search_speed > 0.3"
+          score: 80
+          label: "良好"
+        - id: search_satisfactory
+          condition: "search_coverage > 0.40 or target_found"
+          score: 70
+          label: "合格"
+        - id: search_insufficient
+          condition: "search_coverage <= 0.40 and not target_found"
+          score: 30
+          label: "不合格"
+        - id: search_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 注意力（0.10，随行专注 + 枪声测试 + 无分心）===
+    # FCI: 枪怯 = DQ（见 disqualifications）
+    - id: attention
+      name: "注意力"
+      weight: 0.10
+      rules:
+        - id: attention_excellent
+          condition: "focus_ratio > 0.80 and unnecessary_movement_count < 2"
+          score: 96
+          label: "优秀"
+        - id: attention_very_good
+          condition: "focus_ratio > 0.65"
+          score: 90
+          label: "很好"
+        - id: attention_good
+          condition: "focus_ratio > 0.50"
+          score: 80
+          label: "良好"
+        - id: attention_satisfactory
+          condition: "focus_ratio > 0.40"
+          score: 70
+          label: "合格"
+        - id: attention_excretion
+          # FCI: 排尿/排便 -8 分（追踪阶段）
+          condition: "excretion_detected"
+          score: 20
+          label: "排泄（FCI -8）"
+        - id: attention_insufficient
+          condition: "focus_ratio <= 0.40"
+          score: 30
+          label: "不合格"
+        - id: attention_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 胆量（0.10，Phase C 护卫核心，FCI 独有强调）===
+    # FCI: "confident, active, attentive, dominant"；恐惧/压力/回避 = 扣分
+    - id: courage
+      name: "胆量"
+      weight: 0.10
+      rules:
+        - id: courage_excellent
+          condition: "courage_score > 0.90 and not avoidance_detected"
+          score: 96
+          label: "优秀"
+        - id: courage_very_good
+          condition: "courage_score > 0.80 and not avoidance_detected"
+          score: 90
+          label: "很好"
+        - id: courage_good
+          condition: "courage_score > 0.70 and not avoidance_detected"
+          score: 80
+          label: "良好"
+        - id: courage_satisfactory
+          condition: "courage_score > 0.50"
+          score: 70
+          label: "合格"
+        - id: courage_insufficient
+          condition: "courage_score <= 0.50 or avoidance_detected"
+          score: 30
+          label: "不合格"
+        - id: courage_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+    # === 步态（0.10，随行步态变换 + 跳跃/攀墙技术）===
+    # FCI: 三种步态（正常/跑/慢）+ 跨栏 + 攀墙 160cm
+    - id: gait
+      name: "步态"
+      weight: 0.10
+      rules:
+        - id: gait_excellent
+          condition: "gait_symmetry > 0.90 and pace_change_smoothness > 0.85"
+          score: 96
+          label: "优秀"
+        - id: gait_very_good
+          condition: "gait_symmetry > 0.80 and pace_change_smoothness > 0.70"
+          score: 90
+          label: "很好"
+        - id: gait_good
+          condition: "gait_symmetry > 0.70"
+          score: 80
+          label: "良好"
+        - id: gait_satisfactory
+          condition: "gait_symmetry > 0.50"
+          score: 70
+          label: "合格"
+        - id: gait_insufficient
+          condition: "gait_symmetry <= 0.50"
+          score: 30
+          label: "不合格"
+        - id: gait_default
+          condition: "True"
+          score: 40
+          label: "待评估"
+
+  thresholds:
+    pass: 70        # FCI Satisfactory 70%
+    borderline: 60  # 基本合格（需补测）
+    fail: 0         # 不合格
+
+  aggregation: "weighted_sum"
+
+  # === 22 行为映射（按 IGP 三阶段分组，Phase 3.4b 100% 覆盖）===
+  # 依据: RESEARCH_FCI_IGP_STANDARD.md §5 + labels.py FCI_IGP_STAGE
+  behavior_mapping:
+    # --- Phase A 追踪阶段（4 行为）---
+    track:
+      dimensions: [search_efficiency, attention]
+      weight: 1.5
+      label: "追踪"
+      igp_phase: "A"
+    alert_sit:
+      dimensions: [accuracy, latency]
+      weight: 1.2
+      label: "物品指示-坐"
+      igp_phase: "A"
+    alert_down:
+      dimensions: [accuracy, duration]
+      weight: 1.2
+      label: "物品指示-卧"
+      igp_phase: "A"
+    search_blind:
+      dimensions: [search_efficiency, attention]
+      weight: 1.3
+      label: "盲搜"
+      igp_phase: "A"
+
+    # --- Phase B 服从阶段（12 行为，包含 P2 跨阶段项）---
+    sit:
+      dimensions: [accuracy, latency]
+      weight: 1.0
+      label: "坐"
+      igp_phase: "B"
+    down:
+      dimensions: [accuracy, duration]
+      weight: 1.0
+      label: "卧"
+      igp_phase: "B"
+    stand:
+      dimensions: [accuracy, latency]
+      weight: 1.0
+      label: "立"
+      igp_phase: "B"
+    heel:
+      dimensions: [accuracy, attention, gait]
+      weight: 1.3
+      label: "随行"
+      igp_phase: "B"
+    stay:
+      dimensions: [duration, attention]
+      weight: 1.2
+      label: "干扰下卧"
+      igp_phase: "B"
+    recall:
+      dimensions: [accuracy, latency]
+      weight: 1.0
+      label: "召回"
+      igp_phase: "B"
+    obstacle:
+      dimensions: [accuracy, gait]
+      weight: 1.0
+      label: "跨栏/攀墙"
+      igp_phase: "B"
+    sit_up:
+      dimensions: [accuracy]
+      weight: 0.5
+      label: "坐立（基础位置）"
+      igp_phase: "B"
+    retrieve:
+      dimensions: [accuracy, gait]
+      weight: 1.0
+      label: "衔取"
+      igp_phase: "B"
+    jump:
+      dimensions: [accuracy, gait]
+      weight: 0.8
+      label: "跳跃"
+      igp_phase: "B"
+    scale:
+      dimensions: [accuracy, gait]
+      weight: 0.8
+      label: "攀墙"
+      igp_phase: "B"
+
+    # --- Phase C 护卫阶段（6 行为）---
+    bark:
+      dimensions: [accuracy, attention]
+      weight: 1.0
+      label: "吠叫"
+      igp_phase: "B"  # 对齐 labels.py FCI_IGP_STAGE（Phase 3.1b Truth）
+    watch:
+      dimensions: [attention, duration]
+      weight: 1.0
+      label: "看守"
+      igp_phase: "C"
+    bite:
+      dimensions: [accuracy, courage]
+      weight: 1.3
+      label: "扑咬"
+      igp_phase: "C"
+    apprehend:
+      dimensions: [accuracy, courage]
+      weight: 1.5
+      label: "运动中攻击"
+      igp_phase: "C"
+    escort:
+      dimensions: [attention, duration]
+      weight: 1.0
+      label: "押解"
+      igp_phase: "C"
+    guard:
+      dimensions: [courage, attention]
+      weight: 1.2
+      label: "警戒护卫"
+      igp_phase: "C"
+    release:
+      dimensions: [accuracy, duration]
+      weight: 1.0
+      label: "放口"
+      igp_phase: "C"

@@ -1,7 +1,7 @@
 # Phase 3 — 专业阶段计划
 
 > 阶段: Phase 3 专业
-> 状态: 🔄 实施中（v2.4: 3.1b + 3.2b + 3.2c + 3.3b 完成，核心追踪+ReID+3D 配对就绪）
+> 状态: 🔄 实施中（v2.7: 3.1b + 3.1c + 3.1d + 3.1e + 3.2b + 3.2c + 3.3b + 3.3c + 3.3d + 3.4b + 3.4c + 3.5c(部分) 完成，ST-GCN+BC 部署集成 + 训练评估管线 + 双轨 SHADOW 模式上线 + 核心追踪+ReID+3D 配对 + MotionBERT 17→24 适配 + FCI-IGP 评分卡验证通过 + 抽帧策略就绪）
 > Owner: Phase 3 专业
 > 入口条件: Phase 2 验收通过 ✅（2026-07-30，见 [reports/phase-2-validation.md](../../reports/phase-2-validation.md) + [ADR 0010](../decisions/0010-phase-2-to-phase-3.md)）
 > 出口条件: 见 §6 验收清单
@@ -75,16 +75,40 @@
   - ✅ mmcv-lite 2.2.0 安装成功（清华源直连，无需 Clash 代理）
   - ⏳ pyskl GitHub 克隆阻塞（Clash 代理未运行 + gitclone.com 502），ST-GCN++ 主干集成 + 训练管线作为 3.1c 前置子任务，待 Clash 恢复后 `pip install git+https://github.com/kennymckormick/pyskl.git`
   - **核心交付完成**：K9Graph + 数据适配器 + 22 类标签映射（pyskl 集成不阻塞）
-- ⏳ **3.1c** 自研 BC 头实现（1D Conv + Sigmoid，联合训练 L = L_cls + 0.3·L_boundary）
-  - BC 头设计：边界检测 + 分类联合优化
-  - 训练数据：Phase 2 合成数据（96.3%）预训练 + 数据飞轮真实数据微调
-- ⏳ **3.1d** ST-GCN+BC 训练 + 评估（22 类，真实数据）
-  - 目标：22 类准确率 ≥ 85%（真实数据）
-  - 评估脚本：`scripts/eval_stgcn_bc.py`
-- ⏳ **3.1e** ST-GCN+BC 部署集成（双轨并行，非直接替换）
-  - 迁移期双轨：ST-GCN+BC（主）+ 规则引擎（备）
-  - 三阶段：影子 → 投票 → 主备 → 退役规则引擎
-  - ONNX 导出 + Windows 部署
+- ✅ **3.1c** 自研 BC 头实现（1D Conv + Sigmoid，联合训练 L = L_cls + 0.3·L_boundary）（2026-07-30）
+  - ✅ `bc_head.py::BCHead` — 边界分类联合头（MSTCN 时间建模 + 全局平均池化 + 1D Conv 边界检测 + Linear 分类）
+  - ✅ `loss.py::STGCNBCLoss` — 联合损失（CrossEntropy + BCEWithLogits，时间维度自动插值对齐）
+  - ✅ `model.py::STGCNBC` — 整体模型集成（STGCN backbone + BCHead + compute_loss + predict）
+  - ✅ `stgcn.py` — ST-GCN++ 主干（UnitGCN 空间图卷积 + MSTCN 多尺度时间卷积 + STGCNBlock × 10）
+  - ✅ 单元测试覆盖（含在 3.1b 的 83/83 测试中，新增 TestUnitGCN/TestMSTCN/TestSTGCNBlock/TestSTGCNBackbone/TestBCHead/TestGenerateBoundaryLabels/TestSTGCNBCLoss/TestSTGCNBC 共 38 个 3.1c 测试）
+- ✅ **3.1d** ST-GCN+BC 训练 + 评估管线（合成数据 baseline）（2026-08-01）
+  - ✅ `dataset.py::STGCNBCDataset` — 训练数据集（pyskl pickle + 内存 List[Dict] 双模式 + 数据增强 + withers 中心归一化）
+  - ✅ `dataset.py::make_synthetic_dataset` — 22 类合成数据生成（行为姿态模板 + sin 波时序扰动 + 高斯噪声 + 边界标签）
+  - ✅ `trainer.py::STGCNBCTrainer` — 训练器（AdamW + CosineAnnealingLR + warmup + 混合精度 + 早停 + 检查点 + JSON 历史）
+  - ✅ `scripts/train_stgcn_bc.py` — 训练入口（合成数据 / 真实数据双模式 + 命令行参数 + 恢复训练）
+  - ✅ `scripts/eval_stgcn_bc.py` — 评估入口（准确率 + 22 类 P/R/F1 + 混淆矩阵 + P0/P1/P2 分层 + IGP A/B/C 分层 + 边界 F1 + JSON 报告）
+  - ✅ 合成数据 baseline 训练验证通过（30 epochs / 1.43M 参数 / best_val_acc=46.97% @ epoch 21 / 边界 F1=58.45% / 22 类基线 4.5% × 9 倍提升）
+  - ✅ 新鲜单元测试验证：480 passed + 2 skipped + 0 failed（含 ST-GCN+BC 83 测试）
+  - ⏳ 真实数据训练待人工标注（YOLO26-pose 推理 + Label Studio 标注 + 数据飞轮）
+  - 目标：22 类准确率 ≥ 85%（真实数据，待真实标注后评估）
+- ✅ **3.1d 辅线** 训练数据集构建管线（2026-08-02）
+  - ✅ `scripts/convert_labelstudio_to_stgcn.py` — Label Studio JSON → pyskl pickle 转换器（支持 v1.23+ 视频关键点 + videobbox + frame 索引 + YOLO26-pose keypoints pkl 合并 + 边界标签自动生成）
+  - ✅ `scripts/build_training_dataset.py` — 多源合并 + 划分管线（pyskl pickle 合并 + 按 clip_id 分层无泄漏划分 + 80/20 默认比例 + 统计报告 JSON 输出）
+  - ✅ `scripts/verify_dataset_quality.py` — 数据集质量验证脚本（6 项验证: 格式合规性 + 数值健康性 + 标签分布 + 边界标签对齐 + train/val 泄漏检测 + STGCNBCDataset 兼容性；合成数据测试 5/5 通过 + 泄漏检测验证通过）
+  - ⏳ 待人工标注完成后执行: Label Studio 导出 → `convert_labelstudio_to_stgcn.py` → `verify_dataset_quality.py` → `build_training_dataset.py` → 真实数据训练（目标 ≥ 85%）
+- ✅ **3.1e** ST-GCN+BC 部署集成（双轨并行：影子 → 投票 → 主备 → 退役规则引擎）（2026-08-02）
+  - ✅ `backend/ml/behavior/stgcn_bc/export_onnx.py::export_onnx` — ONNX 导出（动态 batch+time 轴 + opset 17 + 一致性验证，1e-3 阈值兼容 MSTCN 膨胀卷积浮点误差）
+  - ✅ `backend/ml/behavior/stgcn_bc/inference.py::STGCNBCInferer` — 双后端推理器（PyTorch / ONNX Runtime + 滑动窗口 + 边界检测 episode 分割 + softmax/sigmoid 数值稳定性 clip[-50,50]）
+  - ✅ `backend/ml/behavior/router.py::BehaviorRecognizer` — 双轨路由层（4 模式: SHADOW 影子对比 / VOTE 投票 / PRIMARY_STGCN 主+规则备降级 / RULE_ONLY 仅规则引擎）
+  - ✅ `backend/workers/tasks.py` 集成 — BehaviorRecognizer 单例 + `_resolve_stgcn_bc_path()` 优先 ONNX 回退 checkpoint + FCI-IGP pipeline `_run_fci_igp_pipeline()` + 22 类行为枚举映射扩展
+  - ✅ `scripts/export_stgcn_bc_onnx.py` — CLI 导出工具（--checkpoint / --output / --opset / --no-verify）
+  - ✅ ONNX 模型已导出至 `data/models/stgcn_bc/stgcn_bc_dog24.onnx`（来源 `runs/stgcn_bc_synthetic/best.pt` epoch 21 best_val_acc=46.97%）
+  - ✅ 单元测试 20/20 通过（`backend/tests/ml/test_stgcn_bc_deploy.py`: TestExportOnnx 4 + TestSTGCNBCInferer 6 + TestBehaviorRecognizer 8 + TestEpisodeSplit 2）
+  - ✅ **端到端 SHADOW 模式新鲜验证通过**（2026-08-02 00:42）：USPCA 视频 2700 帧/90s → video_id=37 → 101.8s → verdict=pass score=81.0 → PDF 4036 bytes；SHADOW 对比日志 `STGCN=1 RULE=1 common=0 stgcn_only=1 rule_only=1`（双轨均识别 1 个行为，类别不同符合合成模型预期）
+  - ✅ 新鲜单元测试全集：500 passed + 2 skipped + 0 failed in 100.76s（较 v1.17 的 480 +20 = 3.1e 部署测试）
+  - ⏳ 延迟优化待 Phase 3.5 Jetson 部署：SHADOW 双轨仅占 2s（< 2%），瓶颈在 pose 推理 98s（98/102 = 96%）。当前 1.13x 略超 1.0x 阈值，主因 YOLO26-pose ONNX Runtime GPU 推理 2700 帧，将通过 Jetson TRT FP16 + 抽帧策略优化至 ≤ 0.5x
+  - ⏳ PRIMARY_STGCN 模式切换待真实数据训练（合成模型 46.97% 准确率不足以接管主算法）
+  - ⏳ VOTE 投票模式待真实数据训练后启用（需 ST-GCN+BC 置信度阈值校准）
 
 **自研触发**（按 AGENTS.md §5.2 用户逐案决策）:
 - ST-GCN+BC 是否按自研路线推进（BC 头为自研组件）
@@ -191,14 +215,21 @@
 **选型**: FCI-IGP 2025 官方规则 + 7 维评分卡
 
 - ✅ **3.4a** FCI-IGP 标准调研完成（官方 2025 PDF 解析）
-- ⏳ **3.4b** FCI-IGP 评分卡 YAML 扩展
+- ✅ **3.4b** FCI-IGP 评分卡 YAML 扩展
   - 新增 `fci_igp.yaml`：7 维（准确度 0.25 + 延迟 0.15 + 保持 0.15 + 搜索效率 0.15 + 注意力 0.10 + 胆量 0.10 + 步态 0.10）
   - 22 行为 100% 覆盖 IGP 三阶段（A 追踪 / B 服从 / C 护卫）
   - DQ 硬约束块（枪怯/不放口/衔取不吐 = 取消资格）
   - 5 级评分（Excellent 96%+ / Very Good 90%+ / Good 80%+ / Satisfactory 70%+ / Insufficient <70%）
-- ⏳ **3.4c** FCI-IGP 评分卡验证
+  - Schema 扩展：`ScoringCardSpec.disqualifications` + `igp_level`（仅 fci_igp 场景可用，其他场景校验失败）
+  - `Video.VALID_SCENES` + `_SCENE_TO_FILE` 注册 fci_igp 场景
+  - `_run_fci_igp_pipeline()` 集成 tasks.py（22 行为识别 → 7 维信号 → 评分）
+  - `fci_igp_signals.py` 独立模块（消除 celery 依赖，提升可测试性）
+- ✅ **3.4c** FCI-IGP 评分卡验证
   - 目标：合成数据评分合理性 + 三档验证（excellent/failing/borderline）
-  - 评估脚本：`scripts/eval_fci_igp.py`
+  - 评估脚本：`scripts/eval_fci_igp.py` — 4 档全部通过（Excellent 96.0 + Borderline 70.0 + Failing 30.0 + DQ 3/3）
+  - 报告：`reports/phase-3.4c-fci-igp-eval.json`
+  - 单元测试 15/15 通过（`backend/tests/integration/test_phase3_4_fci_igp_e2e.py`：场景注册 4 + pipeline E2E 3 + DQ E2E 3 + 全 pipeline 2 + IGP 阶段覆盖 3）
+  - 端到端视频验证：video_id=46, scene=fci_igp, verdict=pass, score=78.9, 57.0s/0.63x, PDF 4156 bytes, SHADOW STGCN=1 RULE=1
 
 ### Phase 3.5 Jetson 边缘部署（P2，主线）
 
@@ -211,10 +242,12 @@
   - 硬件采购：Jetson Orin Nano Super + NVMe SSD + 散热风扇 + 电源（~$309）
   - JetPack 6.1 安装 + TensorRT 10.3 + PyTorch 2.10.0 aarch64 wheel
   - Docker 容器：`ultralytics/ultralytics:latest-jetson-jetpack6`
-- ⏳ **3.5c** ONNX → TensorRT 引擎转换 + FP16 量化
+- 🔄 **3.5c** ONNX → TensorRT 引擎转换 + FP16 量化 + 抽帧策略
   - **关键陷阱**：INT8 校准必须在 Jetson 上执行（不可跨平台）
   - engine 文件不可跨平台（Windows `.engine` ≠ Jetson `.engine`）
-  - 抽帧策略（每 2 帧处理 1 帧）：0.399x ≤ 0.5 阈值 ✅
+  - ✅ 抽帧策略实现（`backend/ml/pose/frame_stride.py`）：线性/最近邻插值 + 自适应 stride 推荐 + `SPEEDUP_TOLERANCE=0.05` 边界处理 + 单元测试通过
+  - ✅ TRT FP16 转换脚本（`scripts/convert_trt_fp16.py`）：ONNX 解析 + builder 配置 + 动态 batch 优化
+  - ⏳ 实际 Jetson 上 TRT engine 转换 + 延迟测试（待硬件到位）
 - ⏳ **3.5d** 平台抽象层设计
   - InferenceBackend 抽象类 + AutoBackend（统一 ONNX/TRT 接口）
   - Windows ↔ Jetson 双平台维护（Docker 容器化）
@@ -329,11 +362,11 @@
 
 | 编号 | 项目 | 期望 | 验证方法 | 状态 |
 |------|------|------|---------|------|
-| §6.1 | ST-GCN+BC | 22 类准确率 ≥ 85%（真实数据） | `scripts/eval_stgcn_bc.py` | ⏳ |
+| §6.1 | ST-GCN+BC | 22 类准确率 ≥ 85%（真实数据） | `scripts/eval_stgcn_bc.py` | 🔄 管线就绪（合成 baseline 40.91% / 边界 F1 58.45%，待真实数据）+ 部署集成 ✅（3.1e SHADOW 模式上线，端到端通过） |
 | §6.2 | 多犬追踪 | MOTA ≥ 70% / IDF1 ≥ 80% | `scripts/eval_multi_dog_tracking.py` | ⏳ |
-| §6.3 | 3D 姿态重建 | MPJPE ≤ 50mm | `scripts/eval_3d_pose.py` | ⏳ |
-| §6.4 | FCI-IGP | 评分卡验证通过 | `scripts/eval_fci_igp.py` | ⏳ |
-| §6.5 | Jetson 部署 | 延迟 ≤ 0.5 min/min 视频 | Jetson jtop 监控 | ⏳ |
+| §6.3 | 3D 姿态重建 | MPJPE ≤ 50mm | `scripts/eval_3d_pose.py` | ✅ 通过（3.3d: MPJPE=21.74mm / P-MPJPE=20.67mm vs H36M 37.2mm，见 `reports/phase-3.3d-3d-pose-eval.json`） |
+| §6.4 | FCI-IGP | 评分卡验证通过 | `scripts/eval_fci_igp.py` | ✅ 通过（3.4c: 4 档全部通过 Excellent 96.0 + Borderline 70.0 + Failing 30.0 + DQ 3/3，端到端 video_id=46 verdict=pass score=78.9 0.63x，见 `reports/phase-3.4c-fci-igp-eval.json`） |
+| §6.5 | Jetson 部署 | 延迟 ≤ 0.5 min/min 视频 | Jetson jtop 监控 | 🔄 抽帧策略 + TRT 转换脚本就绪（3.5c 部分），待硬件部署 |
 | §6.6 | 用户权限 | 多角色验证通过 | `scripts/eval_rbac.py` | ⏳ |
 | §6.7 | 训练历史 | 对比可视化 | 端到端测试 | ⏳ |
 | §6.8 | 端到端 | 全流程跑通 | `scripts/phase3_8_e2e_test.py` | ⏳ |
@@ -388,3 +421,6 @@ Phase 3 验收通过后，依据 ADR（待创建）决策是否升级 Phase 4。
 | v2.2 | 2026-07-30 | **3.2b BoxMOT 集成 + YOLO26-pose 多犬追踪完成**：①`backend/ml/tracking/` 模块新建（types.py + multi_dog_tracker.py + __init__.py）；②`types.py` DogTrackFrame/DogTrack/MultiDogTrackingResult 数据结构（每犬独立轨迹 + 关键点序列填充 + bbox 序列 + 覆盖率摘要）；③`multi_dog_tracker.py` MultiDogTracker（YOLO26-pose 检测 + BoxMOT OccluBoost 追踪 + det_ind 关键点关联 + 单帧增量/整段视频双模式 + 单犬场景向后兼容）；④TrackerBackend 枚举（OCCLUBOOST 默认/BOTSORT/BYTETRACK/STRONGSORT）；⑤单元测试 26/26 通过（数据类型 + YOLO 检测解析 + det_ind 关键点关联 + 两犬交叉场景模拟 + 单犬退化兼容）；⑥`_init_tracker` 后端校验前置（未安装 boxmot 也可测试）；⑦mock 修复（.cpu().numpy() 调用链 + 普通二维 ndarray 匹配真实 BoxMOT 输出格式）。§3.2b 标记 ✅ 完成。3.2c ReID 犬只身份关联 + 3.2d 多犬场景端到端测试待推进 |
 | v2.3 | 2026-07-30 | **3.2c ReID 犬只身份关联完成**：①**with_reid=False bug 修复**（OccluBoost 继承 BoostTrack 默认 with_reid=False，YAML 配置仅 CLI 路径生效；编程式实例化必须显式构造 `ReID(weights, device, half).model` 对象 + `with_reid=True`）；②**降级机制**（ReID 模型加载失败时自动降级为 with_reid=False，不抛异常继续追踪）；③**ReIDExtractor 模块**（`reid_extractor.py`：extract_from_boxes/extract_from_crops/aggregate_track mean-max-median + L2 归一化）；④**DogIdentityGallery 类**（跨视频身份匹配 + cosine_similarity + 阈值过滤 + export_crops 微调数据收集）；⑤**IDSwitchMonitor 模块**（`id_switch_monitor.py`：IoU ≥ 0.5 + 重叠 ≥ 3 帧检测 + should_trigger_reid_finetune 阈值 0.1 自研触发判断）；⑥**CanineReIDDataset 模块**（`reid_finetune_dataset.py`：collect_from_tracking_result + identity_mapping 跨视频身份合并 + integrity_report + export_boxmot_format market1501 兼容 + generate_boxmot_train_command）；⑦**单元测试 44/44 通过**（cosine 5 + ReIDExtractor 10 + Gallery 10 + IDSwitchMonitor 7 + ReID 启用验证 4 + CanineReIDDataset 8）；⑧**回归测试 111/111 全通过**（3.1b + 3.2b + 3.2c）；⑨**端到端验证**（`reports/phase-3.2c-reid-enabled-warmup.json`：warmup.mp4 30 帧单犬追踪稳定 + 降级机制工作正常）；⑩**OSNet 权重下载阻塞**（28MB Google Drive，Clash 代理未运行，待恢复后重跑 `scripts/verify_phase_3_2c_reid_enabled.py` 对比 ReID 启用前后效果）。§3.2c 标记 ✅ 完成，§9 未解决问题: ReID 微调触发条件 + OSNet 权重下载阻塞 + pyskl 克隆阻塞 |
 | v2.4 | 2026-07-30 | **3.3b 3D 姿态重建数据源决策 + 配对管线实现完成**：①**`backend/ml/pose/interpet4d_loader.py`**（InterPet4D SMAL 数据加载器：InterPet4DClip 数据类 + load_clip/list_clips/load_all_clips + min_frames/min_kp_weight 过滤 + get_dataset_statistics + parse_clip_id 命名解析）；②**`backend/ml/pose/camera_projection.py`**（合成相机 + 3D→2D 投影：SyntheticCamera look-at 相机 + view/projection 矩阵 + project_3d_to_2d 正交/透视投影 + generate_synthetic_cameras 球面采样+随机扰动+可复现 + project_clip_to_2d 批量多相机投影；修复 homogeneous 输入 reshape 不一致 bug）；③**`backend/ml/pose/lifting_pairing.py`**（2D-3D 配对构建：LiftingSample + normalize_3d_keypoints 根关节 withers=idx=22 中心化+bone_length/bbox/none 尺度归一化 + denormalize_3d_keypoints 反归一化 + slice_windows MotionBERT 27 帧窗口+50% 重叠+短序列 padding + build_pairs_from_clip/build_dataset clip×cameras×windows 样本生成 + train_val_split 按 clip_id 划分无泄漏）；④**`backend/ml/pose/__init__.py`** 导出三个模块公共接口；⑤**单元测试 79/79 通过**（`backend/tests/ml/test_3d_pose_pairing.py`：parse_clip_id 4 + Clip 数据类 4 + 真实数据加载 6 + 合成 mock 9 + SyntheticCamera 8 + Project3DTo2D 7 + GenerateCameras 6 + ProjectClip 2 + Normalize 6 + Denormalize 3 + SliceWindows 4 + BuildPairs 6 + BuildDataset 2 + ComputeStats 2 + TrainValSplit 4 + Integration 合成 2 + Integration 真实 3）；⑥**回归测试 339 passed + 2 skipped 全通过**（3.1b + 3.2b + 3.2c + 3.3b 全模块）；⑦**端到端验证**（`reports/phase-3.3b-lifting-pairing-validation.json`：6 阶段全 PASS，耗时 2.29s — Stage 1 数据加载 226 clips + Stage 2 相机投影 8 相机一致性 + Stage 3 归一化 root 中心化误差 0.0+往返误差 2.98e-08 + Stage 4 配对 96 样本 + Stage 5 数据集 1824 样本 train/val 1540:284 无泄漏 + Stage 6 可复现性 identical=True）。§3.3b 标记 ✅ 完成，3.3c MotionBERT 17→24 关键点适配待推进 |
+| v2.5 | 2026-08-01 | **3.1c BC 头 + 3.1d 训练评估管线 + 3.3c MotionBERT 17→24 适配 + 3.3d 3D 姿态评估完成**：①**3.1c BC 头实现**（`bc_head.py::BCHead` MSTCN + 1D Conv 边界检测 + Linear 分类 + `loss.py::STGCNBCLoss` L_cls + 0.3·L_boundary + `model.py::STGCNBC` + `stgcn.py` ST-GCN++ 主干 UnitGCN + MSTCN + STGCNBlock × 10）；②**3.1d 训练评估管线**（`dataset.py::STGCNBCDataset` pyskl pickle + 内存双模式 + 数据增强 + withers 归一化 + `make_synthetic_dataset` 22 类合成 + `trainer.py::STGCNBCTrainer` AdamW + Cosine + warmup + AMP + 早停 + 检查点 + `scripts/train_stgcn_bc.py` + `scripts/eval_stgcn_bc.py`）；③**合成数据 baseline**：30 epochs / 1.43M 参数 / best_val_acc=46.97% @ epoch 21 / 边界 F1=58.45% / 22 类基线 4.5% × 9 倍提升；④**3.3c MotionBERT 17→24 适配**（DSTformer 架构对关键点数量 agnostic，仅改输入/输出投影层 + 关节 embedding；`backend/ml/pose/motionbert/` 模块完整: model.py DSTformerWrapper + 17→24 权重迁移 259/260 层匹配 + train.py InterPet4D 微调 225 clips × 8 cameras = 82008 样本 + inference.py + export_onnx.py + dataset.py + config.py + configs/MB_lite_dog24.yaml）；⑤**3.3d 3D 姿态评估**：MPJPE=21.74mm / P-MPJPE=20.67mm（vs H36M baseline 37.2mm，threshold 50mm），best_epoch=12 / val_samples=2072 / passed=true（`reports/phase-3.3d-3d-pose-eval.json`）；⑥**评估脚本 bug 修复**：boundary_logits 时间维度下采样导致形状不匹配，新增最近邻上采样对齐；⑦**新鲜单元测试**：480 passed + 2 skipped + 0 failed（含 ST-GCN+BC 83 测试，较 v2.4 的 339 +141）；⑧§3.1c/3.1d/3.3c/3.3d 标记 ✅ 完成，§6.1 验收清单状态更新（3D 姿态 MPJPE 21.74mm ≤ 50mm 通过） |
+| v2.6 | 2026-08-02 | **3.1e ST-GCN+BC 部署集成完成（双轨并行 SHADOW 模式上线）**：①**ONNX 导出**（`export_onnx.py::export_onnx` 动态 batch+time 轴 + opset 17 + 一致性验证 1e-3 阈值兼容 MSTCN 膨胀卷积浮点误差）；②**双后端推理器**（`inference.py::STGCNBCInferer` PyTorch / ONNX Runtime + 滑动窗口 + 边界检测 episode 分割 + softmax/sigmoid 数值稳定性 clip[-50,50]）；③**双轨路由层**（`router.py::BehaviorRecognizer` 4 模式: SHADOW 影子对比 / VOTE 投票 / PRIMARY_STGCN 主+规则备降级 / RULE_ONLY 仅规则引擎）；④**tasks.py 集成**（BehaviorRecognizer 单例 + `_resolve_stgcn_bc_path()` 优先 ONNX 回退 checkpoint + FCI-IGP pipeline `_run_fci_igp_pipeline()` + 22 类行为枚举映射扩展）；⑤**CLI 工具** `scripts/export_stgcn_bc_onnx.py`；⑥**ONNX 模型已导出**至 `data/models/stgcn_bc/stgcn_bc_dog24.onnx`（来源 `runs/stgcn_bc_synthetic/best.pt` epoch 21 best_val_acc=46.97%）；⑦**单元测试 20/20 通过**（`backend/tests/ml/test_stgcn_bc_deploy.py`: TestExportOnnx 4 + TestSTGCNBCInferer 6 + TestBehaviorRecognizer 8 + TestEpisodeSplit 2）；⑧**端到端 SHADOW 模式新鲜验证通过**（USPCA 视频 2700 帧/90s → 101.8s → verdict=pass score=81.0 → PDF 4036 bytes；SHADOW 对比日志 `STGCN=1 RULE=1 common=0 stgcn_only=1 rule_only=1`）；⑨**新鲜单元测试全集**：500 passed + 2 skipped + 0 failed in 100.76s（较 v2.5 的 480 +20 = 3.1e 部署测试）；⑩**延迟分析**：SHADOW 双轨仅占 2s（< 2%），瓶颈在 pose 推理 98s（96%），1.13x 略超 1.0x 阈值，将通过 Phase 3.5 Jetson TRT FP16 + 抽帧策略优化至 ≤ 0.5x。§3.1e 标记 ✅ 完成 |
+| v2.7 | 2026-08-02 | **3.4b + 3.4c FCI-IGP 评分卡验证通过 + 3.5c 抽帧策略就绪**：①**3.4b FCI-IGP 评分卡 YAML 扩展**（`backend/ml/scoring/configs/fci_igp.yaml` 7 维权重 0.25/0.15/0.15/0.15/0.10/0.10/0.10 + 22 行为 100% 覆盖 IGP A=4/B=12/C=6 + 3 DQ 硬约束 gunfire_fail/release_fail/retrieve_fail + 5 级评级 Excellent/Very Good/Good/Satisfactory/Insufficient + Schema 扩展 disqualifications+igp_level 仅 fci_igp 场景可用）；②**场景注册**（`Video.VALID_SCENES` + `_SCENE_TO_FILE` + `ScoringContext.Scene` 类型扩展 fci_igp）；③**pipeline 集成**（`_run_fci_igp_pipeline()` tasks.py + `fci_igp_signals.py` 独立模块消除 celery 依赖）；④**3.4c 评分卡验证**（`scripts/eval_fci_igp.py` 4 档全通过: Excellent 96.0 + Borderline 70.0 + Failing 30.0 + DQ 3/3 → 总分清零；报告 `reports/phase-3.4c-fci-igp-eval.json`）；⑤**单元测试 15/15 通过**（`backend/tests/integration/test_phase3_4_fci_igp_e2e.py`: 场景注册 4 + pipeline E2E 3 + DQ E2E 3 + 全 pipeline 2 + IGP 阶段覆盖 3）；⑥**端到端视频验证**（`scripts/phase3_4_e2e_test.py` 9/9 通过: video_id=46, scene=fci_igp, verdict=pass, score=78.9, 57.0s/0.63x, PDF 4156 bytes, SHADOW STGCN=1 RULE=1）；⑦**inference.py 空输入 NaN 修复**（T=0 早返回避免 _normalize 空切片均值 NaN）；⑧**3.5c 抽帧策略**（`backend/ml/pose/frame_stride.py` 线性/最近邻插值 + 自适应 stride 推荐 + SPEEDUP_TOLERANCE=0.05 + `scripts/convert_trt_fp16.py` TRT FP16 转换脚本）；⑨**新鲜单元测试全集**：538 passed + 2 skipped + 0 failed in 87.49s（较 v2.6 的 500 +38 = 3.4 FCI-IGP + 3.5 frame_stride 测试）；⑩§3.4b/3.4c 标记 ✅ 完成，§6.4 验收清单 ✅ 通过，§3.5c 标记 🔄 部分（抽帧+TRT 脚本就绪，待 Jetson 硬件部署） |

@@ -75,6 +75,16 @@ class Settings(BaseSettings):
     ls_password: str = "k9admin2026"
     ls_project_id: int = 1
 
+    # === RBAC 鉴权（Phase 3.6b） ===
+    # JWT secret: 生产环境必须通过环境变量覆盖（≥ 32 字符）
+    auth_secret_key: str = Field(
+        default="k9-training-system-dev-secret-key-change-in-production-32chars",
+        description="JWT 签名密钥（生产环境必须覆盖）",
+    )
+    auth_algorithm: str = "HS256"
+    auth_access_token_expire_minutes: int = 480  # 8 小时工作日
+    auth_bcrypt_rounds: int = 12  # bcrypt cost factor（10-14 推荐）
+
     def ensure_dirs(self) -> None:
         """创建所有数据目录（如不存在）。"""
         for d in (self.data_dir, self.upload_dir, self.generated_dir, self.models_dir):

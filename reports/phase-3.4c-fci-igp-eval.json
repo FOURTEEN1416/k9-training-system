@@ -1,0 +1,167 @@
+{
+  "schema": {
+    "yaml_loaded": true,
+    "scene": "fci_igp",
+    "igp_level": "IGP1",
+    "dimensions_count": 7,
+    "weights_sum": 1.0,
+    "weights_sum_valid": true,
+    "dq_count": 3,
+    "behavior_mapping_count": 22,
+    "thresholds": {
+      "pass": 70,
+      "borderline": 60,
+      "fail": 0
+    },
+    "behaviors_expected": 22,
+    "behaviors_actual": 22,
+    "behaviors_missing": [],
+    "behaviors_extra": [],
+    "behaviors全覆盖": true,
+    "igp_phase_a_count": 4,
+    "igp_phase_b_count": 12,
+    "igp_phase_c_count": 6,
+    "igp_phase_distribution": {
+      "A": [
+        "track",
+        "alert_sit",
+        "alert_down",
+        "search_blind"
+      ],
+      "B": [
+        "sit",
+        "down",
+        "stand",
+        "heel",
+        "stay",
+        "recall",
+        "obstacle",
+        "sit_up",
+        "retrieve",
+        "jump",
+        "scale",
+        "bark"
+      ],
+      "C": [
+        "watch",
+        "bite",
+        "apprehend",
+        "escort",
+        "guard",
+        "release"
+      ]
+    },
+    "passed": true
+  },
+  "excellent": {
+    "tier": "excellent",
+    "total_score": 96.0,
+    "verdict": "pass",
+    "passed": true,
+    "rating": "Excellent",
+    "disqualified": false,
+    "dimension_scores": {
+      "accuracy": 96,
+      "latency": 96,
+      "duration": 96,
+      "search_efficiency": 96,
+      "attention": 96,
+      "courage": 96,
+      "gait": 96
+    },
+    "dimension_labels": {
+      "accuracy": "优秀",
+      "latency": "优秀",
+      "duration": "优秀",
+      "search_efficiency": "优秀",
+      "attention": "优秀",
+      "courage": "优秀",
+      "gait": "优秀"
+    }
+  },
+  "borderline": {
+    "tier": "borderline",
+    "total_score": 70.0,
+    "verdict": "pass",
+    "passed": true,
+    "rating": "Satisfactory",
+    "disqualified": false,
+    "dimension_scores": {
+      "accuracy": 70,
+      "latency": 70,
+      "duration": 70,
+      "search_efficiency": 70,
+      "attention": 70,
+      "courage": 70,
+      "gait": 70
+    },
+    "dimension_labels": {
+      "accuracy": "合格",
+      "latency": "合格",
+      "duration": "合格",
+      "search_efficiency": "合格",
+      "attention": "合格",
+      "courage": "合格",
+      "gait": "合格"
+    }
+  },
+  "failing": {
+    "tier": "failing",
+    "total_score": 30.0,
+    "verdict": "fail",
+    "passed": false,
+    "rating": "Insufficient",
+    "disqualified": false,
+    "dimension_scores": {
+      "accuracy": 30,
+      "latency": 30,
+      "duration": 30,
+      "search_efficiency": 30,
+      "attention": 30,
+      "courage": 30,
+      "gait": 30
+    },
+    "dimension_labels": {
+      "accuracy": "不合格",
+      "latency": "不合格",
+      "duration": "不合格",
+      "search_efficiency": "不合格",
+      "attention": "不合格",
+      "courage": "不合格",
+      "gait": "不合格"
+    }
+  },
+  "dq_gunshy": {
+    "dq_case": "gun_shy",
+    "expected_dq_id": "gunfire_fail",
+    "actual_dq_id": "gunfire_fail",
+    "disqualified": true,
+    "total_score": 0.0,
+    "verdict": "fail",
+    "rating": "Insufficient",
+    "passed": true
+  },
+  "dq_no_release": {
+    "dq_case": "no_release",
+    "expected_dq_id": "release_fail",
+    "actual_dq_id": "release_fail",
+    "disqualified": true,
+    "total_score": 0.0,
+    "verdict": "fail",
+    "rating": "Insufficient",
+    "passed": true
+  },
+  "dq_retrieve": {
+    "dq_case": "retrieve_fail",
+    "expected_dq_id": "retrieve_fail",
+    "actual_dq_id": "retrieve_fail",
+    "disqualified": true,
+    "total_score": 0.0,
+    "verdict": "fail",
+    "rating": "Insufficient",
+    "passed": true
+  },
+  "all_passed": true,
+  "timestamp": "2026-08-01T17:41:23.140689+00:00",
+  "yaml_path": "D:\\Desktop\\k9-training-system\\backend\\ml\\scoring\\configs\\fci_igp.yaml"
+}

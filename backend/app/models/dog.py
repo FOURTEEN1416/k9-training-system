@@ -10,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from backend.app.models.base import Base, TimestampMixin
 
 if TYPE_CHECKING:
+    from backend.app.models.base_entity import Base_
     from backend.app.models.handler import Handler
     from backend.app.models.training_session import TrainingSession
     from backend.app.models.video import Video
@@ -29,7 +30,10 @@ class TrainingStage(str, enum.Enum):
 
 
 class Dog(TimestampMixin, Base):
-    """犬只档案表。"""
+    """犬只档案表。
+
+    Phase 3.6a 扩展：home_base_id 用于多租户隔离。
+    """
 
     __tablename__ = "dogs"
 
@@ -55,8 +59,17 @@ class Dog(TimestampMixin, Base):
     )
     notes: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
 
+    # === Phase 3.6a 多租户字段 ===
+    home_base_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("bases.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+        comment="犬只主基地 ID",
+    )
+
     # 关系
     handler: Mapped[Optional["Handler"]] = relationship("Handler", back_populates="dogs")
+    home_base: Mapped[Optional["Base_"]] = relationship("Base_", back_populates="dogs")
     sessions: Mapped[list["TrainingSession"]] = relationship(
         "TrainingSession", back_populates="dog"
     )

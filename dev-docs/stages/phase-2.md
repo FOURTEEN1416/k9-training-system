@@ -1,11 +1,11 @@
 # Phase 2 — 核心阶段计划
 
 > 阶段: Phase 2 核心
-> 状态: 🔄 启动中（v2.0 收敛重写，2026-07-29）
+> 状态: ✅ 完成（2026-07-30 验收通过，v2.7；见 [reports/phase-2-validation.md](../../reports/phase-2-validation.md) + [ADR 0010](../decisions/0010-phase-2-to-phase-3.md)）
 > Owner: Phase 2 核心
 > 入口条件: Phase 1 验收通过 ✅ + 1.6d/1.2f 前置条件达成 ✅（ADR 0005 v1.1 + ADR 0006 v1.1）
-> 出口条件: 见 §6 验收清单
-> 时间约束: 3-4 周单人全职（v2.0 从 6 子阶段收敛到 3 核心子阶段 + 1 后台 + 1 收尾）
+> 出口条件: 见 §6 验收清单（§6.1-§6.8 全部通过，详见验收报告）
+> 时间约束: 3-4 周单人全职（v2.0 从 6 子阶段收敛到 3 核心子阶段 + 1 后台 + 1 收尾；实际 2026-07-28 → 2026-07-30 验收）
 > 依据: [ADR 0007](../decisions/0007-phase-2-start.md) + [ADR 0008](../decisions/0008-1.2f-supplement-plan.md) + [function-list.md](../function-list.md) + [stage-plan.md](../stage-plan.md)
 
 ## 1. 阶段目标（v2.0 收敛）

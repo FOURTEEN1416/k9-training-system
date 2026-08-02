@@ -9,8 +9,12 @@ from backend.app.models.annotation import (
 )
 from backend.app.models.behavior import Behavior, BehaviorClass, BehaviorDetector
 from backend.app.models.behavior_vector import BehaviorVector, BEHAVIOR_VECTOR_DIM
+from backend.app.models.base_entity import Base_
 from backend.app.models.dog import Dog, Gender, TrainingStage
-from backend.app.models.handler import Handler, UserRole
+from backend.app.models.dog_associations import (
+    DogBaseAccess, DogBaseAssociation, DogHandlerAssociation, DogHandlerRole,
+)
+from backend.app.models.handler import Handler, ROLE_HIERARCHY, UserRole
 from backend.app.models.keypoint import Keypoint, NUM_KEYPOINTS
 from backend.app.models.ml_model import MLModel, ModelFramework, ModelType
 from backend.app.models.score import Score
@@ -21,6 +25,7 @@ __all__ = [
     "Base",
     "TimestampMixin",
     # 模型
+    "Base_",  # 基地表（命名加下划线后缀避免与 DeclarativeBase 冲突）
     "Handler",
     "Dog",
     "TrainingSession",
@@ -32,8 +37,11 @@ __all__ = [
     "Score",
     "AnnotationTask",
     "Annotation",
+    "DogHandlerAssociation",
+    "DogBaseAssociation",
     # 枚举
     "UserRole",
+    "ROLE_HIERARCHY",
     "Gender",
     "TrainingStage",
     "ScoringStandard",
@@ -45,6 +53,8 @@ __all__ = [
     "AnnotationTaskStatus",
     "AnnotationType",
     "AnnotationSource",
+    "DogHandlerRole",
+    "DogBaseAccess",
     # 常量
     "NUM_KEYPOINTS",
     "BEHAVIOR_VECTOR_DIM",

@@ -34,7 +34,81 @@ class HandlerCreate(HandlerBase):
 class HandlerRead(HandlerBase):
     id: int
     is_active: bool
+    base_id: Optional[int] = None
+    is_superuser: bool = False
     created_at: datetime
+
+
+# === Phase 3.6b 鉴权 ===
+
+class LoginRequest(BaseModel):
+    """登录请求。"""
+
+    email: str
+    password: str
+
+
+class TokenResponse(BaseModel):
+    """登录成功响应（JWT + 用户信息）。"""
+
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int  # 秒
+    handler: "HandlerRead"
+
+
+class PasswordChangeRequest(BaseModel):
+    """修改密码请求。"""
+
+    old_password: str
+    new_password: str
+
+
+class HandlerRegisterRequest(BaseModel):
+    """注册新用户请求（仅 ADMIN 可调用）。"""
+
+    name: str
+    email: str
+    password: str
+    role: str = "handler"  # handler/manager/researcher/viewer
+    base_id: Optional[int] = None
+    phone: Optional[str] = None
+    is_superuser: bool = False
+
+
+# === Phase 3.6a 基地管理 ===
+
+class BaseCreate(BaseModel):
+    """创建基地请求。"""
+
+    name: str
+    code: str
+    description: Optional[str] = None
+    is_active: bool = True
+
+
+class BaseUpdate(BaseModel):
+    """更新基地请求（partial update）。"""
+
+    name: Optional[str] = None
+    code: Optional[str] = None
+    description: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class BaseRead(ORMModel):
+    """基地响应。"""
+
+    id: int
+    name: str
+    code: str
+    description: Optional[str] = None
+    is_active: bool
+    created_at: datetime
+
+
+# 避免前向引用问题
+TokenResponse.model_rebuild()
 
 
 class DogBase(ORMModel):

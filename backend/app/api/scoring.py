@@ -38,11 +38,13 @@ _SCORING_CONFIGS_DIR = _PROJECT_ROOT / "backend" / "ml" / "scoring" / "configs"
 # Phase 1: puppy_selection / obedience_trial
 # Phase 2.2e: working_dog_trial（16 行为 7 维）
 # Phase 2.3b: uspca_patrol（USPCA PDI 5 维）
+# Phase 3.4: fci_igp（FCI-IGP 国际工作犬 7 维 + DQ）
 _SCENE_TO_FILE = {
     "puppy_selection": "puppy_selection.yaml",
     "obedience_trial": "obedience_trial.yaml",
     "working_dog_trial": "working_dog_trial.yaml",
     "uspca_patrol": "uspca_patrol.yaml",
+    "fci_igp": "fci_igp.yaml",
 }
 
 _VALID_SCENES = set(_SCENE_TO_FILE.keys())
