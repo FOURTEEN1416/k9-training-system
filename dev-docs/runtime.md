@@ -1,7 +1,7 @@
 # Runtime Baseline — 运行时基线 Truth
 
 > Truth source: Phase 0 启动时实测形成；ADR 0002 修正后基线
-> 状态: ✅ Phase 0 基线已建立（v1.3，2026-08-02 Phase 3.1e ST-GCN+BC 部署集成完成 + SHADOW 模式上线）
+> 状态: ✅ Phase 0 基线已建立（v1.4，2026-08-02 sliver-vibe-coding 接管审计 + 3.6 RBAC 基础代码完成 + 538 单元测试新鲜验证）
 > Owner: Phase 0 基础设施
 > 修改触发: 运行时栈任何组件版本变更、硬件变更、服务端口变更
 
@@ -148,18 +148,21 @@ postgresql-17   Running   Automatic   ✅
 postgresql-15   Running   Automatic   （本项目不使用）
 ```
 
-### 5.4 新鲜验证（2026-08-02，Phase 3.1e ST-GCN+BC 部署集成完成）
+### 5.4 新鲜验证（2026-08-02，sliver-vibe-coding 接管审计 + Phase 3.6 RBAC 基础代码完成）
 
-- ✅ **500 单元测试通过** + 2 skipped + 0 failed in 100.76s（`pytest backend/tests/`，较 v1.2 的 480 +20 = 3.1e 部署单元测试）
+- ✅ **538 单元测试通过** + 2 skipped + 0 failed in 106.71s（`pytest backend/tests/`，较 v1.3 的 500 +38 = 3.4 FCI-IGP + 3.5 frame_stride 测试 + 接管审计重跑）
 - ✅ **3.1e 部署单元测试 20/20 通过**（`backend/tests/ml/test_stgcn_bc_deploy.py`: TestExportOnnx 4 + TestSTGCNBCInferer 6 + TestBehaviorRecognizer 8 + TestEpisodeSplit 2）
+- ✅ **3.4 FCI-IGP 单元测试 15/15 通过**（`backend/tests/integration/test_phase3_4_fci_igp_e2e.py`）
 - ✅ **端到端 SHADOW 模式新鲜验证通过**（USPCA 视频 2700 帧/90s → video_id=37 → 101.8s → verdict=pass score=81.0 → PDF 4036 bytes）
   - SHADOW 对比日志：`STGCN=1 RULE=1 common=0 stgcn_only=1 rule_only=1`（双轨均识别 1 个行为）
   - 延迟分析：SHADOW 双轨仅占 2s（< 2%），瓶颈在 pose 推理 98s（96%），1.13x 略超 1.0x 阈值，将通过 Phase 3.5 Jetson TRT FP16 优化
+- ✅ **FCI-IGP 端到端验证通过**（video_id=46, scene=fci_igp, verdict=pass, score=78.9, 57.0s/0.63x, PDF 4156 bytes）
 - ✅ ST-GCN+BC 合成数据 baseline 训练验证（30 epochs / 1.43M 参数 / best_val_acc=46.97% @ epoch 21 / 边界 F1=58.45%）
 - ✅ MotionBERT 17→24 适配 + InterPet4D 微调验证（best_epoch=12 / MPJPE=21.74mm / P-MPJPE=20.67mm，见 `reports/phase-3.3d-3d-pose-eval.json`）
 - ✅ `scripts/phase2_6_e2e_test.py` 8/9 通过（USPCA 闭环 + 延迟 1.13x 略超标 + PDF 报告）
 - ✅ API 启动验证（`uvicorn backend.app.main:app --port 8001`）—— cv2 冲突修复后通过
 - ✅ Celery Worker 启动验证（`celery -A backend.workers.celery_app worker -l info --pool=solo`）
+- ⚠️ **3.6 RBAC auth API 未上线**（`backend/app/api/auth.py` + `bases.py` 代码已完成，但 `main.py` 未注册路由，端点不可访问）
 
 ## 6. 环境变量约定（`.env`）
 
@@ -278,6 +281,26 @@ python scripts/export_stgcn_bc_onnx.py \
     --opset 17
 ```
 
+### 8.7 RBAC 用户权限（2026-08-02 代码完成，未上线）
+
+**状态**：3.6a migration + model ✅ / 3.6b auth API + deps 代码 ✅ / **main.py 未注册路由未上线** ⚠️
+
+**已实现文件**：
+- `backend/alembic/versions/c3d4e5f6a7b8_phase3_6_rbac_base_tables.py`（migration，未在真实 PG17 执行验证）
+- `backend/app/models/handler.py`（UserRole 5 角色：ADMIN/MANAGER/HANDLER/RESEARCHER/VIEWER + ROLE_HIERARCHY + password_hash + base_id + is_superuser）
+- `backend/app/models/base_entity.py`（BaseEntity time-mixin）
+- `backend/app/models/dog_associations.py`（DogBaseAssociation + DogHandlerAssociation + DogHandlerRole PRIMARY/SECONDARY）
+- `backend/app/core/security.py`（JWT 编解码 + bcrypt 密码哈希 + AuthError 异常层级）
+- `backend/app/core/deps.py`（get_current_handler + get_optional_handler + require_roles + require_role_hierarchy + check_dog_access + check_base_access）
+- `backend/app/api/auth.py`（POST /auth/login + /auth/refresh + GET /auth/me + POST /auth/logout）
+- `backend/app/api/bases.py`（基地 CRUD）
+
+**待办**：
+1. `main.py` 注册 auth + bases 路由
+2. `main.py` 注册 AuthError exception_handler
+3. 真实 PG17 执行 migration `c3d4e5f6a7b8` 验证
+4. 3.6c 多租户场景测试（`scripts/eval_rbac.py` 未创建）
+
 ## 9. 修订历史
 
 | 版本 | 日期 | 变更 |
@@ -286,3 +309,4 @@ python scripts/export_stgcn_bc_onnx.py \
 | v1.1 | 2026-08-01 | ①ultralytics 版本同步 8.3.55→8.4.107（与 `requirements.txt` 一致）；②§3 多个依赖从"⏳ Phase 0 验收验证"转为"✅ 通过"；③§7 未验证项全部转为已验证（Phase 0 验收 + 2026-08-01 新鲜验证）；④§5.4 新增 2026-08-01 新鲜验证证据（401 单元测试 + e2e 9/9）；⑤§8.3 mmaction2/TensorRT 状态同步（mmaction2 未触发安装，TensorRT 已安装）；⑥§8.4 新增 opencv-python-headless 冲突修复记录 |
 | v1.2 | 2026-08-01 | §5.4 新鲜验证更新：①单元测试 401→480（+79，含 ST-GCN+BC 83 测试）；②新增 ST-GCN+BC 合成数据 baseline 训练验证证据（30 epochs / 1.43M 参数 / best_val_acc=46.97% / 边界 F1=58.45%）；③对应 Phase 3.1c + 3.1d 完成（见 phase-3.md v2.5 + AGENTS.md v1.17） |
 | v1.3 | 2026-08-02 | **Phase 3.1e ST-GCN+BC 部署集成完成 + SHADOW 模式上线**：①§5.4 新鲜验证更新：单元测试 480→500（+20，含 3.1e 部署测试 20 个）+ 端到端 SHADOW 模式验证通过（USPCA video_id=37 / 101.8s / score=81.0 / PDF 4036 bytes）；②§8.5 新增 Redis 服务启动指引（chocolatey 安装路径 + 启动命令 + nssm 生产期建议）；③§8.6 新增 ST-GCN+BC 部署模式章节（4 模式路由表 + 配置切换 + 模型路径解析 + ONNX 导出 CLI）；④对应 Phase 3.1e 完成（见 phase-3.md v2.6 + AGENTS.md v1.18） |
+| v1.4 | 2026-08-02 | **sliver-vibe-coding 接管审计 + 3.6 RBAC 基础代码完成 + 文档漂移修复**：①§5.4 新鲜验证更新：单元测试 500→538（+38 = 3.4 FCI-IGP 15 + 3.5 frame_stride 测试 + 接管审计重跑 106.71s）+ FCI-IGP 端到端验证通过（video_id=46 / 0.63x / PDF 4156 bytes）+ 3.6 RBAC auth API 未上线警告；②§8.7 新增 RBAC 用户权限章节（8 个已实现文件清单 + 4 项待办：main.py 注册路由 + exception_handler + migration 真实执行 + 3.6c 测试）；③对应 sliver-vibe-coding 接管审计（见 phase-3.md v2.8 + AGENTS.md v1.20 + Git commit `2e6aef3`） |

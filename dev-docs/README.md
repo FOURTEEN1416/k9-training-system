@@ -4,7 +4,7 @@
 
 **公开文档与内部 truth 分离**：本目录内容不应直接推送到公开仓库（已在 `.gitignore` 中排除 `.trae/`，但 `dev-docs/` 默认入库；如需私有化，参见 `project-flow.md` 的 dual-repo 管理策略）。
 
-> **修订说明（2026-08-01）**：本次修订同步至 Phase 3 实施中状态。原文档多处理于"⏳ Phase 0"过时状态——实际 Phase 0/1/2 已完成验收（见 `reports/phase-{0,1,2}-validation.md` + AGENTS.md §7），Phase 3 已实施至 3.3b（见 `stages/phase-3.md` v2.4）。`design/` / `quality/` / `acceptance/` / `database-design.md` / `backend-boundary.md` 等 truth 文档**未建立**（占位条目移除，避免误导）。
+> **修订说明（2026-08-02）**：本次修订同步至 Phase 3 v2.8 实施中状态（sliver-vibe-coding 接管审计后）。原文档多处理于"⏳ Phase 0"过时状态——实际 Phase 0/1/2 已完成验收（见 `reports/phase-{0,1,2}-validation.md` + AGENTS.md §7），Phase 3 已实施至 3.6b 部分（见 `stages/phase-3.md` v2.8：3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a + 3.6b 部分完成）。`design/` / `quality/` / `acceptance/` / `database-design.md` / `backend-boundary.md` 等 truth 文档**未建立**（占位条目移除，避免误导）。
 
 ## 文档索引
 
@@ -15,8 +15,8 @@
 | `function-list.md` | 功能清单与复杂功能文档索引 | ✅ |
 | `technical-selection.md` | 技术选型 truth（栈+框架+架构组合） | ✅ |
 | `architecture.md` | 项目架构（拓扑、owner map、模块边界） | ✅（部分漂移，待同步 Phase 2/3 实际结构） |
-| `runtime.md` | 运行时基线（包管理器、版本、启动命令） | ✅ Phase 0 已建立（部分依赖版本待同步） |
-| `stage-plan.md` | 大阶段计划（Phase 0-4） | ✅（v1.0，Phase 3 状态待同步） |
+| `runtime.md` | 运行时基线（包管理器、版本、启动命令） | ✅ Phase 0 已建立（v1.4，538 单元测试新鲜验证） |
+| `stage-plan.md` | 大阶段计划（Phase 0-4） | ✅（v1.2，Phase 3 v2.8 状态同步） |
 
 ### 阶段 truth
 | 文档 | 用途 | 状态 |
@@ -24,7 +24,7 @@
 | `stages/phase-0.md` | Phase 0 基础设施计划 | ✅ 完成（2026-07-26 验收） |
 | `stages/phase-1.md` | Phase 1 MVP 计划 | ✅ 完成（2026-07-28 验收，带条件） |
 | `stages/phase-2.md` | Phase 2 核心计划 | ✅ 完成（2026-07-30 验收，v2.7） |
-| `stages/phase-3.md` | Phase 3 专业计划 | 🔄 实施中（v2.4：3.1b+3.2b+3.2c+3.3b 完成） |
+| `stages/phase-3.md` | Phase 3 专业计划 | 🔄 实施中（v2.8：3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a + 3.6b 部分完成） |
 
 ### 设计/质量/验收 truth
 > `design/` / `quality/` / `acceptance/` 目录**尚未建立**。原 README 列为占位条目但实际未创建——Phase 0-2 期间验收证据统一归档到 `reports/phase-{N}-validation.md`。如需建立独立 truth 目录，Phase 3+ 启动时按需创建。
@@ -79,15 +79,15 @@
 
 ## 阶段映射
 
-本项目遵循 sliver-vibe-coding Main Sequence，当前处于 Phase 3 实施中（2026-08-01）：
+本项目遵循 sliver-vibe-coding Main Sequence，当前处于 Phase 3 实施中（2026-08-02 sliver-vibe-coding 接管审计后）：
 - ✅ 项目空间/Git/dev-docs 已建立
 - ✅ Project brief / Function list / Technical selection / Architecture 已创建
-- ✅ Agent constitution 已创建（`AGENTS.md` v1.15）
+- ✅ Agent constitution 已创建（`AGENTS.md` v1.20）
 - ✅ ADR 0001-0010 已建立（0004 占位未触发）
-- ✅ Runtime baseline 已建立（Phase 0 验收，见 `runtime.md`）
+- ✅ Runtime baseline 已建立（Phase 0 验收 + v1.4 新鲜验证 538 测试，见 `runtime.md`）
 - ✅ Frontend/Database/Backend skeleton 已建立（Phase 0 验收）
 - ✅ Phase 0 基础设施完成（2026-07-26 验收）
 - ✅ Phase 1 MVP 完成（2026-07-28 验收，带条件）
 - ✅ Phase 2 核心完成（2026-07-30 验收，v2.7 + ADR 0010）
-- 🔄 Phase 3 专业实施中（v2.4：3.1b ST-GCN+BC + 3.2b 多犬追踪 + 3.2c ReID + 3.3b 3D 配对已完成）
+- 🔄 Phase 3 专业实施中（v2.8：3.1b/c/d/e ST-GCN+BC + 3.2b/c 多犬追踪+ReID + 3.3b/c/d 3D 姿态 + 3.4b/c FCI-IGP + 3.5c 抽帧部分 + 3.6a/3.6b RBAC 基础部分完成，Git 检查点 `2e6aef3`）
 - ⏳ Phase 4 前沿按需
