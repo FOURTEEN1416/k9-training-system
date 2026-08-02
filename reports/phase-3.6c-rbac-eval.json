@@ -1,0 +1,170 @@
+{
+  "phase": "3.6c",
+  "test_name": "RBAC 端到端评估",
+  "timestamp": "2026-08-02T04:04:17.273654+00:00",
+  "overall": "pass",
+  "summary": {
+    "total_suites": 6,
+    "total_cases": 25,
+    "passed": 25,
+    "failed": 0,
+    "pass_rate": "100.0%"
+  },
+  "suites": [
+    {
+      "name": "authentication",
+      "cases": [
+        {
+          "case": "login_with_correct_password",
+          "status": "pass",
+          "detail": "JWT 签发成功"
+        },
+        {
+          "case": "login_with_wrong_password",
+          "status": "pass",
+          "detail": "期望 401，实际 401"
+        },
+        {
+          "case": "login_nonexistent_email",
+          "status": "pass",
+          "detail": "期望 401（防枚举），实际 401"
+        },
+        {
+          "case": "get_me_with_valid_token",
+          "status": "pass",
+          "detail": "status=200, email=eval_rbac_admin@test.com"
+        },
+        {
+          "case": "get_me_without_token",
+          "status": "pass",
+          "detail": "期望 401，实际 401"
+        },
+        {
+          "case": "get_me_with_invalid_token",
+          "status": "pass",
+          "detail": "期望 401，实际 401"
+        }
+      ]
+    },
+    {
+      "name": "role_permission_users_list",
+      "cases": [
+        {
+          "case": "admin_access_users_list",
+          "status": "pass",
+          "detail": "ADMIN 可查看所有用户：期望 200，实际 200。"
+        },
+        {
+          "case": "manager_a_access_users_list",
+          "status": "pass",
+          "detail": "MANAGER 可查看（仅本基地）：期望 200，实际 200。返回 5 个用户（期望本基地 5 个）"
+        },
+        {
+          "case": "researcher_a_access_users_list",
+          "status": "pass",
+          "detail": "RESEARCHER 无权访问用户列表：期望 403，实际 403。"
+        },
+        {
+          "case": "handler_a1_access_users_list",
+          "status": "pass",
+          "detail": "HANDLER 无权访问用户列表：期望 403，实际 403。"
+        },
+        {
+          "case": "viewer_a_access_users_list",
+          "status": "pass",
+          "detail": "VIEWER 无权访问用户列表：期望 403，实际 403。"
+        }
+      ]
+    },
+    {
+      "name": "base_isolation_manager",
+      "cases": [
+        {
+          "case": "manager_a_only_sees_base_a_users",
+          "status": "pass",
+          "detail": "返回 5 个用户，本基地用户 5/5，跨基地泄漏 无"
+        },
+        {
+          "case": "manager_a_cannot_view_base_b_user",
+          "status": "pass",
+          "detail": "期望 403（跨基地访问），实际 403"
+        }
+      ]
+    },
+    {
+      "name": "base_crud_admin_only",
+      "cases": [
+        {
+          "case": "admin_create_base",
+          "status": "pass",
+          "detail": "期望 201，实际 201"
+        },
+        {
+          "case": "manager_cannot_create_base",
+          "status": "pass",
+          "detail": "期望 403，实际 403"
+        },
+        {
+          "case": "admin_list_all_bases",
+          "status": "pass",
+          "detail": "期望 ≥3 个基地，实际 3"
+        },
+        {
+          "case": "manager_list_only_own_base",
+          "status": "pass",
+          "detail": "期望 1 个基地（本基地），实际 1"
+        },
+        {
+          "case": "admin_deactivate_base",
+          "status": "pass",
+          "detail": "期望 204，实际 204"
+        }
+      ]
+    },
+    {
+      "name": "user_management_admin_only",
+      "cases": [
+        {
+          "case": "admin_register_new_user",
+          "status": "pass",
+          "detail": "期望 201，实际 201"
+        },
+        {
+          "case": "manager_cannot_register_user",
+          "status": "pass",
+          "detail": "期望 403，实际 403"
+        },
+        {
+          "case": "admin_deactivate_user",
+          "status": "pass",
+          "detail": "期望 204，实际 204"
+        },
+        {
+          "case": "admin_cannot_deactivate_self",
+          "status": "pass",
+          "detail": "期望 400（不能禁用自己），实际 400"
+        }
+      ]
+    },
+    {
+      "name": "change_password",
+      "cases": [
+        {
+          "case": "change_password_correct_old",
+          "status": "pass",
+          "detail": "期望 204，实际 204"
+        },
+        {
+          "case": "login_with_new_password",
+          "status": "pass",
+          "detail": "新密码登录期望 200，实际 200"
+        },
+        {
+          "case": "change_password_wrong_old",
+          "status": "pass",
+          "detail": "期望 400（旧密码错误），实际 400"
+        }
+      ]
+    }
+  ]
+}

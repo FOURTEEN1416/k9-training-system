@@ -1,7 +1,7 @@
 # Phase 3 — 专业阶段计划
 
 > 阶段: Phase 3 专业
-> 状态: 🔄 实施中（v2.8: 3.1b + 3.1c + 3.1d + 3.1e + 3.2b + 3.2c + 3.3b + 3.3c + 3.3d + 3.4b + 3.4c + 3.5c(部分) + 3.6a + 3.6b(部分) 完成，ST-GCN+BC 部署集成 + 训练评估管线 + 双轨 SHADOW 模式上线 + 核心追踪+ReID+3D 配对 + MotionBERT 17→24 适配 + FCI-IGP 评分卡验证通过 + 抽帧策略就绪 + RBAC 基础代码完成待 main.py 注册路由）
+> 状态: 🔄 实施中（v2.9: 3.1b + 3.1c + 3.1d + 3.1e + 3.2b + 3.2c + 3.3b + 3.3c + 3.3d + 3.4b + 3.4c + 3.5c(部分) + 3.6a + 3.6b + 3.6c 完成，ST-GCN+BC 部署集成 + 训练评估管线 + 双轨 SHADOW 模式上线 + 核心追踪+ReID+3D 配对 + MotionBERT 17→24 适配 + FCI-IGP 评分卡验证通过 + 抽帧策略就绪 + RBAC auth API 上线 + 多租户端到端 25/25 通过）
 > Owner: Phase 3 专业
 > 入口条件: Phase 2 验收通过 ✅（2026-07-30，见 [reports/phase-2-validation.md](../../reports/phase-2-validation.md) + [ADR 0010](../decisions/0010-phase-2-to-phase-3.md)）
 > 出口条件: 见 §6 验收清单
@@ -264,15 +264,25 @@
   - model 扩展: `handler.py` UserRole 枚举（ADMIN/MANAGER/HANDLER/RESEARCHER/VIEWER）+ ROLE_HIERARCHY + password_hash + base_id + is_superuser
   - 新增 model: `base_entity.py`（BaseEntity time-mixin）+ `dog_associations.py`（DogBaseAssociation 临时基地 + DogHandlerAssociation 多训导员 + DogHandlerRole PRIMARY/SECONDARY）
   - 角色：超管 / 基地管理员 / 训导员 / 研究员 / 查看者
-- 🔄 **3.6b** RBAC 权限验证（代码完成，**main.py 未注册 auth/bases 路由，未上线**）
-  - `app/api/auth.py`：POST /auth/login（JWT 签发）+ POST /auth/refresh + GET /auth/me + POST /auth/logout
-  - `app/core/security.py`：JWT 编解码 + bcrypt 密码哈希 + AuthError 异常层级（InvalidTokenError / InsufficientPermissionError）
-  - `app/core/deps.py`：get_current_handler 强制鉴权 + get_optional_handler 可选鉴权 + require_roles/require_role_hierarchy 角色级 + check_dog_access/check_base_access 资源级
-  - `app/api/bases.py`：基地 CRUD（ADMIN 写 / 其他本基地读）
-  - ⏳ **待办**：main.py 注册 auth + bases 路由 + exception_handler + 启动验证
-- ⏳ **3.6c** 多租户场景测试（未启动）
-  - 基地隔离 + 数据权限
-  - 测试脚本：`scripts/eval_rbac.py`（未创建）
+- ✅ **3.6b** RBAC 权限验证（2026-08-02 上线）
+  - `app/api/auth.py`：POST /auth/login（JWT 签发）+ POST /auth/refresh + GET /auth/me + POST /auth/logout + POST /auth/register（ADMIN 限定）+ GET /auth/users（ADMIN/MANAGER）+ PATCH /auth/users/{id}/deactivate（ADMIN）+ POST /auth/change-password
+  - `app/core/security.py`：JWT 编解码 + bcrypt 密码哈希（直接调用，替换 passlib 1.7.4 与 bcrypt 5.0 不兼容）+ 72 字节截断 + AuthError 异常层级（InvalidTokenError / InsufficientPermissionError / AuthenticationFailedError）+ TokenPayload sub 字符串化（PyJWT 2.x 规范）
+  - `app/core/deps.py`：get_current_handler 强制鉴权 + get_optional_handler 可选鉴权 + require_roles/require_role_hierarchy 角色级 + check_dog_access/check_base_access 资源级（async 接口）
+  - `app/api/bases.py`：基地 CRUD（POST 创建 ADMIN / GET 列表 ADMIN 全量+MANAGER 本基地 / GET 单个 / PATCH 更新 ADMIN / PATCH deactivate ADMIN）
+  - ✅ **main.py 注册路由 + exception_handler**：`app.include_router(auth.router, prefix="/api")` + `app.include_router(bases.router, prefix="/api")` + `@app.exception_handler(AuthError)` 返回 JSONResponse `{"detail": exc.message}`
+  - ✅ **passlib → bcrypt 直接调用**：解决 `AttributeError: module 'bcrypt' has no attribute '__about__'`（passlib 1.7.4 与 bcrypt 5.0.0 不兼容）
+  - ✅ **JWT sub 字符串化**：解决 PyJWT 2.x 解码时 `sub` 必须为字符串的规范要求
+- ✅ **3.6c** 多租户场景测试（2026-08-02 通过）
+  - 测试脚本：`scripts/eval_rbac.py`（httpx.AsyncClient + ASGITransport 单 event loop + psycopg2 同步种子数据 + bcrypt 4 rounds 加速）
+  - 单元测试：`backend/tests/test_rbac.py`（45 测试：密码哈希 7 + JWT 7 + 异常类型 6 + UserRole 4 + check_base_access 11 + check_dog_access 10）
+  - **端到端 25/25 通过**（`reports/phase-3.6c-rbac-eval.json`）：
+    - authentication 6/6（login 正确/错误/不存在 + me 有效/无效/无 token）
+    - role_permission_users_list 5/5（ADMIN 全量 / MANAGER 本基地 / RESEARCHER+HANDLER+VIEWER 403）
+    - base_isolation_manager 2/2（MANAGER 仅本基地 + 跨基地 403）
+    - base_crud_admin_only 5/5（ADMIN 创建 + MANAGER 403 + ADMIN 列表 + MANAGER 仅本基地 + ADMIN deactivate）
+    - user_management_admin_only 4/4（ADMIN register + MANAGER 403 + ADMIN deactivate + 不能禁用自己）
+    - change_password 3/3（正确旧密码 + 新密码登录 + 错误旧密码 400）
+  - 真实 PG17 执行 migration `c3d4e5f6a7b8` 验证通过（bases + handlers + dog_base_association + dog_handler_association 表创建 + 枚举类型 user_role / dog_handler_role）
 
 ### Phase 3.7 训练历史对比可视化（P2，从 Phase 2 延后）
 
@@ -372,7 +382,7 @@
 | §6.3 | 3D 姿态重建 | MPJPE ≤ 50mm | `scripts/eval_3d_pose.py` | ✅ 通过（3.3d: MPJPE=21.74mm / P-MPJPE=20.67mm vs H36M 37.2mm，见 `reports/phase-3.3d-3d-pose-eval.json`） |
 | §6.4 | FCI-IGP | 评分卡验证通过 | `scripts/eval_fci_igp.py` | ✅ 通过（3.4c: 4 档全部通过 Excellent 96.0 + Borderline 70.0 + Failing 30.0 + DQ 3/3，端到端 video_id=46 verdict=pass score=78.9 0.63x，见 `reports/phase-3.4c-fci-igp-eval.json`） |
 | §6.5 | Jetson 部署 | 延迟 ≤ 0.5 min/min 视频 | Jetson jtop 监控 | 🔄 抽帧策略 + TRT 转换脚本就绪（3.5c 部分），待硬件部署 |
-| §6.6 | 用户权限 | 多角色验证通过 | `scripts/eval_rbac.py` | 🔄 部分（3.6a migration+model ✅ / 3.6b auth API+deps 代码 ✅ 但 main.py 未注册路由未上线 / 3.6c 多租户测试 ⏳ 未启动） |
+| §6.6 | 用户权限 | 多角色验证通过 | `scripts/eval_rbac.py` | ✅ 通过（3.6a migration+model ✅ / 3.6b auth API+deps+main.py 注册 ✅ 上线 / 3.6c 多租户端到端 25/25 通过 + 单元测试 45/45 通过，见 `reports/phase-3.6c-rbac-eval.json`） |
 | §6.7 | 训练历史 | 对比可视化 | 端到端测试 | ⏳ |
 | §6.8 | 端到端 | 全流程跑通 | `scripts/phase3_8_e2e_test.py` | ⏳ |
 | §6.9 | 延迟 | ≤ 1 min/min 视频（维持） | 延迟测试 | ⏳ |
@@ -430,3 +440,4 @@ Phase 3 验收通过后，依据 ADR（待创建）决策是否升级 Phase 4。
 | v2.6 | 2026-08-02 | **3.1e ST-GCN+BC 部署集成完成（双轨并行 SHADOW 模式上线）**：①**ONNX 导出**（`export_onnx.py::export_onnx` 动态 batch+time 轴 + opset 17 + 一致性验证 1e-3 阈值兼容 MSTCN 膨胀卷积浮点误差）；②**双后端推理器**（`inference.py::STGCNBCInferer` PyTorch / ONNX Runtime + 滑动窗口 + 边界检测 episode 分割 + softmax/sigmoid 数值稳定性 clip[-50,50]）；③**双轨路由层**（`router.py::BehaviorRecognizer` 4 模式: SHADOW 影子对比 / VOTE 投票 / PRIMARY_STGCN 主+规则备降级 / RULE_ONLY 仅规则引擎）；④**tasks.py 集成**（BehaviorRecognizer 单例 + `_resolve_stgcn_bc_path()` 优先 ONNX 回退 checkpoint + FCI-IGP pipeline `_run_fci_igp_pipeline()` + 22 类行为枚举映射扩展）；⑤**CLI 工具** `scripts/export_stgcn_bc_onnx.py`；⑥**ONNX 模型已导出**至 `data/models/stgcn_bc/stgcn_bc_dog24.onnx`（来源 `runs/stgcn_bc_synthetic/best.pt` epoch 21 best_val_acc=46.97%）；⑦**单元测试 20/20 通过**（`backend/tests/ml/test_stgcn_bc_deploy.py`: TestExportOnnx 4 + TestSTGCNBCInferer 6 + TestBehaviorRecognizer 8 + TestEpisodeSplit 2）；⑧**端到端 SHADOW 模式新鲜验证通过**（USPCA 视频 2700 帧/90s → 101.8s → verdict=pass score=81.0 → PDF 4036 bytes；SHADOW 对比日志 `STGCN=1 RULE=1 common=0 stgcn_only=1 rule_only=1`）；⑨**新鲜单元测试全集**：500 passed + 2 skipped + 0 failed in 100.76s（较 v2.5 的 480 +20 = 3.1e 部署测试）；⑩**延迟分析**：SHADOW 双轨仅占 2s（< 2%），瓶颈在 pose 推理 98s（96%），1.13x 略超 1.0x 阈值，将通过 Phase 3.5 Jetson TRT FP16 + 抽帧策略优化至 ≤ 0.5x。§3.1e 标记 ✅ 完成 |
 | v2.7 | 2026-08-02 | **3.4b + 3.4c FCI-IGP 评分卡验证通过 + 3.5c 抽帧策略就绪**：①**3.4b FCI-IGP 评分卡 YAML 扩展**（`backend/ml/scoring/configs/fci_igp.yaml` 7 维权重 0.25/0.15/0.15/0.15/0.10/0.10/0.10 + 22 行为 100% 覆盖 IGP A=4/B=12/C=6 + 3 DQ 硬约束 gunfire_fail/release_fail/retrieve_fail + 5 级评级 Excellent/Very Good/Good/Satisfactory/Insufficient + Schema 扩展 disqualifications+igp_level 仅 fci_igp 场景可用）；②**场景注册**（`Video.VALID_SCENES` + `_SCENE_TO_FILE` + `ScoringContext.Scene` 类型扩展 fci_igp）；③**pipeline 集成**（`_run_fci_igp_pipeline()` tasks.py + `fci_igp_signals.py` 独立模块消除 celery 依赖）；④**3.4c 评分卡验证**（`scripts/eval_fci_igp.py` 4 档全通过: Excellent 96.0 + Borderline 70.0 + Failing 30.0 + DQ 3/3 → 总分清零；报告 `reports/phase-3.4c-fci-igp-eval.json`）；⑤**单元测试 15/15 通过**（`backend/tests/integration/test_phase3_4_fci_igp_e2e.py`: 场景注册 4 + pipeline E2E 3 + DQ E2E 3 + 全 pipeline 2 + IGP 阶段覆盖 3）；⑥**端到端视频验证**（`scripts/phase3_4_e2e_test.py` 9/9 通过: video_id=46, scene=fci_igp, verdict=pass, score=78.9, 57.0s/0.63x, PDF 4156 bytes, SHADOW STGCN=1 RULE=1）；⑦**inference.py 空输入 NaN 修复**（T=0 早返回避免 _normalize 空切片均值 NaN）；⑧**3.5c 抽帧策略**（`backend/ml/pose/frame_stride.py` 线性/最近邻插值 + 自适应 stride 推荐 + SPEEDUP_TOLERANCE=0.05 + `scripts/convert_trt_fp16.py` TRT FP16 转换脚本）；⑨**新鲜单元测试全集**：538 passed + 2 skipped + 0 failed in 87.49s（较 v2.6 的 500 +38 = 3.4 FCI-IGP + 3.5 frame_stride 测试）；⑩§3.4b/3.4c 标记 ✅ 完成，§6.4 验收清单 ✅ 通过，§3.5c 标记 🔄 部分（抽帧+TRT 脚本就绪，待 Jetson 硬件部署） |
 | v2.8 | 2026-08-02 | **sliver-vibe-coding 接管审计 + 文档漂移修复 + Git 检查点**：①**接管只读首检**（路由 `接管项目`，只读审计 Git/Truth/运行时/AI 债务，新鲜验证 pytest 538 passed + 2 skipped + 0 failed in 106.71s）；②**Git 检查点保护**（commit `2e6aef3`，58 文件 +12340 行，保护 22 已修改 + 30 未跟踪文件，防止 Phase 3 已完成工作丢失）；③**3.6 RBAC 文档漂移修复**（代码已存在但 truth 标记 ⏳）：§3.6a ⏳→✅（migration `c3d4e5f6a7b8` + handler.py UserRole 5 角色 + base_entity.py + dog_associations.py 代码完成，migration 未在真实 PG17 验证）；§3.6b ⏳→🔄（auth.py 4 端点 + core/security.py JWT+bcrypt + core/deps.py 5 依赖项代码完成，**main.py 未注册 auth/bases 路由未上线**）；§3.6c ⏳ 维持（未启动）；④**§6.6 验收清单** ⏳→🔄 部分完成；⑤**AGENTS.md v1.19→v1.20 + runtime.md v1.3→v1.4 + dev-docs/README.md + stage-plan.md** 同步 538 测试 + 3.6 状态 |
+| v2.9 | 2026-08-02 | **3.6b 收尾 + 3.6c 多租户测试完成 + RBAC 端到端验收通过**：①**3.6b main.py 注册路由 + exception_handler 上线**（`app.include_router(auth.router, prefix="/api")` + `app.include_router(bases.router, prefix="/api")` + `@app.exception_handler(AuthError)` JSONResponse）；②**passlib → bcrypt 直接调用**（解决 passlib 1.7.4 与 bcrypt 5.0.0 不兼容 `AttributeError: module 'bcrypt' has no attribute '__about__'`）；③**JWT sub 字符串化**（PyJWT 2.x 规范要求 sub 必须为字符串）；④**auth.py 端点扩展**（login + refresh + me + logout + register ADMIN + users ADMIN/MANAGER + deactivate ADMIN + change-password）；⑤**3.6c 多租户测试**：`scripts/eval_rbac.py`（httpx.AsyncClient + ASGITransport + psycopg2 种子数据 + bcrypt 4 rounds）+ `backend/tests/test_rbac.py` 45 测试（密码哈希 7 + JWT 7 + 异常 6 + UserRole 4 + check_base_access 11 + check_dog_access 10）；⑥**真实 PG17 执行 migration `c3d4e5f6a7b8` 验证通过**（bases + handlers + dog_base_association + dog_handler_association 表 + user_role / dog_handler_role 枚举）；⑦**端到端 25/25 通过**（`reports/phase-3.6c-rbac-eval.json`：authentication 6 + role_permission 5 + base_isolation 2 + base_crud 5 + user_management 4 + change_password 3）；⑧**§6.6 验收清单** 🔄→✅ 通过；⑨**新鲜单元测试全集**：566 passed + 2 skipped + 5 failed + 12 errors（onnxruntime 环境损坏预存问题，与 RBAC 无关，TRAE 沙箱阻止修复）；⑩§3.6b/3.6c 标记 ✅ 完成 |

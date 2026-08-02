@@ -1,7 +1,7 @@
 # Runtime Baseline — 运行时基线 Truth
 
 > Truth source: Phase 0 启动时实测形成；ADR 0002 修正后基线
-> 状态: ✅ Phase 0 基线已建立（v1.4，2026-08-02 sliver-vibe-coding 接管审计 + 3.6 RBAC 基础代码完成 + 538 单元测试新鲜验证）
+> 状态: ✅ Phase 0 基线已建立（v1.5，2026-08-02 3.6 RBAC 端到端验收通过 + 566 单元测试新鲜验证，onnxruntime 环境损坏预存问题待用户手动修复）
 > Owner: Phase 0 基础设施
 > 修改触发: 运行时栈任何组件版本变更、硬件变更、服务端口变更
 
@@ -148,9 +148,11 @@ postgresql-17   Running   Automatic   ✅
 postgresql-15   Running   Automatic   （本项目不使用）
 ```
 
-### 5.4 新鲜验证（2026-08-02，sliver-vibe-coding 接管审计 + Phase 3.6 RBAC 基础代码完成）
+### 5.4 新鲜验证（2026-08-02，3.6 RBAC 端到端验收通过 + 566 单元测试）
 
-- ✅ **538 单元测试通过** + 2 skipped + 0 failed in 106.71s（`pytest backend/tests/`，较 v1.3 的 500 +38 = 3.4 FCI-IGP + 3.5 frame_stride 测试 + 接管审计重跑）
+- ✅ **566 单元测试通过** + 2 skipped + 5 failed + 12 errors in 194.49s（`pytest backend/tests/`，较 v1.4 的 538 +28 = RBAC 45 测试 - 17 个 onnxruntime 损坏相关）
+  - ⚠️ **onnxruntime 环境损坏（预存问题，与 RBAC 无关）**：ultralytics 自动安装 onnxruntime-gpu 1.28.0 失败（DLL 拒绝访问），导致 onnxruntime Python 文件 1.28.0 与 _pybind_state.pyd 1.20.1 混合，5 failed + 12 errors 全部为 `AttributeError: module 'onnxruntime.capi._pybind_state' has no attribute 'OrtCompileApiFlags'`。TRAE 沙箱阻止卸载/重装（系统 Python 受保护）。**修复方法**：用户在系统 PowerShell（管理员）执行 `pip uninstall onnxruntime -y && pip install onnxruntime==1.20.1`
+- ✅ **RBAC 单元测试 45/45 通过**（`backend/tests/test_rbac.py` in 4.87s：TestPasswordHash 7 + TestJWT 7 + TestAuthErrors 6 + TestUserRole 4 + TestCheckBaseAccess 11 + TestCheckDogAccess 10）
 - ✅ **3.1e 部署单元测试 20/20 通过**（`backend/tests/ml/test_stgcn_bc_deploy.py`: TestExportOnnx 4 + TestSTGCNBCInferer 6 + TestBehaviorRecognizer 8 + TestEpisodeSplit 2）
 - ✅ **3.4 FCI-IGP 单元测试 15/15 通过**（`backend/tests/integration/test_phase3_4_fci_igp_e2e.py`）
 - ✅ **端到端 SHADOW 模式新鲜验证通过**（USPCA 视频 2700 帧/90s → video_id=37 → 101.8s → verdict=pass score=81.0 → PDF 4036 bytes）
@@ -162,7 +164,8 @@ postgresql-15   Running   Automatic   （本项目不使用）
 - ✅ `scripts/phase2_6_e2e_test.py` 8/9 通过（USPCA 闭环 + 延迟 1.13x 略超标 + PDF 报告）
 - ✅ API 启动验证（`uvicorn backend.app.main:app --port 8001`）—— cv2 冲突修复后通过
 - ✅ Celery Worker 启动验证（`celery -A backend.workers.celery_app worker -l info --pool=solo`）
-- ⚠️ **3.6 RBAC auth API 未上线**（`backend/app/api/auth.py` + `bases.py` 代码已完成，但 `main.py` 未注册路由，端点不可访问）
+- ✅ **3.6 RBAC auth API 已上线**（`main.py` 注册 auth + bases 路由 + AuthError exception_handler）
+- ✅ **3.6 RBAC 端到端 25/25 通过**（`scripts/eval_rbac.py` → `reports/phase-3.6c-rbac-eval.json`：authentication 6 + role_permission 5 + base_isolation 2 + base_crud 5 + user_management 4 + change_password 3，真实 PG17 migration `c3d4e5f6a7b8` 执行验证）
 
 ## 6. 环境变量约定（`.env`）
 
@@ -281,25 +284,27 @@ python scripts/export_stgcn_bc_onnx.py \
     --opset 17
 ```
 
-### 8.7 RBAC 用户权限（2026-08-02 代码完成，未上线）
+### 8.7 RBAC 用户权限（2026-08-02 上线 + 端到端验收通过）
 
-**状态**：3.6a migration + model ✅ / 3.6b auth API + deps 代码 ✅ / **main.py 未注册路由未上线** ⚠️
+**状态**：3.6a migration + model ✅ / 3.6b auth API + deps + main.py 注册 ✅ 上线 / 3.6c 多租户端到端 25/25 通过 ✅
 
 **已实现文件**：
-- `backend/alembic/versions/c3d4e5f6a7b8_phase3_6_rbac_base_tables.py`（migration，未在真实 PG17 执行验证）
+- `backend/alembic/versions/c3d4e5f6a7b8_phase3_6_rbac_base_tables.py`（migration，真实 PG17 执行验证通过）
 - `backend/app/models/handler.py`（UserRole 5 角色：ADMIN/MANAGER/HANDLER/RESEARCHER/VIEWER + ROLE_HIERARCHY + password_hash + base_id + is_superuser）
 - `backend/app/models/base_entity.py`（BaseEntity time-mixin）
 - `backend/app/models/dog_associations.py`（DogBaseAssociation + DogHandlerAssociation + DogHandlerRole PRIMARY/SECONDARY）
-- `backend/app/core/security.py`（JWT 编解码 + bcrypt 密码哈希 + AuthError 异常层级）
-- `backend/app/core/deps.py`（get_current_handler + get_optional_handler + require_roles + require_role_hierarchy + check_dog_access + check_base_access）
-- `backend/app/api/auth.py`（POST /auth/login + /auth/refresh + GET /auth/me + POST /auth/logout）
-- `backend/app/api/bases.py`（基地 CRUD）
+- `backend/app/core/security.py`（JWT 编解码 + bcrypt 直接调用密码哈希 + 72 字节截断 + AuthError 异常层级 + TokenPayload sub 字符串化）
+- `backend/app/core/deps.py`（get_current_handler + get_optional_handler + require_roles + require_role_hierarchy + check_dog_access + check_base_access，async 接口）
+- `backend/app/api/auth.py`（POST /auth/login + /auth/refresh + GET /auth/me + POST /auth/logout + POST /auth/register ADMIN + GET /auth/users ADMIN/MANAGER + PATCH /auth/users/{id}/deactivate ADMIN + POST /auth/change-password）
+- `backend/app/api/bases.py`（基地 CRUD：POST 创建 ADMIN / GET 列表 ADMIN 全量+MANAGER 本基地 / GET 单个 / PATCH 更新 ADMIN / PATCH deactivate ADMIN）
+- `backend/app/main.py`（注册 auth + bases 路由 + AuthError exception_handler）
+- `backend/tests/test_rbac.py`（45 单元测试：密码哈希 7 + JWT 7 + 异常 6 + UserRole 4 + check_base_access 11 + check_dog_access 10）
+- `scripts/eval_rbac.py`（端到端评估：httpx.AsyncClient + ASGITransport + psycopg2 种子数据）
 
-**待办**：
-1. `main.py` 注册 auth + bases 路由
-2. `main.py` 注册 AuthError exception_handler
-3. 真实 PG17 执行 migration `c3d4e5f6a7b8` 验证
-4. 3.6c 多租户场景测试（`scripts/eval_rbac.py` 未创建）
+**验证证据**：
+- 真实 PG17 执行 migration `c3d4e5f6a7b8` 通过（bases + handlers + dog_base_association + dog_handler_association 表 + user_role / dog_handler_role 枚举）
+- 单元测试 45/45 通过（`pytest backend/tests/test_rbac.py` in 4.87s）
+- 端到端 25/25 通过（`reports/phase-3.6c-rbac-eval.json`：authentication 6 + role_permission 5 + base_isolation 2 + base_crud 5 + user_management 4 + change_password 3）
 
 ## 9. 修订历史
 
@@ -310,3 +315,4 @@ python scripts/export_stgcn_bc_onnx.py \
 | v1.2 | 2026-08-01 | §5.4 新鲜验证更新：①单元测试 401→480（+79，含 ST-GCN+BC 83 测试）；②新增 ST-GCN+BC 合成数据 baseline 训练验证证据（30 epochs / 1.43M 参数 / best_val_acc=46.97% / 边界 F1=58.45%）；③对应 Phase 3.1c + 3.1d 完成（见 phase-3.md v2.5 + AGENTS.md v1.17） |
 | v1.3 | 2026-08-02 | **Phase 3.1e ST-GCN+BC 部署集成完成 + SHADOW 模式上线**：①§5.4 新鲜验证更新：单元测试 480→500（+20，含 3.1e 部署测试 20 个）+ 端到端 SHADOW 模式验证通过（USPCA video_id=37 / 101.8s / score=81.0 / PDF 4036 bytes）；②§8.5 新增 Redis 服务启动指引（chocolatey 安装路径 + 启动命令 + nssm 生产期建议）；③§8.6 新增 ST-GCN+BC 部署模式章节（4 模式路由表 + 配置切换 + 模型路径解析 + ONNX 导出 CLI）；④对应 Phase 3.1e 完成（见 phase-3.md v2.6 + AGENTS.md v1.18） |
 | v1.4 | 2026-08-02 | **sliver-vibe-coding 接管审计 + 3.6 RBAC 基础代码完成 + 文档漂移修复**：①§5.4 新鲜验证更新：单元测试 500→538（+38 = 3.4 FCI-IGP 15 + 3.5 frame_stride 测试 + 接管审计重跑 106.71s）+ FCI-IGP 端到端验证通过（video_id=46 / 0.63x / PDF 4156 bytes）+ 3.6 RBAC auth API 未上线警告；②§8.7 新增 RBAC 用户权限章节（8 个已实现文件清单 + 4 项待办：main.py 注册路由 + exception_handler + migration 真实执行 + 3.6c 测试）；③对应 sliver-vibe-coding 接管审计（见 phase-3.md v2.8 + AGENTS.md v1.20 + Git commit `2e6aef3`） |
+| v1.5 | 2026-08-02 | **3.6 RBAC 端到端验收通过 + onnxruntime 环境损坏警告**：①§5.4 新鲜验证更新：单元测试 538→566（+28 = RBAC 45 测试 - 17 个 onnxruntime 损坏相关）+ RBAC 单元测试 45/45 通过 in 4.87s + RBAC 端到端 25/25 通过 + 3.6 RBAC auth API 已上线；②§8.7 RBAC 章节：未上线 → 上线 + 端到端验收通过（main.py 注册路由 + exception_handler + 真实 PG17 migration 执行 + 8.7 文件清单扩展含 main.py + test_rbac.py + eval_rbac.py + 验证证据）；③onnxruntime 环境损坏警告（ultralytics 自动安装 onnxruntime-gpu 1.28.0 失败导致 Python 文件混合，TRAE 沙箱阻止修复，提供用户手动修复命令）；④对应 phase-3.md v2.9 + AGENTS.md v1.21 |

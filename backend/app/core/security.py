@@ -4,7 +4,7 @@ Owner: 后端开发（见 AGENTS.md §2.2）
 Phase: 3.6b
 
 提供:
-    - 密码哈希/验证（passlib CryptContext bcrypt）
+    - 密码哈希/验证（bcrypt 直接调用，不依赖 passlib）
     - JWT 创建/解析（PyJWT）
     - Token payload 数据类
     - 异常类型（AuthError 子类）
@@ -21,8 +21,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
+import bcrypt
 import jwt
-from passlib.context import CryptContext
 
 from backend.app.core.config import settings
 
@@ -30,22 +30,36 @@ logger = logging.getLogger(__name__)
 
 
 # ============================================================
-# 密码哈希
+# 密码哈希（直接使用 bcrypt，避免 passlib 1.7.4 + bcrypt 5.x 不兼容）
 # ============================================================
 
-# bcrypt cost factor 由 settings 控制（默认 12）
-_pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto",
-    bcrypt__rounds=settings.auth_bcrypt_rounds,
-)
+# bcrypt 限制：密码最长 72 字节。超过则截断（与 passlib legacy 行为一致）。
+_BCRYPT_MAX_BYTES = 72
+
+
+def _truncate_password(plain: str) -> bytes:
+    """将密码编码为 UTF-8 字节并截断至 bcrypt 上限 72 字节。"""
+    return plain.encode("utf-8")[:_BCRYPT_MAX_BYTES]
 
 
 def hash_password(plain: str) -> str:
-    """明文密码 → bcrypt 哈希。"""
+    """明文密码 → bcrypt 哈希字符串。
+
+    Args:
+        plain: 明文密码
+
+    Returns:
+        bcrypt 哈希字符串（含 salt + cost factor），可存入 DB。
+
+    Raises:
+        ValueError: 密码为空
+    """
     if not plain:
         raise ValueError("密码不能为空")
-    return _pwd_context.hash(plain)
+    pwd_bytes = _truncate_password(plain)
+    salt = bcrypt.gensalt(rounds=settings.auth_bcrypt_rounds)
+    hashed = bcrypt.hashpw(pwd_bytes, salt)
+    return hashed.decode("utf-8")
 
 
 def verify_password(plain: str, hashed: Optional[str]) -> bool:
@@ -62,7 +76,9 @@ def verify_password(plain: str, hashed: Optional[str]) -> bool:
         # 历史数据无密码字段，禁止登录
         return False
     try:
-        return _pwd_context.verify(plain, hashed)
+        pwd_bytes = _truncate_password(plain)
+        hashed_bytes = hashed.encode("utf-8")
+        return bcrypt.checkpw(pwd_bytes, hashed_bytes)
     except Exception as e:
         logger.warning(f"密码验证异常: {e}", exc_info=False)
         return False
@@ -85,8 +101,9 @@ class TokenPayload:
     iat: datetime  # 签发时间
 
     def to_dict(self) -> dict:
+        # JWT 规范要求 sub 为字符串；PyJWT 2.x 解码时强制校验
         return {
-            "sub": self.sub,
+            "sub": str(self.sub),
             "role": self.role,
             "base_id": self.base_id,
             "is_superuser": self.is_superuser,

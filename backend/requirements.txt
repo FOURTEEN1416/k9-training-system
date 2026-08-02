@@ -40,6 +40,11 @@ httpx==0.28.1
 python-dateutil==2.9.0.post0
 tqdm==4.67.1
 
+# === 鉴权（Phase 3.6b RBAC） ===
+# 注：不使用 passlib（1.7.4 与 bcrypt 5.x 不兼容，passlib 已停止维护）
+bcrypt==5.0.0
+PyJWT==2.13.0
+
 # === 测试 ===
 pytest==8.3.4
 pytest-asyncio==0.25.0
