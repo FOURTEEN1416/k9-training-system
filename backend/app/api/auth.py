@@ -18,7 +18,7 @@ from __future__ import annotations
 import logging
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -95,12 +95,12 @@ async def get_me(me: CurrentHandler) -> Handler:
     return me
 
 
-@router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/change-password", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)
 async def change_password(
     payload: PasswordChangeRequest,
     me: CurrentHandler,
     db: DbSession,
-) -> None:
+) -> Response:
     """修改当前用户密码。
 
     要求:
@@ -121,6 +121,7 @@ async def change_password(
     me.password_hash = hash_password(payload.new_password)
     await db.flush()
     logger.info(f"用户 {me.id} ({me.email}) 修改密码")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post(
@@ -304,12 +305,12 @@ async def update_user(
     return handler
 
 
-@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)
 async def deactivate_user(
     user_id: int,
     db: DbSession,
     me: Annotated[Handler, Depends(require_role_hierarchy(UserRole.ADMIN))],
-) -> None:
+) -> Response:
     """禁用用户（软删除，仅 ADMIN）。
 
     不可禁用自己；不可禁用其他超管（防误操作）。
@@ -327,3 +328,4 @@ async def deactivate_user(
     handler.is_active = False
     await db.flush()
     logger.info(f"用户 {me.id} 禁用用户 {user_id}")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

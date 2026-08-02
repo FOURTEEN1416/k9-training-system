@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -60,11 +60,12 @@ async def update_dog(dog_id: int, payload: DogUpdate, db: DbSession) -> Dog:
     return dog
 
 
-@router.delete("/{dog_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_dog(dog_id: int, db: DbSession) -> None:
+@router.delete("/{dog_id}", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)
+async def delete_dog(dog_id: int, db: DbSession) -> Response:
     """删除犬只档案。"""
     dog = await db.get(Dog, dog_id)
     if dog is None:
         raise HTTPException(status_code=404, detail=f"Dog {dog_id} not found")
     await db.delete(dog)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 

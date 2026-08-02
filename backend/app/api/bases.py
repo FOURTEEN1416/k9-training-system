@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 from typing import Annotated, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -151,12 +151,12 @@ async def update_base(
     return base
 
 
-@router.delete("/{base_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{base_id}", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)
 async def deactivate_base(
     base_id: int,
     db: DbSession,
     me: AdminOnly,
-) -> None:
+) -> Response:
     """禁用基地（软删除，仅 ADMIN）。
 
     设 is_active=False 而非物理删除，保留外键完整性。
@@ -168,3 +168,4 @@ async def deactivate_base(
     base.is_active = False
     await db.flush()
     logger.info(f"用户 {me.id} 禁用基地 {base_id}")
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

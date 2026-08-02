@@ -1,7 +1,7 @@
 {
   "phase": "3.6c",
   "test_name": "RBAC 端到端评估",
-  "timestamp": "2026-08-02T04:04:17.273654+00:00",
+  "timestamp": "2026-08-02T05:00:59.994903+00:00",
   "overall": "pass",
   "summary": {
     "total_suites": 6,

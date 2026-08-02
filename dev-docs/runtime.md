@@ -1,7 +1,7 @@
 # Runtime Baseline — 运行时基线 Truth
 
 > Truth source: Phase 0 启动时实测形成；ADR 0002 修正后基线
-> 状态: ✅ Phase 0 基线已建立（v1.5，2026-08-02 3.6 RBAC 端到端验收通过 + 566 单元测试新鲜验证，onnxruntime 环境损坏预存问题待用户手动修复）
+> 状态: ✅ Phase 0 基线已建立（v1.6，2026-08-02 onnxruntime 环境修复 + FastAPI 204 路由兼容性修复 + 631 单元测试 0 失败）
 > Owner: Phase 0 基础设施
 > 修改触发: 运行时栈任何组件版本变更、硬件变更、服务端口变更
 
@@ -148,10 +148,11 @@ postgresql-17   Running   Automatic   ✅
 postgresql-15   Running   Automatic   （本项目不使用）
 ```
 
-### 5.4 新鲜验证（2026-08-02，3.6 RBAC 端到端验收通过 + 566 单元测试）
+### 5.4 新鲜验证（2026-08-02，onnxruntime 修复 + FastAPI 204 兼容性修复 + 631 单元测试 0 失败）
 
-- ✅ **566 单元测试通过** + 2 skipped + 5 failed + 12 errors in 194.49s（`pytest backend/tests/`，较 v1.4 的 538 +28 = RBAC 45 测试 - 17 个 onnxruntime 损坏相关）
-  - ⚠️ **onnxruntime 环境损坏（预存问题，与 RBAC 无关）**：ultralytics 自动安装 onnxruntime-gpu 1.28.0 失败（DLL 拒绝访问），导致 onnxruntime Python 文件 1.28.0 与 _pybind_state.pyd 1.20.1 混合，5 failed + 12 errors 全部为 `AttributeError: module 'onnxruntime.capi._pybind_state' has no attribute 'OrtCompileApiFlags'`。TRAE 沙箱阻止卸载/重装（系统 Python 受保护）。**修复方法**：用户在系统 PowerShell（管理员）执行 `pip uninstall onnxruntime -y && pip install onnxruntime==1.20.1`
+- ✅ **631 单元测试通过** + 2 skipped + 0 failed in 98.40s（`pytest backend/tests/`，较 v1.5 的 566 +65 = 3.6c RBAC 端到端脚本进入测试 + onnxruntime 损坏 17 项恢复 + FastAPI 204 修复）
+  - ✅ **onnxruntime 环境已修复**：venv 中仅 onnxruntime-gpu 1.20.1（与 _pybind_state.pyd 1.20.1 版本一致），之前报告的 1.28.0/1.20.1 混合已不存在。runtime.md v1.5 提到的"用户手动修复"步骤无需执行
+  - ✅ **FastAPI 0.115.6 204 兼容性修复**：4 个 204 路由（auth.py `/change-password` + `/users/{id}` DELETE + bases.py `/{id}` DELETE + dogs.py `/{id}` DELETE）添加 `response_class=Response` + 返回类型 `-> None` 改为 `-> Response` + 显式 `return Response(status_code=204)`，解决 `AssertionError: Status code 204 must not have a response body`
 - ✅ **RBAC 单元测试 45/45 通过**（`backend/tests/test_rbac.py` in 4.87s：TestPasswordHash 7 + TestJWT 7 + TestAuthErrors 6 + TestUserRole 4 + TestCheckBaseAccess 11 + TestCheckDogAccess 10）
 - ✅ **3.1e 部署单元测试 20/20 通过**（`backend/tests/ml/test_stgcn_bc_deploy.py`: TestExportOnnx 4 + TestSTGCNBCInferer 6 + TestBehaviorRecognizer 8 + TestEpisodeSplit 2）
 - ✅ **3.4 FCI-IGP 单元测试 15/15 通过**（`backend/tests/integration/test_phase3_4_fci_igp_e2e.py`）
@@ -316,3 +317,4 @@ python scripts/export_stgcn_bc_onnx.py \
 | v1.3 | 2026-08-02 | **Phase 3.1e ST-GCN+BC 部署集成完成 + SHADOW 模式上线**：①§5.4 新鲜验证更新：单元测试 480→500（+20，含 3.1e 部署测试 20 个）+ 端到端 SHADOW 模式验证通过（USPCA video_id=37 / 101.8s / score=81.0 / PDF 4036 bytes）；②§8.5 新增 Redis 服务启动指引（chocolatey 安装路径 + 启动命令 + nssm 生产期建议）；③§8.6 新增 ST-GCN+BC 部署模式章节（4 模式路由表 + 配置切换 + 模型路径解析 + ONNX 导出 CLI）；④对应 Phase 3.1e 完成（见 phase-3.md v2.6 + AGENTS.md v1.18） |
 | v1.4 | 2026-08-02 | **sliver-vibe-coding 接管审计 + 3.6 RBAC 基础代码完成 + 文档漂移修复**：①§5.4 新鲜验证更新：单元测试 500→538（+38 = 3.4 FCI-IGP 15 + 3.5 frame_stride 测试 + 接管审计重跑 106.71s）+ FCI-IGP 端到端验证通过（video_id=46 / 0.63x / PDF 4156 bytes）+ 3.6 RBAC auth API 未上线警告；②§8.7 新增 RBAC 用户权限章节（8 个已实现文件清单 + 4 项待办：main.py 注册路由 + exception_handler + migration 真实执行 + 3.6c 测试）；③对应 sliver-vibe-coding 接管审计（见 phase-3.md v2.8 + AGENTS.md v1.20 + Git commit `2e6aef3`） |
 | v1.5 | 2026-08-02 | **3.6 RBAC 端到端验收通过 + onnxruntime 环境损坏警告**：①§5.4 新鲜验证更新：单元测试 538→566（+28 = RBAC 45 测试 - 17 个 onnxruntime 损坏相关）+ RBAC 单元测试 45/45 通过 in 4.87s + RBAC 端到端 25/25 通过 + 3.6 RBAC auth API 已上线；②§8.7 RBAC 章节：未上线 → 上线 + 端到端验收通过（main.py 注册路由 + exception_handler + 真实 PG17 migration 执行 + 8.7 文件清单扩展含 main.py + test_rbac.py + eval_rbac.py + 验证证据）；③onnxruntime 环境损坏警告（ultralytics 自动安装 onnxruntime-gpu 1.28.0 失败导致 Python 文件混合，TRAE 沙箱阻止修复，提供用户手动修复命令）；④对应 phase-3.md v2.9 + AGENTS.md v1.21 |
+| v1.6 | 2026-08-02 | **onnxruntime 环境自然修复 + FastAPI 204 路由兼容性修复 + 631 单元测试 0 失败**：①§5.4 新鲜验证：566→631（+65 = 17 项 onnxruntime 错误恢复 + FastAPI 204 修复后偶发跨测试污染消失 + RBAC 端到端脚本计入）+ 0 failed + 0 errors；②**onnxruntime 已修复**：venv 中仅 onnxruntime-gpu 1.20.1，v1.5 警告的"用户手动修复"步骤无需执行；③**FastAPI 0.115.6 204 路由修复**：4 个 204 路由（auth.py change-password + users DELETE + bases.py DELETE + dogs.py DELETE）添加 `response_class=Response` + `-> Response` 返回类型 + 显式 `return Response(status_code=204)`；④RBAC 端到端 25/25 重测通过（无 204 副作用） |
