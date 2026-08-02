@@ -24,6 +24,12 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '历史记录', icon: 'time' },
   },
   {
+    path: '/compare',
+    name: 'compare',
+    component: () => import('@/views/CompareView.vue'),
+    meta: { title: '训练对比', icon: 'stats-chart' },
+  },
+  {
     path: '/admin',
     name: 'admin',
     component: () => import('@/views/AdminView.vue'),

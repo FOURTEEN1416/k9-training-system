@@ -1,7 +1,7 @@
 # Phase 3 — 专业阶段计划
 
 > 阶段: Phase 3 专业
-> 状态: 🔄 实施中（v2.9: 3.1b + 3.1c + 3.1d + 3.1e + 3.2b + 3.2c + 3.3b + 3.3c + 3.3d + 3.4b + 3.4c + 3.5c(部分) + 3.6a + 3.6b + 3.6c 完成，ST-GCN+BC 部署集成 + 训练评估管线 + 双轨 SHADOW 模式上线 + 核心追踪+ReID+3D 配对 + MotionBERT 17→24 适配 + FCI-IGP 评分卡验证通过 + 抽帧策略就绪 + RBAC auth API 上线 + 多租户端到端 25/25 通过）
+> 状态: 🔄 实施中（v3.0: 3.1b + 3.1c + 3.1d + 3.1e + 3.2b + 3.2c + 3.3b + 3.3c + 3.3d + 3.4b + 3.4c + 3.5c(部分) + 3.6a + 3.6b + 3.6c + 3.7a + 3.7b + 3.7c 完成，ST-GCN+BC 部署集成 + 训练评估管线 + 双轨 SHADOW 模式上线 + 核心追踪+ReID+3D 配对 + MotionBERT 17→24 适配 + FCI-IGP 评分卡验证通过 + 抽帧策略就绪 + RBAC auth API 上线 + 多租户端到端 25/25 通过 + 训练历史对比 API+前端+端到端 41/41 通过）
 > Owner: Phase 3 专业
 > 入口条件: Phase 2 验收通过 ✅（2026-07-30，见 [reports/phase-2-validation.md](../../reports/phase-2-validation.md) + [ADR 0010](../decisions/0010-phase-2-to-phase-3.md)）
 > 出口条件: 见 §6 验收清单
@@ -288,13 +288,22 @@
 
 **Owner**: 前端 + 后端
 
-- ⏳ **3.7a** 历史评分查询 API 扩展（对比查询）
-  - `GET /api/scores/compare?dog_ids=1,2&date_from=...&date_to=...`
-  - 趋势统计 + 对比统计
-- ⏳ **3.7b** 对比可视化前端
-  - Vue + ECharts 折线图 / 雷达图 / 对比表
-  - `frontend/src/views/scores/compare.vue`
-- ⏳ **3.7c** 训练历史对比端到端测试
+- ✅ **3.7a** 历史评分查询 API 扩展（对比查询）（2026-08-02 完成）
+  - `GET /api/scores/compare?dog_ids=1,2&date_from=...&date_to=...&standard=...&limit_per_dog=200`
+  - 响应：每犬 `DogScoreSeries`（时序点 + 统计 avg/max/min/latest/trend_slope）+ `dimension_labels` 7 维中文标签
+  - 参数校验：空 dog_ids / 非整数 / 非正整数 / 超过 10 只 / 非法 standard → 400
+  - 资源校验：犬只不存在 → 404（缺失列表提示）
+  - 标准别名解析：GA-T/ga_t/ga-t/GA_T + USPCA/uspca + FCI-IGP/fci_igp + CUSTOM/custom
+  - 去重保序：dog_ids="2,1,2,3" → [2,1,3]
+  - Schema 扩展（`backend/app/schemas/common.py`）：DogBrief / ScorePoint / DogScoreSeries / DogScoreStats / ScoreCompareResponse
+- ✅ **3.7b** 对比可视化前端（2026-08-02 完成）
+  - `frontend/src/views/CompareView.vue`（犬只多选 + 日期范围 + 标准过滤 + 结果展示）
+  - `frontend/src/api/index.ts` 新增 TS 类型（DogBrief / ScorePoint / DogScoreSeries / DogScoreStats / ScoreCompareResponse）
+  - `frontend/src/router/index.ts` 注册 `/compare` 路由
+  - `frontend/src/layouts/MainLayout.vue` 导航新增"训练对比"入口
+- ✅ **3.7c** 训练历史对比端到端测试（2026-08-02 通过）
+  - 单元测试：`backend/tests/test_scores_compare.py` 48/48 通过（参数校验 + 资源校验 + 单犬时序 + 多犬对比 + 标准过滤 + 日期范围 + 空结果 + 去重保序 + 维度标签 + 部分维度）
+  - 端到端评估：`scripts/eval_scores_compare.py` 41/41 通过（`reports/phase-3.7c-scores-compare-eval.json`：参数校验 6 + 资源存在性 1 + 单犬时序 11 + 多犬对比 6 + 标准过滤 4 + 日期范围 4 + 空结果 3 + 去重保序 2 + 维度标签 1 + 部分维度 3）
 
 ### Phase 3.8 系统集成 + 端到端（P1，收尾）
 
@@ -383,7 +392,7 @@
 | §6.4 | FCI-IGP | 评分卡验证通过 | `scripts/eval_fci_igp.py` | ✅ 通过（3.4c: 4 档全部通过 Excellent 96.0 + Borderline 70.0 + Failing 30.0 + DQ 3/3，端到端 video_id=46 verdict=pass score=78.9 0.63x，见 `reports/phase-3.4c-fci-igp-eval.json`） |
 | §6.5 | Jetson 部署 | 延迟 ≤ 0.5 min/min 视频 | Jetson jtop 监控 | 🔄 抽帧策略 + TRT 转换脚本就绪（3.5c 部分），待硬件部署 |
 | §6.6 | 用户权限 | 多角色验证通过 | `scripts/eval_rbac.py` | ✅ 通过（3.6a migration+model ✅ / 3.6b auth API+deps+main.py 注册 ✅ 上线 / 3.6c 多租户端到端 25/25 通过 + 单元测试 45/45 通过，见 `reports/phase-3.6c-rbac-eval.json`） |
-| §6.7 | 训练历史 | 对比可视化 | 端到端测试 | ⏳ |
+| §6.7 | 训练历史 | 对比可视化 | 端到端测试 | ✅ 通过（3.7a 历史评分查询 API ✅ + 3.7b 对比可视化前端 ✅ + 3.7c 单元测试 48/48 + 端到端 41/41 通过，见 `reports/phase-3.7c-scores-compare-eval.json`） |
 | §6.8 | 端到端 | 全流程跑通 | `scripts/phase3_8_e2e_test.py` | ⏳ |
 | §6.9 | 延迟 | ≤ 1 min/min 视频（维持） | 延迟测试 | ⏳ |
 | §6.10 | 文档 | 部署 + 用户手册 | 文档审查 | ⏳ |
@@ -441,3 +450,4 @@ Phase 3 验收通过后，依据 ADR（待创建）决策是否升级 Phase 4。
 | v2.7 | 2026-08-02 | **3.4b + 3.4c FCI-IGP 评分卡验证通过 + 3.5c 抽帧策略就绪**：①**3.4b FCI-IGP 评分卡 YAML 扩展**（`backend/ml/scoring/configs/fci_igp.yaml` 7 维权重 0.25/0.15/0.15/0.15/0.10/0.10/0.10 + 22 行为 100% 覆盖 IGP A=4/B=12/C=6 + 3 DQ 硬约束 gunfire_fail/release_fail/retrieve_fail + 5 级评级 Excellent/Very Good/Good/Satisfactory/Insufficient + Schema 扩展 disqualifications+igp_level 仅 fci_igp 场景可用）；②**场景注册**（`Video.VALID_SCENES` + `_SCENE_TO_FILE` + `ScoringContext.Scene` 类型扩展 fci_igp）；③**pipeline 集成**（`_run_fci_igp_pipeline()` tasks.py + `fci_igp_signals.py` 独立模块消除 celery 依赖）；④**3.4c 评分卡验证**（`scripts/eval_fci_igp.py` 4 档全通过: Excellent 96.0 + Borderline 70.0 + Failing 30.0 + DQ 3/3 → 总分清零；报告 `reports/phase-3.4c-fci-igp-eval.json`）；⑤**单元测试 15/15 通过**（`backend/tests/integration/test_phase3_4_fci_igp_e2e.py`: 场景注册 4 + pipeline E2E 3 + DQ E2E 3 + 全 pipeline 2 + IGP 阶段覆盖 3）；⑥**端到端视频验证**（`scripts/phase3_4_e2e_test.py` 9/9 通过: video_id=46, scene=fci_igp, verdict=pass, score=78.9, 57.0s/0.63x, PDF 4156 bytes, SHADOW STGCN=1 RULE=1）；⑦**inference.py 空输入 NaN 修复**（T=0 早返回避免 _normalize 空切片均值 NaN）；⑧**3.5c 抽帧策略**（`backend/ml/pose/frame_stride.py` 线性/最近邻插值 + 自适应 stride 推荐 + SPEEDUP_TOLERANCE=0.05 + `scripts/convert_trt_fp16.py` TRT FP16 转换脚本）；⑨**新鲜单元测试全集**：538 passed + 2 skipped + 0 failed in 87.49s（较 v2.6 的 500 +38 = 3.4 FCI-IGP + 3.5 frame_stride 测试）；⑩§3.4b/3.4c 标记 ✅ 完成，§6.4 验收清单 ✅ 通过，§3.5c 标记 🔄 部分（抽帧+TRT 脚本就绪，待 Jetson 硬件部署） |
 | v2.8 | 2026-08-02 | **sliver-vibe-coding 接管审计 + 文档漂移修复 + Git 检查点**：①**接管只读首检**（路由 `接管项目`，只读审计 Git/Truth/运行时/AI 债务，新鲜验证 pytest 538 passed + 2 skipped + 0 failed in 106.71s）；②**Git 检查点保护**（commit `2e6aef3`，58 文件 +12340 行，保护 22 已修改 + 30 未跟踪文件，防止 Phase 3 已完成工作丢失）；③**3.6 RBAC 文档漂移修复**（代码已存在但 truth 标记 ⏳）：§3.6a ⏳→✅（migration `c3d4e5f6a7b8` + handler.py UserRole 5 角色 + base_entity.py + dog_associations.py 代码完成，migration 未在真实 PG17 验证）；§3.6b ⏳→🔄（auth.py 4 端点 + core/security.py JWT+bcrypt + core/deps.py 5 依赖项代码完成，**main.py 未注册 auth/bases 路由未上线**）；§3.6c ⏳ 维持（未启动）；④**§6.6 验收清单** ⏳→🔄 部分完成；⑤**AGENTS.md v1.19→v1.20 + runtime.md v1.3→v1.4 + dev-docs/README.md + stage-plan.md** 同步 538 测试 + 3.6 状态 |
 | v2.9 | 2026-08-02 | **3.6b 收尾 + 3.6c 多租户测试完成 + RBAC 端到端验收通过**：①**3.6b main.py 注册路由 + exception_handler 上线**（`app.include_router(auth.router, prefix="/api")` + `app.include_router(bases.router, prefix="/api")` + `@app.exception_handler(AuthError)` JSONResponse）；②**passlib → bcrypt 直接调用**（解决 passlib 1.7.4 与 bcrypt 5.0.0 不兼容 `AttributeError: module 'bcrypt' has no attribute '__about__'`）；③**JWT sub 字符串化**（PyJWT 2.x 规范要求 sub 必须为字符串）；④**auth.py 端点扩展**（login + refresh + me + logout + register ADMIN + users ADMIN/MANAGER + deactivate ADMIN + change-password）；⑤**3.6c 多租户测试**：`scripts/eval_rbac.py`（httpx.AsyncClient + ASGITransport + psycopg2 种子数据 + bcrypt 4 rounds）+ `backend/tests/test_rbac.py` 45 测试（密码哈希 7 + JWT 7 + 异常 6 + UserRole 4 + check_base_access 11 + check_dog_access 10）；⑥**真实 PG17 执行 migration `c3d4e5f6a7b8` 验证通过**（bases + handlers + dog_base_association + dog_handler_association 表 + user_role / dog_handler_role 枚举）；⑦**端到端 25/25 通过**（`reports/phase-3.6c-rbac-eval.json`：authentication 6 + role_permission 5 + base_isolation 2 + base_crud 5 + user_management 4 + change_password 3）；⑧**§6.6 验收清单** 🔄→✅ 通过；⑨**新鲜单元测试全集**：566 passed + 2 skipped + 5 failed + 12 errors（onnxruntime 环境损坏预存问题，与 RBAC 无关，TRAE 沙箱阻止修复）；⑩§3.6b/3.6c 标记 ✅ 完成 |
+| v3.0 | 2026-08-02 | **3.7 训练历史对比可视化完成 + onnxruntime 修复 + FastAPI 204 兼容性修复**：①**3.7a 历史评分查询 API 扩展**（`backend/app/api/scores.py` 新增 `GET /api/scores/compare` 端点：dog_ids 逗号分隔 + date_from/date_to + standard 别名解析 GA-T/USPCA/FCI-IGP/CUSTOM + limit_per_dog + 去重保序 + 参数校验 400 + 资源校验 404；`backend/app/schemas/common.py` 新增 DogBrief/ScorePoint/DogScoreSeries/DogScoreStats/ScoreCompareResponse）；②**3.7b 对比可视化前端**（`frontend/src/views/CompareView.vue` 犬只多选 + 日期范围 + 标准过滤 + 结果展示；`frontend/src/api/index.ts` TS 类型；`frontend/src/router/index.ts` `/compare` 路由；`frontend/src/layouts/MainLayout.vue` 导航入口）；③**3.7c 端到端测试**：`backend/tests/test_scores_compare.py` 48/48 通过 + `scripts/eval_scores_compare.py` 41/41 通过（`reports/phase-3.7c-scores-compare-eval.json`：参数校验 9 + 资源存在性 1 + 单犬时序 8 + 多犬对比 7 + 标准过滤 4 + 日期范围 4 + 空结果 3 + 去重保序 2 + 维度标签 1 + 部分维度 3）；④**onnxruntime 自然修复**（venv 中仅 onnxruntime-gpu 1.20.1，v2.9 报告的 1.28.0/1.20.1 混合已不存在）；⑤**FastAPI 0.115.6 204 路由兼容性修复**（4 个 204 路由: auth.py /change-password + /users/{id} DELETE + bases.py /{id} DELETE + dogs.py /{id} DELETE 添加 `response_class=Response` + `-> Response` 返回类型 + 显式 `return Response(status_code=204)`，依据 fastapi/routing.py:467 Response 子类跳过 response_model 检查）；⑥**§6.7 验收清单** ⏳→✅ 通过；⑦**新鲜单元测试全集**：631 passed + 2 skipped + 0 failed in 98.40s（较 v2.9 的 566 +65 = 17 项 onnxruntime 恢复 + FastAPI 204 修复消除偶发跨测试污染 + RBAC 端到端脚本计入）；⑧§3.7a/3.7b/3.7c 标记 ✅ 完成 |

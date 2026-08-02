@@ -184,6 +184,59 @@ class ScoreRead(ORMModel):
     created_at: datetime
 
 
+# === Phase 3.7a 训练历史对比 ===
+
+class DogBrief(BaseModel):
+    """犬只简要信息（对比响应内嵌）。"""
+
+    id: int
+    name: str
+    breed: Optional[str] = None
+
+
+class ScorePoint(BaseModel):
+    """评分时序点（按时间排序）。"""
+
+    score_id: int
+    video_id: int
+    created_at: datetime
+    overall: float
+    standard: str
+    dimensions: dict[str, float]  # 仅包含非 None 的维度
+
+
+class DogScoreSeries(BaseModel):
+    """单犬评分时间序列。"""
+
+    dog: DogBrief
+    points: list[ScorePoint]
+
+
+class DogScoreStats(BaseModel):
+    """单犬评分统计。"""
+
+    dog: DogBrief
+    count: int
+    avg_overall: float
+    max_overall: float
+    min_overall: float
+    latest_overall: Optional[float] = None
+    trend_slope: Optional[float] = None  # overall 随时间变化的线性回归斜率（正=提升）
+    avg_dimensions: dict[str, float]  # 各维度平均值（仅包含至少一个非 None 值的维度）
+
+
+class ScoreCompareResponse(BaseModel):
+    """训练历史对比查询响应。"""
+
+    dogs: list[DogBrief]
+    series: list[DogScoreSeries]  # 每犬一条时序
+    stats: list[DogScoreStats]  # 每犬一条统计
+    dimension_labels: dict[str, str]  # 维度 key → 中文标签
+    date_from: Optional[datetime] = None
+    date_to: Optional[datetime] = None
+    standard: Optional[str] = None
+
+
 # === ML 模型管理 ===
 
 class ModelCreate(ORMModel):

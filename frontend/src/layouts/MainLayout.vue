@@ -19,6 +19,7 @@ import {
   TimeOutline,
   SettingsOutline,
   RefreshOutline,
+  StatsChartOutline,
 } from '@vicons/ionicons5'
 import { useAppStore } from '@/stores/app'
 
@@ -35,6 +36,7 @@ const menuOptions: MenuOption[] = [
   { label: '视频上传', key: '/upload', icon: renderIcon(CloudUploadOutline) },
   { label: '评分报告', key: '/report', icon: renderIcon(DocumentTextOutline) },
   { label: '历史记录', key: '/history', icon: renderIcon(TimeOutline) },
+  { label: '训练对比', key: '/compare', icon: renderIcon(StatsChartOutline) },
   { label: '系统管理', key: '/admin', icon: renderIcon(SettingsOutline) },
 ]
 
@@ -43,6 +45,7 @@ const activeKey = computed(() => {
   if (path.startsWith('/report')) return '/report'
   if (path.startsWith('/upload')) return '/upload'
   if (path.startsWith('/history')) return '/history'
+  if (path.startsWith('/compare')) return '/compare'
   if (path.startsWith('/admin')) return '/admin'
   return path
 })

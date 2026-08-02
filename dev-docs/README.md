@@ -15,8 +15,8 @@
 | `function-list.md` | 功能清单与复杂功能文档索引 | ✅ |
 | `technical-selection.md` | 技术选型 truth（栈+框架+架构组合） | ✅ |
 | `architecture.md` | 项目架构（拓扑、owner map、模块边界） | ✅（部分漂移，待同步 Phase 2/3 实际结构） |
-| `runtime.md` | 运行时基线（包管理器、版本、启动命令） | ✅ Phase 0 已建立（v1.5，566 单元测试新鲜验证 + 3.6 RBAC 端到端验收通过） |
-| `stage-plan.md` | 大阶段计划（Phase 0-4） | ✅（v1.3，Phase 3 v2.9 状态同步） |
+| `runtime.md` | 运行时基线（包管理器、版本、启动命令） | ✅ Phase 0 已建立（v1.6，631 单元测试新鲜验证 + onnxruntime 修复 + FastAPI 204 兼容性修复 + 3.7 训练历史对比端到端 41/41 通过） |
+| `stage-plan.md` | 大阶段计划（Phase 0-4） | ✅（v1.3，Phase 3 v3.0 状态同步） |
 
 ### 阶段 truth
 | 文档 | 用途 | 状态 |
@@ -24,7 +24,7 @@
 | `stages/phase-0.md` | Phase 0 基础设施计划 | ✅ 完成（2026-07-26 验收） |
 | `stages/phase-1.md` | Phase 1 MVP 计划 | ✅ 完成（2026-07-28 验收，带条件） |
 | `stages/phase-2.md` | Phase 2 核心计划 | ✅ 完成（2026-07-30 验收，v2.7） |
-| `stages/phase-3.md` | Phase 3 专业计划 | 🔄 实施中（v2.9：3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a/b/c 完成） |
+| `stages/phase-3.md` | Phase 3 专业计划 | 🔄 实施中（v3.0：3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a/b/c + 3.7a/b/c 完成） |
 
 ### 设计/质量/验收 truth
 > `design/` / `quality/` / `acceptance/` 目录**尚未建立**。原 README 列为占位条目但实际未创建——Phase 0-2 期间验收证据统一归档到 `reports/phase-{N}-validation.md`。如需建立独立 truth 目录，Phase 3+ 启动时按需创建。
@@ -89,5 +89,5 @@
 - ✅ Phase 0 基础设施完成（2026-07-26 验收）
 - ✅ Phase 1 MVP 完成（2026-07-28 验收，带条件）
 - ✅ Phase 2 核心完成（2026-07-30 验收，v2.7 + ADR 0010）
-- 🔄 Phase 3 专业实施中（v2.9：3.1b/c/d/e ST-GCN+BC + 3.2b/c 多犬追踪+ReID + 3.3b/c/d 3D 姿态 + 3.4b/c FCI-IGP + 3.5c 抽帧部分 + 3.6a/b/c RBAC 端到端验收通过 25/25，Git 检查点 `2e6aef3`）
+- 🔄 Phase 3 专业实施中（v3.0：3.1b/c/d/e ST-GCN+BC + 3.2b/c 多犬追踪+ReID + 3.3b/c/d 3D 姿态 + 3.4b/c FCI-IGP + 3.5c 抽帧部分 + 3.6a/b/c RBAC 端到端验收通过 25/25 + 3.7a/b/c 训练历史对比端到端 41/41 通过，Git 检查点 `2e6aef3`）
 - ⏳ Phase 4 前沿按需

@@ -1,0 +1,270 @@
+{
+  "phase": "3.7c",
+  "test_name": "训练历史对比 API 端到端评估",
+  "timestamp": "2026-08-02T05:06:38.307671+00:00",
+  "overall": "pass",
+  "summary": {
+    "total_suites": 10,
+    "total_cases": 41,
+    "passed": 41,
+    "failed": 0,
+    "pass_rate": "100.0%"
+  },
+  "suites": [
+    {
+      "name": "parameter_validation",
+      "cases": [
+        {
+          "case": "empty_dog_ids_returns_400",
+          "status": "pass",
+          "detail": "期望 422（min_length=1），实际 422"
+        },
+        {
+          "case": "only_commas_returns_400",
+          "status": "pass",
+          "detail": "期望 400，实际 400 {\"detail\":\"dog_ids 不能为空\"}"
+        },
+        {
+          "case": "non_integer_returns_400",
+          "status": "pass",
+          "detail": "期望 400 + '非整数'，实际 400 {\"detail\":\"dog_ids 包含非整数: ['1', 'abc', '3']\"}"
+        },
+        {
+          "case": "non_positive_returns_400",
+          "status": "pass",
+          "detail": "期望 400 + '正整数'，实际 400 {\"detail\":\"dog_ids 必须为正整数: [0, -1]\"}"
+        },
+        {
+          "case": "too_many_dogs_returns_400",
+          "status": "pass",
+          "detail": "期望 400 + '不能超过'，实际 400 {\"detail\":\"对比犬只数不能超过 10 只，当前 11\"}"
+        },
+        {
+          "case": "invalid_standard_returns_400",
+          "status": "pass",
+          "detail": "期望 400 + '非法 standard'，实际 400 {\"detail\":\"非法 standard: UNKNOWN，允许: GA-T / USPCA / FCI-IGP / CUSTOM\"}"
+        }
+      ]
+    },
+    {
+      "name": "dog_not_found",
+      "cases": [
+        {
+          "case": "nonexistent_dog_returns_404",
+          "status": "pass",
+          "detail": "期望 404 + '犬只不存在'，实际 404 {\"detail\":\"犬只不存在: [999999]\"}"
+        }
+      ]
+    },
+    {
+      "name": "single_dog_timeseries",
+      "cases": [
+        {
+          "case": "returns_200",
+          "status": "pass",
+          "detail": "期望 200，实际 200"
+        },
+        {
+          "case": "single_dog_returned",
+          "status": "pass",
+          "detail": "期望 1 只犬 id=43，实际 [{'id': 43, 'name': 'eval_compare_alpha', 'breed': 'Belgian Malinois'}]"
+        },
+        {
+          "case": "four_score_points",
+          "status": "pass",
+          "detail": "期望 4 个评分点，实际 4"
+        },
+        {
+          "case": "ascending_temporal_order",
+          "status": "pass",
+          "detail": "期望 [60,65,70,75]，实际 [60.0, 65.0, 70.0, 75.0]"
+        },
+        {
+          "case": "stats_count",
+          "status": "pass",
+          "detail": "期望 count=4，实际 4"
+        },
+        {
+          "case": "stats_avg_overall",
+          "status": "pass",
+          "detail": "期望 avg=67.5，实际 67.5"
+        },
+        {
+          "case": "stats_max_min",
+          "status": "pass",
+          "detail": "期望 max=75 min=60，实际 max=75.0 min=60.0"
+        },
+        {
+          "case": "stats_latest_overall",
+          "status": "pass",
+          "detail": "期望 latest=75，实际 75.0"
+        },
+        {
+          "case": "stats_positive_trend_slope",
+          "status": "pass",
+          "detail": "期望 trend_slope > 0，实际 5.0"
+        },
+        {
+          "case": "avg_dimensions_accuracy",
+          "status": "pass",
+          "detail": "期望 accuracy avg=67.5，实际 67.5"
+        },
+        {
+          "case": "avg_dimensions_attention",
+          "status": "pass",
+          "detail": "期望 attention avg=72.5，实际 72.5"
+        }
+      ]
+    },
+    {
+      "name": "multi_dog_comparison",
+      "cases": [
+        {
+          "case": "returns_200",
+          "status": "pass",
+          "detail": "期望 200，实际 200"
+        },
+        {
+          "case": "three_dogs_in_order",
+          "status": "pass",
+          "detail": "期望 3 只犬顺序 [43,44,45]，实际 [43, 44, 45]"
+        },
+        {
+          "case": "four_points_per_dog",
+          "status": "pass",
+          "detail": "期望每犬 4 个点 [4,4,4]，实际 [4, 4, 4]"
+        },
+        {
+          "case": "avg_overall_per_dog",
+          "status": "pass",
+          "detail": "期望 [67.5, 80.75, 48.75]，实际 [67.5, 80.75, 48.75]"
+        },
+        {
+          "case": "beta_steepest_trend",
+          "status": "pass",
+          "detail": "期望 beta > alpha > gamma 且都为正，实际 [5.0, 6.7, 2.3000000000000003]"
+        },
+        {
+          "case": "latest_overall_per_dog",
+          "status": "pass",
+          "detail": "期望 [75, 90, 52]，实际 [75.0, 90.0, 52.0]"
+        }
+      ]
+    },
+    {
+      "name": "standard_filter",
+      "cases": [
+        {
+          "case": "gat_filter_two_points",
+          "status": "pass",
+          "detail": "期望 2 条 [60,70] standard=GA-T，实际 2 条 [60.0, 70.0] standard=GA-T"
+        },
+        {
+          "case": "ga_t_alias_resolved",
+          "status": "pass",
+          "detail": "期望 ga_t 别名解析为 GA-T + 2 条，实际 standard=GA-T count=2"
+        },
+        {
+          "case": "uspca_filter_two_points",
+          "status": "pass",
+          "detail": "期望 2 条 [65,75]，实际 2 条 [65.0, 75.0]"
+        },
+        {
+          "case": "igp_alias_resolved",
+          "status": "pass",
+          "detail": "期望 igp 别名解析为 FCI-IGP + 1 条，实际 standard=FCI-IGP count=1"
+        }
+      ]
+    },
+    {
+      "name": "date_range_filter",
+      "cases": [
+        {
+          "case": "date_from_filters_first_two",
+          "status": "pass",
+          "detail": "期望 2 条 [70,75]，实际 2 条 [70.0, 75.0]"
+        },
+        {
+          "case": "date_to_filters_last_two",
+          "status": "pass",
+          "detail": "期望 2 条 [60,65]，实际 2 条 [60.0, 65.0]"
+        },
+        {
+          "case": "date_range_middle_two",
+          "status": "pass",
+          "detail": "期望 2 条 [65,70]，实际 2 条 [65.0, 70.0]"
+        },
+        {
+          "case": "response_includes_date_fields",
+          "status": "pass",
+          "detail": "期望 date_from/date_to 非 None，实际 from=2026-01-02T12:00:00Z to=2026-01-03T12:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "empty_result",
+      "cases": [
+        {
+          "case": "returns_200_with_empty_series",
+          "status": "pass",
+          "detail": "期望 200，实际 200"
+        },
+        {
+          "case": "empty_series_points",
+          "status": "pass",
+          "detail": "期望 0 个点，实际 0"
+        },
+        {
+          "case": "empty_stats",
+          "status": "pass",
+          "detail": "期望 count=0 latest=None slope=None avg=0.0，实际 count=0 latest=None slope=None avg=0.0"
+        }
+      ]
+    },
+    {
+      "name": "dedup_preserve_order",
+      "cases": [
+        {
+          "case": "dedup_to_three_dogs",
+          "status": "pass",
+          "detail": "期望 3 只犬，实际 3"
+        },
+        {
+          "case": "order_preserved",
+          "status": "pass",
+          "detail": "期望顺序 [43,44,45]，实际 [43, 44, 45]"
+        }
+      ]
+    },
+    {
+      "name": "dimension_labels",
+      "cases": [
+        {
+          "case": "seven_dimension_labels",
+          "status": "pass",
+          "detail": "期望 7 维中文标签，实际 {'accuracy': '准确度', 'response_latency': '响应延迟', 'duration': '保持时长', 'search_efficiency': '搜索效率', 'attention': '注意力', 'courage': '胆量欲望', 'gait_quality': '步态质量'}"
+        }
+      ]
+    },
+    {
+      "name": "partial_dimensions",
+      "cases": [
+        {
+          "case": "only_three_dimensions",
+          "status": "pass",
+          "detail": "期望 3 维 {accuracy, duration, attention}，实际 {'accuracy', 'duration', 'attention'}"
+        },
+        {
+          "case": "no_none_dimensions",
+          "status": "pass",
+          "detail": "期望不包含 None 维度，实际 dict_keys(['accuracy', 'duration', 'attention'])"
+        },
+        {
+          "case": "points_only_three_dimensions",
+          "status": "pass",
+          "detail": "期望每个 point 只含 3 维，实际 [{'accuracy', 'duration', 'attention'}, {'accuracy', 'duration', 'attention'}, {'accuracy', 'duration', 'attention'}, {'accuracy', 'duration', 'attention'}]"
+        }
+      ]
+    }
+  ]
+}

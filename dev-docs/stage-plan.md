@@ -1,8 +1,8 @@
 # Stage Plan — 工作犬训练系统阶段计划
 
 > Truth source: 基于用户立项研讨（2026-07-27）+ 后续阶段验收
-> 状态: ✅ 已确认（v1.3，2026-08-02 3.6 RBAC 端到端验收通过 + Phase 3 v2.9 状态同步）
-> 日期: 2026-07-27（v1.0） / 2026-08-01（v1.1） / 2026-08-02（v1.2/v1.3）
+> 状态: ✅ 已确认（v1.4，2026-08-02 3.7 训练历史对比端到端验收通过 + Phase 3 v3.0 状态同步）
+> 日期: 2026-07-27（v1.0） / 2026-08-01（v1.1） / 2026-08-02（v1.2/v1.3/v1.4）
 
 ## 1. 阶段总览
 
@@ -12,7 +12,7 @@
 | Phase 0 | ✅ 完成 | 2026-07-26 验收 | 环境 + DB schema + 前后端骨架 |
 | Phase 1 | ✅ 完成 | 2026-07-28 验收 | MVP 端到端闭环（双场景 + YAML 评分） |
 | Phase 2 | ✅ 完成 | 2026-07-30 验收 | 数据飞轮 + 16 行为 + USPCA + 1.2f 补强 |
-| Phase 3 | 🔄 实施中 | 2026-07-30 启动 | ST-GCN+BC + 多犬 + 3D + FCI-IGP + Jetson + 用户权限（v2.9：3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a/b/c 完成，Git 检查点 `2e6aef3`，566 单元测试通过 + RBAC 端到端 25/25） |
+| Phase 3 | 🔄 实施中 | 2026-07-30 启动 | ST-GCN+BC + 多犬 + 3D + FCI-IGP + Jetson + 用户权限 + 训练历史对比（v3.0：3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a/b/c + 3.7a/b/c 完成，Git 检查点 `2e6aef3`，631 单元测试通过 + RBAC 端到端 25/25 + 训练历史对比端到端 41/41） |
 | Phase 4 | ⏳ 按需 | 不定 | LLM / Transformer-Mamba / RL |
 | 学术副产物 | ⏳ | Phase 2 后整理 | ACM MM / AAAI Application Track |
 
@@ -129,3 +129,5 @@ Phase 1 完成后，根据实际产出选择最出彩的方向：
 | v1.0 | 2026-07-27 | 新建，基于用户立项研讨 + 3 份调研报告，3-4 周 Phase 1 + 学术副产物轨道 |
 | v1.1 | 2026-08-01 | 同步 Phase 3 实施进度（v2.4：3.1b ST-GCN+BC + 3.2b 多犬追踪 + 3.2c ReID + 3.3b 3D 配对已完成）；补全 Phase 0/1/2 验收日期 |
 | v1.2 | 2026-08-02 | **sliver-vibe-coding 接管审计 + Phase 3 v2.8 状态同步**：①Phase 3 行更新为 v2.8（3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a + 3.6b 部分完成）；②新增 Git 检查点 `2e6aef3` + 538 单元测试新鲜验证证据；③对应 phase-3.md v2.8 + AGENTS.md v1.20 + runtime.md v1.4 |
+| v1.3 | 2026-08-02 | **3.6 RBAC 端到端验收通过**：Phase 3 行更新为 v2.9（3.6a/b/c 完成）+ 566 单元测试 + RBAC 端到端 25/25 通过（authentication 6 + role_permission 5 + base_isolation 2 + base_crud 5 + user_management 4 + change_password 3）；对应 phase-3.md v2.9 + AGENTS.md v1.21 + runtime.md v1.5 |
+| v1.4 | 2026-08-02 | **3.7 训练历史对比端到端验收通过 + Phase 3 v3.0 状态同步**：①Phase 3 行更新为 v3.0（3.7a/b/c 完成：/api/scores/compare API + CompareView 前端 ECharts 折线+雷达图 + 单元测试 48/48 + 端到端 41/41 通过）；②631 单元测试新鲜验证 + onnxruntime 自然修复 + FastAPI 0.115.6 204 路由兼容性修复（4 个 204 路由 response_class=Response）；③对应 phase-3.md v3.0 + AGENTS.md v1.22 + runtime.md v1.6 |

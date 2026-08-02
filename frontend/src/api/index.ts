@@ -96,6 +96,49 @@ export interface Score {
   created_at: string
 }
 
+// === Phase 3.7 训练历史对比 ===
+
+export interface DogBrief {
+  id: number
+  name: string
+  breed?: string | null
+}
+
+export interface ScorePoint {
+  score_id: number
+  video_id: number
+  created_at: string
+  overall: number
+  standard: string
+  dimensions: Record<string, number>
+}
+
+export interface DogScoreSeries {
+  dog: DogBrief
+  points: ScorePoint[]
+}
+
+export interface DogScoreStats {
+  dog: DogBrief
+  count: number
+  avg_overall: number
+  max_overall: number
+  min_overall: number
+  latest_overall?: number | null
+  trend_slope?: number | null
+  avg_dimensions: Record<string, number>
+}
+
+export interface ScoreCompareResponse {
+  dogs: DogBrief[]
+  series: DogScoreSeries[]
+  stats: DogScoreStats[]
+  dimension_labels: Record<string, string>
+  date_from?: string | null
+  date_to?: string | null
+  standard?: string | null
+}
+
 // ============================================================
 // API 封装
 // ============================================================
@@ -176,4 +219,28 @@ export const api = {
     }),
   getScore: (id: number) =>
     request<Score>({ url: `/api/scores/${id}` }),
+  listScoresByDog: (dogId: number, standard?: string) =>
+    request<Score[]>({
+      url: `/api/scores/by-dog/${dogId}`,
+      params: standard ? { standard } : undefined,
+    }),
+
+  // === Phase 3.7 训练历史对比 ===
+  compareScores: (params: {
+    dogIds: number[]
+    dateFrom?: string
+    dateTo?: string
+    standard?: string
+    limitPerDog?: number
+  }) =>
+    request<ScoreCompareResponse>({
+      url: '/api/scores/compare',
+      params: {
+        dog_ids: params.dogIds.join(','),
+        date_from: params.dateFrom,
+        date_to: params.dateTo,
+        standard: params.standard,
+        limit_per_dog: params.limitPerDog,
+      },
+    }),
 }
