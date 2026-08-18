@@ -1,9 +1,9 @@
 # K9 Training Vision System — 项目交接文档
 
-**版本**: v1.1  
-**日期**: 2026-08-18  
+**版本**: v1.2  
+**日期**: 2026-08-19  
 **项目根目录**: `D:\Desktop\k9-training-system`  
-**接手会话**: 歆歆（sliver-vibe-coding）于 2026-08-18 完成接管 + Mamba 升级 + 文档同步
+**接手会话**: 歆歆（sliver-vibe-coding）于 2026-08-18~19 完成接管 + Mamba 编译 + tasks.py 集成路由 + 文档同步
 
 ---
 
@@ -26,7 +26,7 @@
 | Phase 1 | ✅ 完成 | MVP 端到端闭环（双场景 + YAML 评分） |
 | Phase 2 | ✅ 完成 | 数据飞轮 + 16 行为 + USPCA |
 | Phase 3 | ✅ 已关闭（2026-08-17） | 全部子阶段 3.1b-3.8d 验收通过 + 3.2d 补充验证 |
-| Phase 4 | 🔄 实施中 | LLM 解释器 ✅ / Transformer-Mamba 基线 ✅（待集成） |
+| Phase 4 | 🔄 实施中 | LLM 解释器 ✅ / Transformer-Mamba 基线 ✅ / **mamba_ssm 真实编译 ✅（RTX 5060 sm_120）** / tasks.py 集成路由 ✅ |
 
 ### 2.2 核心模块
 
@@ -34,7 +34,7 @@
 |------|------|------|
 | 姿态检测 (YOLO26-pose) | ✅ | 检测 24 个犬只关键点，Box mAP50=96.1% (APTv2 微调) |
 | 行为识别 (ST-GCN+BC) | ✅ | 22 类行为分类，合成数据 46.97%，SHADOW 双轨上线 |
-| 行为识别 (Mamba 基线) | ✅ | 合成数据 85.61%，21K 参数；mamba_ssm 优先路径已接入 |
+| 行为识别 (Mamba 基线) | ✅ | 合成数据 85.61%，21K 参数；**真实 mamba_ssm 已在 WSL/RTX 5060 sm_120 编译验证** |
 | 行为识别 (VideoMamba) | ✅ | 纯 PyTorch 回退实现（videomamba_skeleton.py），无需 CUDA 编译 |
 | 评分引擎 (FCI-IGP) | ✅ | 7 维评分 + 22 行为映射 + 5 级评级 + DQ 硬约束 |
 | 评分引擎 (USPCA) | ✅ | 通用评分标准 |
@@ -52,6 +52,8 @@
 4. **文档漂移修正**：Phase 3 关闭状态写入 phase-3.md / README.md / stage-plan.md
 5. **ADR 0011 路径统一**：从根目录 `decisions/` 迁移至 `dev-docs/decisions/`
 6. **Phase 4 truth 对齐**：phase-4.md / phase-4-transformer-mamba.md / RESEARCH_TRANSFORMER_MAMBA.md
+7. **tasks.py Mamba 集成路由**（2026-08-19）：`behavior_deploy_mode` 配置项 + Mamba/Mamba+BC 单例懒加载 + 模式分发
+8. **mamba_ssm WSL 真实编译**（2026-08-19）：CUDA 12.8 + gcc-12 + RTX 5060 (sm_120)，`load_mamba_class()` 返回真实 `mamba_ssm.modules.mamba_simple.Mamba`
 
 ---
 
@@ -130,35 +132,41 @@ cd frontend && npm run dev
 
 ### 6.1 实现策略
 
-- **优先路径**：解析 `external/VideoMamba/mamba` 中的 vendored `mamba_ssm` 源码
+- **优先路径**：解析 `external/VideoMamba/mamba` 中的标准 `mamba_ssm` 源码
 - **回退路径**：当前 Windows 环境缺少 `causal-conv1d` CUDA 编译依赖 → 使用 `videomamba_skeleton.py::VideoMambaSkeleton` 作为正式回退
 - **兼容接口**：保留 `get_model()`、`MambaSequenceBaseline` 等旧名称，训练/推理/路由调用面无震荡
+- **tasks.py 集成**：`behavior_deploy_mode` 配置项支持 `mamba_only` / `mamba_shadow` / `mamba_vote` / `mamba_bc_only` / `mamba_bc_shadow` / `mamba_bc_vote`，单例懒加载 MambaInferer / MambaBCInferer
 
-### 6.2 已变更文件
+### 6.2 WSL 真实编译（已完成 ✅）
 
-| 文件 | 变更 |
-|------|------|
-| `backend/ml/behavior/mamba_sequence.py` | 重写：引入 `load_mamba_class()` / `resolve_mamba_ssm_source_root()`，Mamba 继承 VideoMambaSkeleton |
-| `backend/ml/behavior/mamba_inference.py` | 新增：MambaInferer 双后端推理器（PyTorch + ONNX） |
-| `backend/ml/behavior/mamba_trainer.py` | 新增：MambaTrainer 训练器 |
-| `backend/tests/ml/test_mamba_upgrade.py` | 新增：4 项测试（入口解析 / 类加载 / 模型前向 / 推理器加载） |
-| `scripts/train_mamba.py` | 对齐新 `get_model()` 接口参数 |
-| `scripts/train_mamba_baseline.py` | 对齐新 `MambaSequenceBaseline` 接口参数 |
-| `scripts/train_mamba_bc.py` | 补充 `embed_dims` 默认值 |
+- **环境**：Ubuntu 26.04 WSL2 + CUDA Toolkit 12.8 + gcc-12 + RTX 5060 (sm_120)
+- **vendored 源码**：`external/VideoMamba/`（commit `37355c2`，未修改源码，仅补 sm_120 编译目标）
+- **修补 setup.py**：`external/VideoMamba/mamba/setup.py` 和 `causal-conv1d/setup.py` 各增加一行 `-gencode arch=compute_120,code=sm_120`
+- **glibc 2.43 兼容**：CUDA 12.8 `math_functions.h` 与 Ubuntu 26.04 glibc 2.43 冲突（`cospi/sinpi/rsqrt noexcept`），已对 `/usr/local/cuda/include/crt/math_functions.h` 打补丁
+- **编译产物**：
+  - `mamba_ssm 1.0.1`（含 `selective_scan_cuda` 187MB .so，sm_70/80/90/120）
+  - `causal_conv1d 1.0.0`（含 `causal_conv1d_cuda` .so，sm_70/80/90/120）
+  - `transformers 4.57.6`
+- **验证**：
+  - `load_mamba_class()` 返回 `mamba_ssm.modules.mamba_simple.Mamba` ✅
+  - CUDA forward: `torch.Size([1,64,64]) -> torch.Size([1,64,64])` on RTX 5060 ✅
+  - 项目测试：605 passed + 2 skipped，零回归 ✅
+- **编译脚本**：`/root/setup_mamba.sh`（WSL 内部）
 
 ### 6.3 依赖现状
 
 | 依赖 | 状态 | 说明 |
 |------|------|------|
-| `einops` | ✅ 已安装 | 0.8.0 |
-| `causal-conv1d` | ❌ 无 Windows 预编译 | 需 WSL/CUDA 编译（见第 7 节） |
-| `mamba_ssm` | ⚠️ 回退模式 | 当前使用 VideoMambaSkeleton 骨架 |
+| `einops` | ✅ 已安装 | 0.8.2 |
+| `causal-conv1d` | ✅ WSL 编译完成 | 1.0.0，sm_120 |
+| `mamba_ssm` | ✅ WSL 编译完成 | 1.0.1，`load_mamba_class()` 返回真实类 |
+| `transformers` | ✅ WSL 安装 | 4.57.6（兼容 mamba_ssm 1.0.1） |
 
 ---
 
-## 7. WSL 环境（mamba_ssm 编译 — 可选升级路径）
+## 7. WSL 环境（mamba_ssm 编译 — ✅ 已完成）
 
-**状态**: ⏸️ 非阻塞，当前 VideoMambaSkeleton 回退可正常工作
+**状态**: ✅ 已完成（2026-08-19）
 
 WSL 环境位置:
 - 发行版: Ubuntu (WSL2)
@@ -166,23 +174,17 @@ WSL 环境位置:
 - 项目代码: `/mnt/d/Desktop/k9-training-system/`（通过 /mnt/d 访问 Windows 盘）
 - 编译脚本: `/root/setup_mamba.sh`
 
-**如需启用真正 mamba_ssm，在 WSL 中执行：**
-
+**已完成**:
 ```bash
-# 1. 安装 CUDA toolkit
-wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-keyring_1.1-1_all.deb
-dpkg -i cuda-keyring_1.1-1_all.deb
-apt-get update
-apt-get install -y cuda-toolkit-12-8
-
-# 2. 编译 mamba_ssm
-export CUDA_HOME=/usr/local/cuda
-cd /mnt/d/Desktop/k9-training-system/external/VideoMamba/mamba
-/root/k9venv/bin/pip install . --no-build-isolation
-
-# 3. 验证
-/root/k9venv/bin/python -c "import mamba_ssm; print('OK')"
+# WSL 中运行（或参考 /root/setup_mamba.sh）:
+/root/k9venv/bin/python -c "from backend.ml.behavior.mamba_sequence import load_mamba_class; cls=load_mamba_class(); print(f'{cls.__name__} from {cls.__module__}')"
+# 输出: Mamba from mamba_ssm.modules.mamba_simple
 ```
+
+**注意事项**:
+- `mamba_ssm` 和 `causal-conv1d` 的 setup.py 已修补增加 sm_120 编译目标
+- CUDA math header 补丁（`/usr/local/cuda/include/crt/math_functions.h`）已在系统级应用
+- 如需重新编译，确保环境变量正确传递：`CC=/usr/bin/gcc-12 CXX=/usr/bin/g++-12 CUDAHOSTCXX=/usr/bin/g++-12 TORCH_CUDA_ARCH_LIST="12.0" MAMBA_FORCE_BUILD=TRUE`
 
 ---
 
@@ -190,11 +192,11 @@ cd /mnt/d/Desktop/k9-training-system/external/VideoMamba/mamba
 
 | 测试套件 | 数量 | 结果 |
 |---------|------|------|
-| 核心单元测试 | 600 | ✅ 全部通过（2 skipped） |
-| ML 测试 | 含 Mamba 升级 4 项 | ✅ 全部通过 |
+| 核心单元测试 | 605 | ✅ 全部通过（2 skipped） |
+| ML 测试 | 含 Mamba 升级 6 项 | ✅ 全部通过 |
 | 项目守卫 | 7 | ✅ 7 PASS |
 | ST-GCN+BC 部署测试 | 20 | ✅ 全部通过 |
-| Mamba 升级测试 | 4 | ✅ 全部通过 |
+| Mamba 升级测试 | 6 | ✅ 全部通过 |
 | FCI-IGP 端到端 | 9 | ✅ 9/9 通过 |
 | RBAC 端到端 | 25 | ✅ 25/25 通过 |
 | 训练历史对比端到端 | 41 | ✅ 41/41 通过 |
@@ -209,6 +211,9 @@ python -m pytest backend/tests/ml/test_mamba_upgrade.py -q
 
 # 项目守卫
 python scripts/check_project_guardrails.py . --mode bootstrap
+
+# WSL 中验证 mamba_ssm 真实编译
+wsl.exe -d Ubuntu -u root --exec /bin/bash -lc '/root/setup_mamba.sh'
 ```
 
 ---
@@ -255,9 +260,14 @@ python scripts/check_project_guardrails.py . --mode bootstrap
 ## 10. 未完成事项
 
 ### P0 - 关键
-- [ ] **WSL 编译 mamba_ssm**：安装 CUDA toolkit + 编译 mamba_ssm，启用标准 Selective SSM（当前 VideoMambaSkeleton 为回退）
+- [x] **WSL 编译 mamba_ssm**：✅ 已完成（2026-08-19，RTX 5060 sm_120）
 - [ ] **真实数据标注**：YouTube 自标数据 (682 片段) 缺少行为标签，需用 Label Studio 标注后训练
-- [ ] **Mamba 集成路由**：将 Mamba/Mamba+BC 推理器接入 `tasks.py` 生产 pipeline，当前仅在 router 层提供模式但 tasks.py 未调用
+- [x] **Mamba 集成路由**：✅ 已完成（2026-08-19，`behavior_deploy_mode` 支持 10 种模式）
+
+### P1 - 重要
+- [ ] **多犬追踪优化**：conf=0.35 后仍有 3 个负 MOTA 视频，需进一步优化
+- [ ] **LLM 报告前端展示**：前端 `/compare` 页面增加 LLM 行为分析按钮
+- [ ] **ST-GCN+BC 真实数据训练**：合成数据 46.97% → 目标 ≥85%，需真实标注数据
 
 ### P1 - 重要
 - [ ] **多犬追踪优化**：conf=0.35 后仍有 3 个负 MOTA 视频，需进一步优化

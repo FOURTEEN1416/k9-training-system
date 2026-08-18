@@ -85,6 +85,40 @@ class Settings(BaseSettings):
     auth_access_token_expire_minutes: int = 480  # 8 小时工作日
     auth_bcrypt_rounds: int = 12  # bcrypt cost factor（10-14 推荐）
 
+    # === LLM 行为解释器（Phase 4） ===
+    # 外部 LLM API 配置
+    # 支持 OpenAI、Azure OpenAI、通义千问、智谱等兼容 API
+    llm_api_key: str = Field(
+        default="",
+        description="LLM API Key（如 OpenAI key 或国内兼容 API key）",
+    )
+    llm_api_base: str = Field(
+        default="https://api.openai.com/v1",
+        description="LLM API Base URL",
+    )
+    llm_model: str = Field(
+        default="gpt-4o-mini",
+        description="使用的 LLM 模型名称",
+    )
+    llm_timeout: int = Field(
+        default=30,
+        description="LLM API 请求超时时间（秒）",
+    )
+
+    # === Phase 4 Mamba 部署 ===
+    behavior_deploy_mode: Literal[
+        "shadow",
+        "vote",
+        "primary_stgcn",
+        "mamba_only",
+        "mamba_shadow",
+        "mamba_vote",
+        "mamba_bc_only",
+        "mamba_bc_shadow",
+        "mamba_bc_vote",
+        "rule_only",
+    ] = "shadow"
+
     def ensure_dirs(self) -> None:
         """创建所有数据目录（如不存在）。"""
         for d in (self.data_dir, self.upload_dir, self.generated_dir, self.models_dir):

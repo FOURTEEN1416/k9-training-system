@@ -40,6 +40,8 @@ from backend.app.models.keypoint import Keypoint
 from backend.app.models.video import Video, VideoStatus
 from backend.app.services.report import ReportInput, generate_report
 from backend.ml.behavior import BehaviorRecognizer, DeployMode
+from backend.ml.behavior.mamba_inference import MambaInferer
+from backend.ml.behavior.mamba_bc_inference import MambaBCInferer
 from backend.ml.behavior.object_detector import (
     ObjectDetector,
     VideoDetectionResult,
@@ -121,6 +123,60 @@ def _resolve_stgcn_bc_path() -> tuple[Optional[str], Optional[str]]:
 # primary_stgcn: ST-GCN+BC 主 + 规则引擎备（失败降级）
 # rule_only: 仅规则引擎（ST-GCN+BC 不可用）
 _behavior_recognizer: Optional[BehaviorRecognizer] = None
+_mamba_inferer: Optional[MambaInferer] = None
+_mamba_bc_inferer: Optional[MambaBCInferer] = None
+
+
+def _resolve_mamba_model_path() -> Optional[str]:
+    """解析 Mamba 模型路径."""
+    candidates = [
+        PROJECT_ROOT / "data" / "models" / "mamba" / "mamba_dog24.onnx",
+        PROJECT_ROOT / "runs" / "mamba_synthetic" / "best.pt",
+    ]
+    for p in candidates:
+        if p.exists():
+            return str(p)
+    return None
+
+
+def _resolve_mamba_bc_path() -> Optional[str]:
+    """解析 Mamba+BC 模型路径."""
+    candidates = [
+        PROJECT_ROOT / "data" / "models" / "mamba_bc" / "mamba_bc_dog24.onnx",
+        PROJECT_ROOT / "runs" / "mamba_bc_synthetic" / "best.pt",
+    ]
+    for p in candidates:
+        if p.exists():
+            return str(p)
+    return None
+
+
+def _mamba_inferer_singleton() -> Optional[MambaInferer]:
+    """单例 MambaInferer（按需懒加载）."""
+    global _mamba_inferer
+    if _mamba_inferer is None:
+        model_path = _resolve_mamba_model_path()
+        if model_path is None:
+            return None
+        if model_path.endswith(".onnx"):
+            _mamba_inferer = MambaInferer(onnx_path=model_path)
+        else:
+            _mamba_inferer = MambaInferer(checkpoint_path=model_path)
+    return _mamba_inferer
+
+
+def _mamba_bc_inferer_singleton() -> Optional[MambaBCInferer]:
+    """单例 MambaBCInferer（按需懒加载）."""
+    global _mamba_bc_inferer
+    if _mamba_bc_inferer is None:
+        model_path = _resolve_mamba_bc_path()
+        if model_path is None:
+            return None
+        if model_path.endswith(".onnx"):
+            _mamba_bc_inferer = MambaBCInferer(onnx_path=model_path)
+        else:
+            _mamba_bc_inferer = MambaBCInferer(checkpoint_path=model_path)
+    return _mamba_bc_inferer
 
 
 def _behavior_recognizer_singleton() -> BehaviorRecognizer:
@@ -132,27 +188,44 @@ def _behavior_recognizer_singleton() -> BehaviorRecognizer:
     """
     global _behavior_recognizer
     if _behavior_recognizer is None:
-        onnx_path, ckpt_path = _resolve_stgcn_bc_path()
         mode_str = getattr(settings, "behavior_deploy_mode", "shadow")
-
-        if onnx_path is None and ckpt_path is None:
-            logger.info("[worker] ST-GCN+BC 模型不可用，使用 RULE_ONLY 模式")
-            _behavior_recognizer = BehaviorRecognizer(mode=DeployMode.RULE_ONLY)
-        else:
-            from backend.ml.behavior.stgcn_bc.inference import STGCNBCInferer
-
-            if onnx_path:
-                inferer = STGCNBCInferer(onnx_path=onnx_path)
-                logger.info(f"[worker] ST-GCN+BC ONNX 后端: {onnx_path}")
+        if mode_str.startswith("mamba"):
+            mamba_inferer = _mamba_inferer_singleton()
+            mamba_bc_inferer = _mamba_bc_inferer_singleton()
+            mode = DeployMode(mode_str)
+            if mode in (DeployMode.MAMBA_ONLY, DeployMode.MAMBA_SHADOW, DeployMode.MAMBA_VOTE):
+                if mamba_inferer is None:
+                    logger.info("[worker] Mamba 模型不可用，降级 RULE_ONLY")
+                    _behavior_recognizer = BehaviorRecognizer(mode=DeployMode.RULE_ONLY)
+                else:
+                    _behavior_recognizer = BehaviorRecognizer(mode=mode, mamba_inferer=mamba_inferer)
             else:
-                inferer = STGCNBCInferer(checkpoint_path=ckpt_path)
-                logger.info(f"[worker] ST-GCN+BC PyTorch 后端: {ckpt_path}")
-
-            _behavior_recognizer = BehaviorRecognizer(
-                mode=DeployMode(mode_str),
-                stgcn_inferer=inferer,
-            )
+                if mamba_bc_inferer is None:
+                    logger.info("[worker] Mamba+BC 模型不可用，降级 RULE_ONLY")
+                    _behavior_recognizer = BehaviorRecognizer(mode=DeployMode.RULE_ONLY)
+                else:
+                    _behavior_recognizer = BehaviorRecognizer(mode=mode, mamba_bc_inferer=mamba_bc_inferer)
             logger.info(f"[worker] 行为识别部署模式: {mode_str}")
+        else:
+            onnx_path, ckpt_path = _resolve_stgcn_bc_path()
+            if onnx_path is None and ckpt_path is None:
+                logger.info("[worker] ST-GCN+BC 模型不可用，使用 RULE_ONLY 模式")
+                _behavior_recognizer = BehaviorRecognizer(mode=DeployMode.RULE_ONLY)
+            else:
+                from backend.ml.behavior.stgcn_bc.inference import STGCNBCInferer
+
+                if onnx_path:
+                    inferer = STGCNBCInferer(onnx_path=onnx_path)
+                    logger.info(f"[worker] ST-GCN+BC ONNX 后端: {onnx_path}")
+                else:
+                    inferer = STGCNBCInferer(checkpoint_path=ckpt_path)
+                    logger.info(f"[worker] ST-GCN+BC PyTorch 后端: {ckpt_path}")
+
+                _behavior_recognizer = BehaviorRecognizer(
+                    mode=DeployMode(mode_str),
+                    stgcn_inferer=inferer,
+                )
+                logger.info(f"[worker] 行为识别部署模式: {mode_str}")
     return _behavior_recognizer
 
 
