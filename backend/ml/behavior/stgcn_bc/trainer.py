@@ -266,6 +266,17 @@ class STGCNBCTrainer:
         # 保存训练历史
         self._save_history()
 
+        # 保存 best（首次验证后一定写入，避免 test_onnx_backend fixture 失效）
+        if self.best_epoch >= 0:
+            self._save_checkpoint(self.best_epoch, self.best_val_acc, is_best=True)
+        else:
+            # 没有最佳记录时（如 val_interval 未触发），用 last 拷贝
+            last_path = self.output_dir / "last.pt"
+            best_path = self.output_dir / "best.pt"
+            if last_path.exists():
+                import shutil
+                shutil.copy2(last_path, best_path)
+
         summary = {
             "total_epochs_trained": len(self.history),
             "best_val_acc": self.best_val_acc,
