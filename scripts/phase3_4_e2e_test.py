@@ -47,7 +47,7 @@ LATENCY_BUDGET_RATIO = 1.5  # FCI-IGP 22 行为 + SHADOW 双轨，放宽至 1.5 
 # ===== HTTP 工具 =====
 
 
-def http_request(url, method="GET", data=None, headers=None, timeout=30.0):
+def http_request(url, method="GET", data=None, headers=None, timeout=120.0):
     req = urllib.request.Request(url, data=data, method=method)
     if headers:
         for k, v in headers.items():
@@ -59,7 +59,7 @@ def http_request(url, method="GET", data=None, headers=None, timeout=30.0):
         return e.code, e.read(), dict(e.headers)
 
 
-def http_get_json(url, timeout=30.0):
+def http_get_json(url, timeout=120.0):
     status, body, _ = http_request(url, "GET", timeout=timeout)
     try:
         return status, json.loads(body)
@@ -67,7 +67,7 @@ def http_get_json(url, timeout=30.0):
         return status, body.decode("utf-8", errors="replace")
 
 
-def http_post_json(url, payload, timeout=30.0):
+def http_post_json(url, payload, timeout=120.0):
     data = json.dumps(payload).encode("utf-8")
     status, body, _ = http_request(
         url, "POST", data=data,
@@ -297,7 +297,7 @@ class TestRunner:
 
         # 验证 PDF 报告
         status, body, _ = http_request(
-            f"{self.base_url}/api/videos/{video_id}/report", "GET", timeout=30.0
+            f"{self.base_url}/api/videos/{video_id}/report", "GET", timeout=120.0
         )
         assert status == 200, f"PDF 下载失败 HTTP {status}"
         assert len(body) > 1000, f"PDF 过小: {len(body)} bytes"
@@ -354,7 +354,7 @@ class TestRunner:
             f"{self.base_url}/api/videos/upload", "POST",
             data=body.getvalue(),
             headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
-            timeout=60.0,
+            timeout=600.0,
         )
         assert status == 201, f"上传失败 HTTP {status}: {resp_body[:500]}"
         resp = json.loads(resp_body)

@@ -1,0 +1,29 @@
+{
+  "video_path": "D:\\Desktop\\k9-training-system\\data\\aptv2_canidae\\videos\\canidae_vid1000612.mp4",
+  "model_path": "runs/train-2/weights/best.pt",
+  "reid_model": "osnet_x1_0_msmt17.pt",
+  "tracker_backend": "OccluBoost",
+  "total_frames": 15,
+  "fps": 30.0,
+  "qualitative": {
+    "num_dogs": 0,
+    "total_frames": 15,
+    "track_ids": [],
+    "avg_coverage": 0.0,
+    "avg_track_length": 0.0,
+    "id_switch_estimate": 0,
+    "per_track": []
+  },
+  "quantitative": {
+    "MOTA": 0.0,
+    "IDF1": 0.0,
+    "ID_switch": 0,
+    "precision": NaN,
+    "recall": 0.0,
+    "mostly_tracked": 0,
+    "mostly_lost": 2,
+    "num_matches": 0,
+    "num_false_positives": 0,
+    "num_misses": 30
+  }
+}

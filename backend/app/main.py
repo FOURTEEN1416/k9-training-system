@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from backend.app.api import (
-    annotations, auth, bases, dogs, finetune, health, models, scoring, scores, videos,
+    annotations, auth, bases, dogs, finetune, health, llm_explainer, models, scoring, scores, videos,
 )
 from backend.app.core.config import settings
 from backend.app.core.security import AuthError
@@ -63,6 +63,7 @@ async def auth_error_handler(request: Request, exc: AuthError) -> JSONResponse:
 app.include_router(health.router, tags=["meta"])
 # Phase 3.6b 鉴权 + 基地管理
 app.include_router(auth.router, prefix="/api")
+app.include_router(llm_explainer.router, prefix="/api", tags=["LLM"])
 app.include_router(bases.router, prefix="/api")
 # 业务路由
 app.include_router(dogs.router, prefix="/api")

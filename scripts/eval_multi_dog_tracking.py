@@ -43,10 +43,11 @@ if str(PROJECT_ROOT) not in sys.path:
 def run_tracker(
     video_path: str,
     model_path: str = "runs/train-2/weights/best.pt",
-    reid_model: str = "osnet_x1_0",
+    reid_model: str = "osnet_x1_0_msmt17.pt",
     device: int = 0,
     new_track_thresh: float = 0.3,
     min_hits: int = 1,
+    conf: float = 0.25,
 ):
     """运行 MultiDogTracker 并返回结果."""
     from backend.ml.tracking import MultiDogTracker, TrackerBackend
@@ -58,6 +59,7 @@ def run_tracker(
         device=device,
         new_track_thresh=new_track_thresh,
         min_hits=min_hits,
+        conf=conf,
     )
     return tracker.track_video(video_path)
 
@@ -214,9 +216,10 @@ def evaluate(
     video_path: str,
     model_path: str = "runs/train-2/weights/best.pt",
     gt_path: Optional[str] = None,
-    reid_model: str = "osnet_x1_0",
+    reid_model: str = "osnet_x1_0_msmt17.pt",
     device: int = 0,
     output_path: Optional[str] = None,
+    conf: float = 0.25,
 ) -> Dict:
     """评估多犬追踪.
 
@@ -227,6 +230,7 @@ def evaluate(
         reid_model: ReID 模型名
         device: 推理设备
         output_path: JSON 报告输出路径
+        conf: YOLO 检测置信度阈值
 
     Returns:
         评估结果字典
@@ -241,6 +245,7 @@ def evaluate(
         model_path=model_path,
         reid_model=reid_model,
         device=device,
+        conf=conf,
     )
     print(f"[eval] 追踪完成: {result.num_dogs} 犬, {result.total_frames} 帧", flush=True)
 
@@ -317,8 +322,9 @@ def main() -> int:
     parser.add_argument("--video", required=True, help="输入视频路径")
     parser.add_argument("--model", default="runs/train-2/weights/best.pt", help="YOLO26-pose 模型路径")
     parser.add_argument("--gt", default=None, help="Ground truth 路径（MOT 格式，可选）")
-    parser.add_argument("--reid", default="osnet_x1_0", help="ReID 模型名")
+    parser.add_argument("--reid", default="osnet_x1_0_msmt17.pt", help="ReID 模型名（与 MultiDogTracker 默认值同步）")
     parser.add_argument("--device", type=int, default=0, help="推理设备")
+    parser.add_argument("--conf", type=float, default=0.25, help="YOLO 检测置信度阈值")
     parser.add_argument("--output", default=None, help="JSON 报告输出路径")
     args = parser.parse_args()
 
@@ -329,6 +335,7 @@ def main() -> int:
         reid_model=args.reid,
         device=args.device,
         output_path=args.output,
+        conf=args.conf,
     )
     return 0
 

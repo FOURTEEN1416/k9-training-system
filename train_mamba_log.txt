@@ -1,0 +1,41 @@
+设备: cuda
+生成合成数据...
+总样本: 1320
+训练: 1056, 验证: 264
+模型参数量: 21,078
+Epoch 1/30: train_loss=3.0018 train_acc=0.1136 val_loss=2.8153 val_acc=0.1818
+Epoch 2/30: train_loss=2.6630 train_acc=0.2188 val_loss=2.5585 val_acc=0.3182
+Epoch 3/30: train_loss=2.3899 train_acc=0.3390 val_loss=2.2768 val_acc=0.3902
+Epoch 4/30: train_loss=2.0719 train_acc=0.4356 val_loss=1.9702 val_acc=0.4811
+Epoch 5/30: train_loss=1.7919 train_acc=0.5009 val_loss=1.6507 val_acc=0.5947
+Epoch 6/30: train_loss=1.4623 train_acc=0.5644 val_loss=1.2803 val_acc=0.6932
+Epoch 7/30: train_loss=1.1780 train_acc=0.6439 val_loss=1.0016 val_acc=0.7386
+Epoch 8/30: train_loss=0.9600 train_acc=0.6903 val_loss=0.8520 val_acc=0.7273
+Epoch 9/30: train_loss=0.8613 train_acc=0.7206 val_loss=0.7208 val_acc=0.7803
+Epoch 10/30: train_loss=0.7437 train_acc=0.7604 val_loss=0.6909 val_acc=0.7727
+Epoch 11/30: train_loss=0.7074 train_acc=0.7538 val_loss=0.5609 val_acc=0.8333
+Epoch 12/30: train_loss=0.6381 train_acc=0.7708 val_loss=0.5188 val_acc=0.8561
+Epoch 13/30: train_loss=0.5879 train_acc=0.7973 val_loss=0.4984 val_acc=0.8447
+Epoch 14/30: train_loss=0.5363 train_acc=0.8191 val_loss=0.5090 val_acc=0.8371
+Epoch 15/30: train_loss=0.5254 train_acc=0.8314 val_loss=0.4691 val_acc=0.8258
+Epoch 16/30: train_loss=0.4786 train_acc=0.8267 val_loss=0.4608 val_acc=0.8068
+Epoch 17/30: train_loss=0.4649 train_acc=0.8324 val_loss=0.4319 val_acc=0.8447
+Epoch 18/30: train_loss=0.4799 train_acc=0.8305 val_loss=0.4209 val_acc=0.8068
+Epoch 19/30: train_loss=0.4417 train_acc=0.8466 val_loss=0.4040 val_acc=0.8523
+Epoch 20/30: train_loss=0.4249 train_acc=0.8532 val_loss=0.3941 val_acc=0.8447
+Epoch 21/30: train_loss=0.4435 train_acc=0.8390 val_loss=0.3987 val_acc=0.8371
+Epoch 22/30: train_loss=0.4548 train_acc=0.8286 val_loss=0.4029 val_acc=0.8182
+Epoch 23/30: train_loss=0.4195 train_acc=0.8428 val_loss=0.3922 val_acc=0.8258
+Epoch 24/30: train_loss=0.4137 train_acc=0.8532 val_loss=0.3769 val_acc=0.8333
+Epoch 25/30: train_loss=0.4216 train_acc=0.8352 val_loss=0.3759 val_acc=0.8295
+Epoch 26/30: train_loss=0.4024 train_acc=0.8551 val_loss=0.3796 val_acc=0.8371
+Epoch 27/30: train_loss=0.3918 train_acc=0.8551 val_loss=0.3776 val_acc=0.8409
+Epoch 28/30: train_loss=0.4044 train_acc=0.8551 val_loss=0.3761 val_acc=0.8409
+Epoch 29/30: train_loss=0.4099 train_acc=0.8504 val_loss=0.3761 val_acc=0.8371
+Epoch 30/30: train_loss=0.4017 train_acc=0.8456 val_loss=0.3759 val_acc=0.8409
+
+=== 训练完成 ===
+最佳验证准确率: 0.8561 (epoch 12)
+参数量: 21,078
+训练耗时: 20.9s
+结果保存至: D:\Desktop\k9-training-system\runs\mamba_baseline

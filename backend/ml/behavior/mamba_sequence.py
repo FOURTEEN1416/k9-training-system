@@ -42,7 +42,8 @@ def load_mamba_class() -> Type[nn.Module]:
     """加载标准 Mamba 类。
 
     优先返回 vendored `mamba_ssm.modules.mamba_simple.Mamba`，
-    若当前环境缺少编译依赖，则回退到项目内的 VideoMamba 骨骼适配实现。
+    若当前环境缺少编译依赖（如 Windows 无 CUDA extension），
+    则回退到项目内的 VideoMambaSkeleton 骨架实现。
     """
 
     _ensure_source_root_on_path()

@@ -1,0 +1,141 @@
+{
+  "video_path": "D:\\Desktop\\k9-training-system\\data\\aptv2_canidae\\videos\\canidae_vid1000607.mp4",
+  "model_path": "D:\\Desktop\\k9-training-system\\runs\\pose\\runs\\aptv2_finetune\\yolo_canidae_pose\\weights\\best.pt",
+  "reid_model": "osnet_x1_0_msmt17.pt",
+  "tracker_backend": "OccluBoost",
+  "total_frames": 15,
+  "fps": 30.0,
+  "qualitative": {
+    "num_dogs": 10,
+    "total_frames": 15,
+    "track_ids": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      10,
+      11,
+      12
+    ],
+    "avg_coverage": 67.3,
+    "avg_track_length": 10.1,
+    "id_switch_estimate": 4,
+    "per_track": [
+      {
+        "track_id": 0,
+        "num_frames": 11,
+        "coverage": 73.3,
+        "frame_range": [
+          0,
+          14
+        ],
+        "gaps": 2
+      },
+      {
+        "track_id": 1,
+        "num_frames": 14,
+        "coverage": 93.3,
+        "frame_range": [
+          0,
+          13
+        ],
+        "gaps": 0
+      },
+      {
+        "track_id": 3,
+        "num_frames": 14,
+        "coverage": 93.3,
+        "frame_range": [
+          0,
+          13
+        ],
+        "gaps": 0
+      },
+      {
+        "track_id": 4,
+        "num_frames": 15,
+        "coverage": 100.0,
+        "frame_range": [
+          0,
+          14
+        ],
+        "gaps": 0
+      },
+      {
+        "track_id": 5,
+        "num_frames": 13,
+        "coverage": 86.7,
+        "frame_range": [
+          0,
+          14
+        ],
+        "gaps": 1
+      },
+      {
+        "track_id": 6,
+        "num_frames": 8,
+        "coverage": 53.3,
+        "frame_range": [
+          6,
+          13
+        ],
+        "gaps": 0
+      },
+      {
+        "track_id": 7,
+        "num_frames": 9,
+        "coverage": 60.0,
+        "frame_range": [
+          4,
+          13
+        ],
+        "gaps": 1
+      },
+      {
+        "track_id": 10,
+        "num_frames": 9,
+        "coverage": 60.0,
+        "frame_range": [
+          6,
+          14
+        ],
+        "gaps": 0
+      },
+      {
+        "track_id": 11,
+        "num_frames": 7,
+        "coverage": 46.7,
+        "frame_range": [
+          5,
+          11
+        ],
+        "gaps": 0
+      },
+      {
+        "track_id": 12,
+        "num_frames": 1,
+        "coverage": 6.7,
+        "frame_range": [
+          14,
+          14
+        ],
+        "gaps": 0
+      }
+    ]
+  },
+  "quantitative": {
+    "MOTA": 51.05,
+    "IDF1": 66.39,
+    "ID_switch": 4,
+    "precision": 88.12,
+    "recall": 62.24,
+    "mostly_tracked": 4,
+    "mostly_lost": 2,
+    "num_matches": 85,
+    "num_false_positives": 12,
+    "num_misses": 54
+  }
+}

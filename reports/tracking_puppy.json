@@ -1,0 +1,18 @@
+{
+  "video_path": "D:\\Desktop\\k9-training-system\\data\\uploads\\_phase1_7_puppy.mp4",
+  "model_path": "runs/train-2/weights/best.pt",
+  "reid_model": "osnet_x1_0_msmt17.pt",
+  "tracker_backend": "OccluBoost",
+  "total_frames": 450,
+  "fps": 30.0,
+  "qualitative": {
+    "num_dogs": 0,
+    "total_frames": 450,
+    "track_ids": [],
+    "avg_coverage": 0.0,
+    "avg_track_length": 0.0,
+    "id_switch_estimate": 0,
+    "per_track": []
+  },
+  "quantitative": null
+}

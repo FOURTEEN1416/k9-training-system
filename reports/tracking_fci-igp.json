@@ -1,0 +1,31 @@
+{
+  "video_path": "D:\\Desktop\\k9-training-system\\data\\uploads\\_phase3_4_fci_igp.mp4",
+  "model_path": "runs/train-2/weights/best.pt",
+  "reid_model": "osnet_x1_0_msmt17.pt",
+  "tracker_backend": "OccluBoost",
+  "total_frames": 2700,
+  "fps": 30.0,
+  "qualitative": {
+    "num_dogs": 1,
+    "total_frames": 2700,
+    "track_ids": [
+      0
+    ],
+    "avg_coverage": 0.3,
+    "avg_track_length": 7.0,
+    "id_switch_estimate": 4,
+    "per_track": [
+      {
+        "track_id": 0,
+        "num_frames": 7,
+        "coverage": 0.3,
+        "frame_range": [
+          1268,
+          1299
+        ],
+        "gaps": 4
+      }
+    ]
+  },
+  "quantitative": null
+}

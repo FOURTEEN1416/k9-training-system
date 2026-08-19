@@ -167,7 +167,7 @@ class MultiDogTracker:
     Args:
         pose_model_path: YOLO26-pose 模型路径（.pt/.onnx/.engine）
         tracker_backend: 追踪器后端（默认 OccluBoost）
-        reid_model: ReID 模型名（默认 'osnet_x1_0'，犬只微调为 3.2c 触发项）
+        reid_model: ReID 模型名（默认 'osnet_x1_0_msmt17.pt'，BoxMOT 自动从 WEIGHTS 解析；犬只微调为 3.2c 触发项）
         device: 推理设备（0=GPU, 'cpu'=CPU）
         imgsz: YOLO 推理图像尺寸
         conf: YOLO 检测置信度阈值
@@ -181,7 +181,7 @@ class MultiDogTracker:
         self,
         pose_model_path: Union[str, Path],
         tracker_backend: TrackerBackend = TrackerBackend.OCCLUBOOST,
-        reid_model: str = "osnet_x1_0",
+        reid_model: str = "osnet_x1_0_msmt17.pt",
         device: Union[int, str] = 0,
         imgsz: int = 640,
         conf: float = 0.25,
@@ -312,6 +312,9 @@ class MultiDogTracker:
     ) -> MultiDogTrackingResult:
         """整段视频多犬追踪.
 
+        使用 ultralytics 推荐的 stream=True 模式（与 backend/ml/pose/inference.py
+        生产代码一致），避免 source=ndarray 单帧模式在部分视频上的检测差异。
+
         Args:
             video_path: 视频文件路径
             save_output: 是否保存结果 pkl
@@ -328,7 +331,7 @@ class MultiDogTracker:
         self._init_tracker()
         self.reset()  # 新视频前重置
 
-        # 读取视频元数据
+        # 读取视频元数据（stream 模式由 ultralytics 内部 cv2.VideoCapture 读帧）
         cap = cv2.VideoCapture(str(video_path))
         if not cap.isOpened():
             raise RuntimeError(f"无法打开视频: {video_path}")
@@ -337,6 +340,7 @@ class MultiDogTracker:
         frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        cap.release()  # 元数据读完即释放，stream 模式由 ultralytics 接管
 
         result = MultiDogTrackingResult(
             total_frames=frame_count,
@@ -351,18 +355,39 @@ class MultiDogTracker:
                 "imgsz": self.imgsz,
                 "conf_threshold": self.conf,
                 "iou_threshold": self.iou,
+                "inference_mode": "stream",
             },
         )
 
+        print(f"[tracking] 开始追踪 (stream): {video_path.name} "
+              f"({frame_count} frames @ {fps:.1f} fps)", flush=True)
+
+        # stream=True 模式：ultralytics 内部用 cv2.VideoCapture 流式处理
+        results_stream = self._pose_model.predict(
+            source=str(video_path),
+            imgsz=self.imgsz,
+            conf=self.conf,
+            iou=self.iou,
+            device=self.device,
+            verbose=False,
+            save=False,
+            stream=True,
+        )
+
         frame_idx = 0
-        print(f"[tracking] 开始追踪: {video_path.name} ({frame_count} frames @ {fps:.1f} fps)", flush=True)
+        for results in results_stream:
+            # stream 模式下原始帧从 results.orig_img 取（BGR ndarray）
+            frame = results.orig_img if hasattr(results, "orig_img") else None
+            dets, kps = _parse_yolo_detections(results)
 
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
+            # BoxMOT 追踪（需要原始帧用于 ReID 特征提取）
+            if frame is not None:
+                tracks = self._tracker.update(dets, img=frame)
+            else:
+                # 兜底：无原始帧时仅用 dets（ReID 失效，但保持追踪器状态机推进）
+                tracks = self._tracker.update(dets, img=np.zeros((height, width, 3), dtype=np.uint8))
 
-            dog_frames = self.update_frame(frame, frame_idx=frame_idx)
+            dog_frames = _tracks_to_frames(tracks, kps, frame_idx)
             for df in dog_frames:
                 if df.track_id not in result.tracks:
                     result.tracks[df.track_id] = DogTrack(track_id=df.track_id)
@@ -373,7 +398,11 @@ class MultiDogTracker:
                 print(f"[tracking] 进度: {frame_idx}/{frame_count} 帧, "
                       f"已追踪 {result.num_dogs} 犬", flush=True)
 
-        cap.release()
+        # stream 模式下实际处理帧数可能 ≠ frame_count（视频元数据不准）
+        if frame_idx != frame_count:
+            print(f"[tracking] 注意: 实际处理 {frame_idx} 帧 ≠ 元数据 {frame_count} 帧", flush=True)
+            result.total_frames = frame_idx
+
         print(f"[tracking] 完成: {frame_idx} 帧, {result.num_dogs} 犬, "
               f"track_ids={result.track_ids}", flush=True)
 

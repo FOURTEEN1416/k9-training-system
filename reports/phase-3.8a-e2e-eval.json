@@ -1,0 +1,91 @@
+{
+  "phase": "3.8a",
+  "timestamp": "2026-08-02T14:07:09",
+  "elapsed_s": 4.8,
+  "summary": {
+    "pass": 6,
+    "skip": 3,
+    "fail": 0
+  },
+  "results": {
+    "3.1e_onnx_model": {
+      "status": "PASS",
+      "path": "data\\models\\stgcn_bc\\stgcn_bc_dog24.onnx",
+      "size_kb": 5715.8
+    },
+    "3.1e_shadow_mode": {
+      "status": "PASS",
+      "mode": "shadow"
+    },
+    "3.3d_report": {
+      "status": "PASS",
+      "path": "reports\\phase-3.3d-3d-pose-eval.json",
+      "keys": [
+        "checkpoint",
+        "best_epoch",
+        "train_val_mpjpe_normalized",
+        "val_samples",
+        "mpjpe_normalized",
+        "p_mpjpe_normalized",
+        "mean_scale",
+        "mpjpe_mm",
+        "p_mpjpe_mm",
+        "threshold_mm"
+      ],
+      "mpjpe_mm": 21.74,
+      "threshold": 50.0
+    },
+    "3.4c_report": {
+      "status": "PASS",
+      "path": "reports\\phase-3.4c-fci-igp-eval.json",
+      "keys": [
+        "schema",
+        "excellent",
+        "borderline",
+        "failing",
+        "dq_gunshy",
+        "dq_no_release",
+        "dq_retrieve",
+        "all_passed",
+        "timestamp",
+        "yaml_path"
+      ]
+    },
+    "3.6c_report": {
+      "status": "PASS",
+      "path": "reports\\phase-3.6c-rbac-eval.json",
+      "keys": [
+        "phase",
+        "test_name",
+        "timestamp",
+        "overall",
+        "summary",
+        "suites"
+      ]
+    },
+    "3.7c_report": {
+      "status": "PASS",
+      "path": "reports\\phase-3.7c-scores-compare-eval.json",
+      "keys": [
+        "phase",
+        "test_name",
+        "timestamp",
+        "overall",
+        "summary",
+        "suites"
+      ]
+    },
+    "3.2d_multi_dog": {
+      "status": "SKIP",
+      "reason": "待多犬视频 + GT 标注"
+    },
+    "3.5e_jetson": {
+      "status": "SKIP",
+      "reason": "待 Jetson 硬件采购"
+    },
+    "3.1d_real_data": {
+      "status": "SKIP",
+      "reason": "待 Label Studio 标注训练 ≥ 85%"
+    }
+  }
+}

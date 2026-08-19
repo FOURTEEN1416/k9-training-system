@@ -1,0 +1,42 @@
+{
+  "video_path": "D:\\Desktop\\k9-training-system\\data\\aptv2_canidae\\videos\\canidae_vid1000356.mp4",
+  "model_path": "D:\\Desktop\\k9-training-system\\runs\\pose\\runs\\aptv2_finetune\\yolo_canidae_pose\\weights\\best.pt",
+  "reid_model": "osnet_x1_0_msmt17.pt",
+  "tracker_backend": "OccluBoost",
+  "total_frames": 15,
+  "fps": 30.0,
+  "qualitative": {
+    "num_dogs": 1,
+    "total_frames": 15,
+    "track_ids": [
+      0
+    ],
+    "avg_coverage": 20.0,
+    "avg_track_length": 3.0,
+    "id_switch_estimate": 2,
+    "per_track": [
+      {
+        "track_id": 0,
+        "num_frames": 3,
+        "coverage": 20.0,
+        "frame_range": [
+          0,
+          7
+        ],
+        "gaps": 2
+      }
+    ]
+  },
+  "quantitative": {
+    "MOTA": -100.0,
+    "IDF1": 50.0,
+    "ID_switch": 0,
+    "precision": 33.33,
+    "recall": 100.0,
+    "mostly_tracked": 1,
+    "mostly_lost": 0,
+    "num_matches": 1,
+    "num_false_positives": 2,
+    "num_misses": 0
+  }
+}

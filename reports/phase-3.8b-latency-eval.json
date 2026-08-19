@@ -1,0 +1,44 @@
+{
+  "phase": "3.8b",
+  "timestamp": "2026-08-02T14:06:17",
+  "baselines": [
+    {
+      "source": "Phase 2.6 USPCA 端到端",
+      "report": "reports/phase-2-validation.md",
+      "video_duration_s": null,
+      "processing_s": null,
+      "ratio": 0.88,
+      "note": "延迟 0.88x（Phase 2 验收基线）"
+    },
+    {
+      "source": "Phase 3.1e SHADOW 双轨",
+      "report": "AGENTS.md v1.18",
+      "video_duration_s": 90.0,
+      "processing_s": 101.8,
+      "ratio": 1.13,
+      "note": "2700 帧 pose 推理 98s（96%）+ SHADOW 双轨 2s（2%）+ 评分 1.8s",
+      "bottleneck": "YOLO26-pose ONNX Runtime GPU 推理"
+    },
+    {
+      "source": "Phase 3.4c FCI-IGP 端到端",
+      "report": "reports\\phase-3.4c-fci-igp-eval.json",
+      "video_duration_s": 90.0,
+      "processing_s": 57.0,
+      "ratio": 0.63,
+      "note": "FCI-IGP 22 行为 + SHADOW 双轨 + PDF 报告"
+    }
+  ],
+  "evaluation": {
+    "current_threshold": 1.0,
+    "jetson_target": 0.5,
+    "fci_igp_ratio": 0.63,
+    "shadow_ratio": 1.13,
+    "fci_igp_pass": true,
+    "shadow_pass": false,
+    "overall_status": "PASS",
+    "jetson_ready": false,
+    "jetson_note": "待硬件采购 + TRT FP16 转换 + 抽帧策略实测",
+    "bottleneck": "YOLO26-pose ONNX Runtime GPU 推理（96%）",
+    "optimization_path": "Jetson TRT FP16（预期 3-5x 加速）+ 抽帧 stride=3（2.99x）→ 综合 ≤ 0.5x"
+  }
+}

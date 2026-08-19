@@ -1,0 +1,97 @@
+{
+  "video_path": "D:\\Desktop\\k9-training-system\\data\\aptv2_canidae\\videos\\canidae_vid1000779.mp4",
+  "model_path": "D:\\Desktop\\k9-training-system\\runs\\pose\\runs\\aptv2_finetune\\yolo_canidae_pose\\weights\\best.pt",
+  "reid_model": "osnet_x1_0_msmt17.pt",
+  "tracker_backend": "OccluBoost",
+  "total_frames": 15,
+  "fps": 30.0,
+  "qualitative": {
+    "num_dogs": 6,
+    "total_frames": 15,
+    "track_ids": [
+      0,
+      1,
+      3,
+      4,
+      5,
+      6
+    ],
+    "avg_coverage": 36.7,
+    "avg_track_length": 5.5,
+    "id_switch_estimate": 4,
+    "per_track": [
+      {
+        "track_id": 0,
+        "num_frames": 11,
+        "coverage": 73.3,
+        "frame_range": [
+          0,
+          13
+        ],
+        "gaps": 2
+      },
+      {
+        "track_id": 1,
+        "num_frames": 4,
+        "coverage": 26.7,
+        "frame_range": [
+          2,
+          5
+        ],
+        "gaps": 0
+      },
+      {
+        "track_id": 3,
+        "num_frames": 9,
+        "coverage": 60.0,
+        "frame_range": [
+          4,
+          14
+        ],
+        "gaps": 1
+      },
+      {
+        "track_id": 4,
+        "num_frames": 7,
+        "coverage": 46.7,
+        "frame_range": [
+          6,
+          14
+        ],
+        "gaps": 1
+      },
+      {
+        "track_id": 5,
+        "num_frames": 1,
+        "coverage": 6.7,
+        "frame_range": [
+          10,
+          10
+        ],
+        "gaps": 0
+      },
+      {
+        "track_id": 6,
+        "num_frames": 1,
+        "coverage": 6.7,
+        "frame_range": [
+          10,
+          10
+        ],
+        "gaps": 0
+      }
+    ]
+  },
+  "quantitative": {
+    "MOTA": 51.06,
+    "IDF1": 52.5,
+    "ID_switch": 5,
+    "precision": 93.94,
+    "recall": 65.96,
+    "mostly_tracked": 0,
+    "mostly_lost": 0,
+    "num_matches": 26,
+    "num_false_positives": 2,
+    "num_misses": 16
+  }
+}

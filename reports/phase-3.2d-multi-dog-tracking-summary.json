@@ -1,0 +1,133 @@
+[
+  {
+    "video": "canidae_vid1000356.mp4",
+    "species": "1deer",
+    "追踪犬数": "1",
+    "平均覆盖率": "40.0%",
+    "ID switch": "0",
+    "MOTA": "-600.0% (阈值 ≥ 70.0%)",
+    "IDF1": "0.0% (阈值 ≥ 80.0%)",
+    "精确率": "0.0%",
+    "召回率": "0.0%"
+  },
+  {
+    "video": "canidae_vid1000341.mp4",
+    "species": "1deer"
+  },
+  {
+    "video": "canidae_vid1000538.mp4",
+    "species": "24polar-bear",
+    "追踪犬数": "1",
+    "平均覆盖率": "60.0%",
+    "ID switch": "0",
+    "MOTA": "-900.0% (阈值 ≥ 70.0%)",
+    "IDF1": "0.0% (阈值 ≥ 80.0%)",
+    "精确率": "0.0%",
+    "召回率": "0.0%"
+  },
+  {
+    "video": "canidae_vid1000607.mp4",
+    "species": "26fox"
+  },
+  {
+    "video": "canidae_vid1000615.mp4",
+    "species": "26fox"
+  },
+  {
+    "video": "canidae_vid1000612.mp4",
+    "species": "26fox",
+    "追踪犬数": "0",
+    "平均覆盖率": "0.0%",
+    "ID switch": "0",
+    "MOTA": "0.0% (阈值 ≥ 70.0%)",
+    "IDF1": "0.0% (阈值 ≥ 80.0%)",
+    "精确率": "nan%",
+    "召回率": "0.0%"
+  },
+  {
+    "video": "canidae_vid1000606.mp4",
+    "species": "26fox"
+  },
+  {
+    "video": "canidae_vid1000641.mp4",
+    "species": "27buffalo",
+    "追踪犬数": "1",
+    "平均覆盖率": "60.0%",
+    "ID switch": "0",
+    "MOTA": "-450.0% (阈值 ≥ 70.0%)",
+    "IDF1": "0.0% (阈值 ≥ 80.0%)",
+    "精确率": "0.0%",
+    "召回率": "0.0%"
+  },
+  {
+    "video": "canidae_vid1000727.mp4",
+    "species": "29wolf"
+  },
+  {
+    "video": "canidae_vid1000747.mp4",
+    "species": "29wolf"
+  },
+  {
+    "video": "canidae_vid1000724.mp4",
+    "species": "29wolf"
+  },
+  {
+    "video": "canidae_vid1000751.mp4",
+    "species": "29wolf"
+  },
+  {
+    "video": "canidae_vid1000732.mp4",
+    "species": "29wolf"
+  },
+  {
+    "video": "canidae_vid1000788.mp4",
+    "species": "2dog"
+  },
+  {
+    "video": "canidae_vid1000753.mp4",
+    "species": "2dog"
+  },
+  {
+    "video": "canidae_vid1000779.mp4",
+    "species": "2dog",
+    "追踪犬数": "0",
+    "平均覆盖率": "0.0%",
+    "ID switch": "0",
+    "MOTA": "0.0% (阈值 ≥ 70.0%)",
+    "IDF1": "0.0% (阈值 ≥ 80.0%)",
+    "精确率": "nan%",
+    "召回率": "0.0%"
+  },
+  {
+    "video": "canidae_vid1000777.mp4",
+    "species": "2dog"
+  },
+  {
+    "video": "canidae_vid1000756.mp4",
+    "species": "2dog"
+  },
+  {
+    "video": "canidae_vid1000786.mp4",
+    "species": "2dog"
+  },
+  {
+    "video": "canidae_vid1000823.mp4",
+    "species": "30sheep"
+  },
+  {
+    "video": "canidae_vid1000828.mp4",
+    "species": "30sheep"
+  },
+  {
+    "video": "canidae_vid1000810.mp4",
+    "species": "30sheep"
+  },
+  {
+    "video": "canidae_vid1001068.mp4",
+    "species": "8monkey"
+  },
+  {
+    "video": "canidae_vid1001090.mp4",
+    "species": "9orangutan"
+  }
+]
