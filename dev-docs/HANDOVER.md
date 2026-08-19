@@ -1,5 +1,11 @@
 # K9 Training Vision System — 项目交接文档
 
+> 项目性质: **学术研究项目**（产品系统作为方法验证载体）
+> 核心创新: 首次将图像域小样本伪标签方法（姚青 JIA：VFM 骨干 + 锚点学习 + 聚类 + 伪标签）迁移到时序骨架域
+> 论文定位: Pattern Recognition / IJCV — A Physics-Semantics Decoupled Framework for Low-Resource Animal Behavior Recognition under Evolving Evaluation Criteria
+> 技术栈: SMQ（ICCV 2025）+ AimCLR（AAAI 2022）+ TCL（CVPR 2021）+ 姚青 JIA 迁移（核心创新）
+> 产品系统: K9 Training Vision System（Phase 1-3 已完成，作为方法验证平台）
+
 **版本**: v1.4  
 **日期**: 2026-08-19  
 **项目根目录**: `D:\Desktop\k9-training-system`  
