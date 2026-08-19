@@ -113,4 +113,12 @@ runs/           # 模型权重与训练输出（不入库，见 .gitignore）
 
 ## 许可证
 
-本项目许可证**待定**（涉及 YOLO26 AGPL 及第三方模型许可评估，见 `dev-docs/decisions/`）。在许可确认前，仅限内部研究使用。
+本项目采用 **CC BY-NC 4.0**（知识共享 署名-非商业 4.0 国际许可）：
+
+- ✅ 允许：复制、分发、修改、构建衍生作品
+- ⚠️ 条件：必须署名（Attribution）
+- ❌ **禁止商业用途**（NonCommercial）
+
+完整条款见 [LICENSE](LICENSE) 与 https://creativecommons.org/licenses/by-nc/4.0/
+
+> 注意：本项目使用的第三方组件（如 YOLO26/Ultralytics AGPL-3.0、各预训练模型权重）版权归其各自所有者，适用各自许可条款。
