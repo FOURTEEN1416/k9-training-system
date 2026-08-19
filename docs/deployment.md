@@ -179,7 +179,6 @@ psql -U k9system -d k9system -p 5433 -c "\dt"
 ```powershell
 # Phase 2 新增数据目录（按需准备，不影响核心功能）：
 #   data\interpet4d\smal_npy\*.npz   — InterPet4D 3D 关键点数据（226 clips）
-#   data\youtube_self_label\raw\*.mp4 — YouTube 犬类视频（5 个，用于标注）
 #   data\animal_kingdom\...\video\*.mp4 — Animal Kingdom 犬类视频（211 个）
 #   data\kpm_project\               — keypoint-MoSeq 无监督行为发现产物
 
@@ -285,24 +284,18 @@ VITE_BACKEND_HOST=127.0.0.1
 VITE_BACKEND_PORT=8001
 ```
 
-### 4.7 启动 Label Studio（Phase 2 可选，数据飞轮标注用）
+### 4.7 主动学习标注管线（Phase 2 可选，数据飞轮标注用）
+
+> YouTube 自标数据源已废弃（2026-08-19），标注流程改为 AimCLR+SMQ+TCL+主动学习管线。
+> 详见 `dev-docs/decisions/0012-foundation-system-direction.md`
 
 ```powershell
-# 安装 Label Studio（仅需一次）
-pip install label-studio==1.23.0
-
-# 启动（默认端口 8080）
-label-studio start --port 8080
-
-# 首次访问 http://127.0.0.1:8080 注册管理员账号
-# 登录后创建项目，配置关键点标注模板
-
-# Phase 2 数据飞轮标注流程：
-# 1. 上传视频到 Label Studio
-# 2. YOLO26-pose 预标注（脚本 scripts/setup_label_studio.py）
-# 3. 人工修正标注
-# 4. 导出标注 → finetune_from_annotations.py 微调
-# 5. 注册新模型 → 激活
+# 标注流程（待 AimCLR+SMQ+TCL 管线就绪后启用）：
+# 1. AimCLR 预训练 → 骨架 embedding
+# 2. SMQ 动作 episode 分割 → 无监督行为边界
+# 3. TCL 原型对比学习 → 聚类为行为原型
+# 4. 主动学习不确定性采样 → 100-200 片段人工标注
+# 5. ST-GCN+BC 微调 → 22 行为分类
 ```
 
 ## 5. 端到端验证
@@ -601,7 +594,6 @@ psql -U postgres -p 5433 -c "DROP USER k9system;"
 | `data/generated/` | 推理产物（关键点 JSON 等） |
 | `data/models_weights/` | 模型权重存储 |
 | `data/interpet4d/` | InterPet4D 3D 关键点数据（Phase 2） |
-| `data/youtube_self_label/` | YouTube 自标视频 + Label Studio 数据（Phase 2） |
 | `data/animal_kingdom/` | Animal Kingdom 犬类视频（Phase 2） |
 | `data/kpm_project/` | keypoint-MoSeq 无监督行为发现产物（Phase 2） |
 | `reports/` | 生成的 PDF 评分报告 |

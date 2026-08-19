@@ -304,7 +304,7 @@ async def main_async(args: argparse.Namespace) -> int:
 
     if stats["exported_frames"] == 0:
         print("\n[WARN] 无可用标注帧，无法训练")
-        print("       请先在 Label Studio 完成标注并同步: POST /api/annotations/sync")
+        print("       标注管线已改为 AimCLR+SMQ+TCL+主动学习（ADR 0012），请从 DB annotations 表导入")
         return 1
 
     if args.export_only:

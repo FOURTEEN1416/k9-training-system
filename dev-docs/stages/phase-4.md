@@ -60,7 +60,7 @@
 - MS-Temba 多尺度膨胀 SSM 集成（阶段 3 改进实验）
 - 动作边界检测损失
 - 消融实验: Mamba-only vs Transformer-only vs Hybrid
-- 真实数据训练（需标注数据集: YouTube 自标 682 片段或 APT-36K 申请中）
+- 真实数据训练（需标注数据集: 通过 AimCLR+SMQ+TCL+主动学习管线，见 ADR 0012）
 
 ## 4.3 RL评分优化 (待启动)
 

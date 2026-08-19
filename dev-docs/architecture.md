@@ -98,7 +98,6 @@ backend/
 │   ├── schemas/         # Pydantic schema
 │   │   └── common.py
 │   ├── services/        # 业务逻辑
-│   │   ├── label_studio.py  # LS 对接（Phase 2.1）
 │   │   └── report.py        # PDF 报告
 │   └── main.py          # FastAPI 入口
 ├── workers/             # Celery 任务（统一入口）

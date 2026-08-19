@@ -473,9 +473,9 @@ scoring_engine:
 
 ```
 1. 上传视频到系统（正常流程）
-2. 管理员将视频导入 Label Studio（http://127.0.0.1:8080）
-3. YOLO26-pose 自动预标注关键点
-4. 人工修正标注（关键点位置 + 行为标签）
+2. 系统通过 AimCLR 预训练 + SMQ 时序分割自动生成行为 episode 边界
+3. 主动学习不确定性采样选出最具信息量的 100-200 片段
+4. 人工标注行为类别
 5. 导出标注数据
 6. 触发微调流水线（API: POST /api/finetune/trigger）
 7. 训练完成，注册新模型版本（is_active=False）
@@ -610,7 +610,7 @@ scoring_engine:
 | DQ | Disqualification，FCI-IGP 硬约束直接判定不合格（退避/未发现目标/正确数 < 5）（Phase 3） |
 | Celery Worker | 后台异步任务执行进程 |
 | ONNX Runtime | GPU 推理后端（Phase 1 生产推荐） |
-| Label Studio | 开源数据标注平台，用于数据飞轮人工标注（Phase 2） |
+| Label Studio | 开源数据标注平台（已废弃，2026-08-19，改为主动学习管线，见 ADR 0012） |
 
 ## 12. 反馈与支持
 
@@ -649,7 +649,6 @@ scoring_engine:
 | `/api/finetune/trigger` | POST | 触发微调流水线（Phase 2） |
 | `/api/finetune/status` | GET | 微调状态（Phase 2） |
 | `/api/finetune/pipeline` | GET | 数据飞轮概览（Phase 2） |
-| `/api/annotations/ls/health` | GET | Label Studio 健康检查（Phase 2） |
 | `/api/annotations` | GET/POST | 标注任务管理（Phase 2） |
 
 完整 OpenAPI 文档：http://127.0.0.1:8000/docs

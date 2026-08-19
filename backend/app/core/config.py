@@ -69,7 +69,9 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",
     )
 
-    # === Label Studio（数据飞轮标注平台） ===
+    # === Label Studio（已废弃，保留配置向后兼容） ===
+    # YouTube 自标数据源已废弃（2026-08-19），Label Studio 标注管线不再使用
+    # 改为 AimCLR+SMQ+TCL+主动学习管线（见 ADR 0012）
     ls_url: str = "http://127.0.0.1:8080"
     ls_email: str = "admin@k9.local"
     ls_password: str = "k9admin2026"

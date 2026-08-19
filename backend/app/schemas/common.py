@@ -341,13 +341,3 @@ class AnnotationRead(ORMModel):
     data_json: dict
     confidence: Optional[float] = None
     created_at: datetime
-
-
-class LabelStudioSyncResult(BaseModel):
-    """LS 标注同步结果。"""
-
-    project_id: int
-    synced_tasks: int
-    synced_annotations: int
-    completed_tasks: int
-    errors: list[str] = []

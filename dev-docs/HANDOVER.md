@@ -106,7 +106,6 @@ cd frontend && npm run dev
 | APTv2 标注 | `data/aptv2_annotations/` | 127MB | COCO 格式标注 |
 | APTv2 Canidae 子集 | `data/aptv2_canidae/` | 360 帧 | dog/wolf/fox，24 视频 |
 | APTv2 YOLO 训练集 | `data/aptv2_yolo_pose/` | 290 图 | YOLO pose 格式 |
-| YouTube 自标数据 | `data/youtube_self_label/` | 682 片段 | 5 视频，24 关键点 |
 | 合成数据 | 代码生成 (make_synthetic_dataset) | 动态 | 22 类 × N 样本 |
 | 上传视频 | `data/uploads/` | 33 个 | 真实犬只训练视频 |
 | ReID 数据 | `data/market1501/` | 852 张 | 12 identity，Market1501 格式 |
@@ -263,7 +262,7 @@ wsl.exe -d Ubuntu -u root --exec /bin/bash -lc '/root/setup_mamba.sh'
 - [x] **WSL 编译 mamba_ssm**：✅ 已完成（2026-08-19，RTX 5060 sm_120）
 - [x] **Mamba 集成路由**：✅ 已完成（2026-08-19，`behavior_deploy_mode` 支持 10 种模式）
 - [ ] **基座系统 L3 数据飞轮**（2026-08-19 方向确认，ADR 0012）：AimCLR 自监督预训练 + SMQ 无监督时序分割 + TCL 半监督自训练 + 主动学习 100-200 标注 → ST-GCN+BC ≥ 85%
-- [ ] **真实数据标注**：YouTube 自标数据 (682 片段) 缺少行为标签，需用主动学习策略（不确定性采样）标 100-200 片段
+- [ ] **真实数据标注**：YouTube 自标数据已废弃（2026-08-19，零标注无价值），标注管线改为 AimCLR+SMQ+TCL+主动学习（ADR 0012），需标 100-200 片段
 
 ### P1 - 重要
 - [ ] **LLM 实用阶段本地化**：实验室阶段 Agnes API（数据出本地豁免）→ 实用阶段切换本地大模型（Llama 3.2 1B 或等价），代码已环境变量解耦，配置级切换（ADR 0011 v1.1）

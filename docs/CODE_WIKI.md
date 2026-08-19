@@ -126,7 +126,7 @@ k9-training-system/
 │   │   ├── core/              # 配置 / 数据库引擎
 │   │   ├── models/            # SQLAlchemy ORM 模型（10 张表）
 │   │   ├── schemas/           # Pydantic 请求/响应 schema
-│   │   ├── services/          # 业务服务（PDF 报告 / Label Studio）
+│   │   ├── services/          # 业务服务（PDF 报告）
 │   │   └── main.py            # FastAPI 入口
 │   ├── ml/                    # 机器学习模块
 │   │   ├── pose/              # 姿态检测（YOLO26 + MotionBERT 3D）
@@ -179,7 +179,7 @@ app = FastAPI(
 - **路由注册**：8 个 router，前缀 `/api`（health 除外）
 - **生命周期**：启动时通过 `settings.ensure_dirs()` 创建 `data/` 各子目录
 
-**配置管理**：[config.py](file:///d:/Desktop/k9-training-system/backend/app/core/config.py) — `Settings(BaseSettings)` 类，配置来源优先级：环境变量 > `.env` 文件 > 默认值。通过 `@lru_cache` 单例 `get_settings()` 提供。配置项涵盖应用/数据库/Redis/路径/上传限制/CORS/Label Studio。
+**配置管理**：[config.py](file:///d:/Desktop/k9-training-system/backend/app/core/config.py) — `Settings(BaseSettings)` 类，配置来源优先级：环境变量 > `.env` 文件 > 默认值。通过 `@lru_cache` 单例 `get_settings()` 提供。配置项涵盖应用/数据库/Redis/路径/上传限制/CORS/（Label Studio 配置已废弃）。
 
 **数据库引擎**：[database.py](file:///d:/Desktop/k9-training-system/backend/app/core/database.py) — 异步引擎（asyncpg）+ `AsyncSessionLocal` 会话工厂 + `get_db()` FastAPI 依赖。另有 [database_sync.py](file:///d:/Desktop/k9-training-system/backend/app/core/database_sync.py) 提供同步 Session（Celery 任务用）。
 
@@ -195,7 +195,7 @@ app = FastAPI(
 | scores | [scores.py](file:///d:/Desktop/k9-training-system/backend/app/api/scores.py) | `/api/scores` | `GET ""`、`GET /by-dog/{dog_id}`（按犬历史查询）、`GET /{score_id}` |
 | models | [models.py](file:///d:/Desktop/k9-training-system/backend/app/api/models.py) | `/api/models` | `GET ""`、`GET /current?type=`、`POST /register`、`POST /{id}/activate`（切换激活版本） |
 | scoring | [scoring.py](file:///d:/Desktop/k9-training-system/backend/app/api/scoring.py) | `/api/scoring` | `GET /configs`、`GET /configs/{scene}`、`PUT /configs/{scene}`（触发热加载）、`POST /evaluate`（实时评分预览） |
-| annotations | [annotations.py](file:///d:/Desktop/k9-training-system/backend/app/api/annotations.py) | `/api/annotations` | 标注任务 CRUD + Label Studio 同步（`/tasks`、`/sync`、`/ls/health` 等） |
+| annotations | [annotations.py](file:///d:/Desktop/k9-training-system/backend/app/api/annotations.py) | `/api/annotations` | 标注任务 CRUD（`/tasks`） |
 | finetune | [finetune.py](file:///d:/Desktop/k9-training-system/backend/app/api/finetune.py) | `/api/finetune` | `POST /trigger`（异步微调）、`GET /status`、`GET /pipeline`（数据飞轮状态） |
 
 **关键设计**：
@@ -230,10 +230,8 @@ app = FastAPI(
 - `ReportInput` dataclass：犬只信息 + 视频信息 + `ScoringResult` + `list[BehaviorEpisode]`
 - `generate_report(report_input, output_path)`：基于 reportlab platypus 生成 A4 PDF（标题/犬只表/视频表/评分摘要/维度明细/行为时间线/评分说明）
 
-**LabelStudioClient** — [label_studio.py](file:///d:/Desktop/k9-training-system/backend/app/services/label_studio.py)
-- 数据飞轮标注平台 HTTP 客户端
-- 认证：Django session cookie（CSRF + form POST，非 JWT）
-- 能力：`login()` / `list_projects()` / `list_tasks()` / `create_task()` / `upload_file()` / `export_annotations()`
+> LabelStudioClient（`label_studio.py`）已于 2026-08-19 废弃移除（YouTube 自标数据源零标注无价值）。
+> 标注管线改为 AimCLR+SMQ+TCL+主动学习（见 ADR 0012）。
 
 ### 4.5 Celery 异步任务
 
@@ -517,13 +515,12 @@ handlers ──1:N── dogs ──1:N── training_sessions
 
 ```
 前端 api/index.ts
-  └→ backend/app/api/* (FastAPI 路由)
-       ├→ backend/app/services/* (业务逻辑)
-       │    ├→ report.py → reportlab (PDF)
-       │    └→ label_studio.py → requests (LS HTTP)
-       ├→ backend/app/models/* (SQLAlchemy ORM)
-       │    └→ backend/app/core/database.py → asyncpg → PostgreSQL
-       └→ backend/workers/tasks.py (Celery 派发)
+   └→ backend/app/api/* (FastAPI 路由)
+        ├→ backend/app/services/* (业务逻辑)
+        │    └→ report.py → reportlab (PDF)
+        ├→ backend/app/models/* (SQLAlchemy ORM)
+        │    └→ backend/app/core/database.py → asyncpg → PostgreSQL
+        └→ backend/workers/tasks.py (Celery 派发)
             └→ Redis Broker → Celery Worker
                  ├→ backend/ml/pose/inference.py (PoseInferenceEngine)
                  │    └→ ultralytics YOLO → ONNX/TensorRT

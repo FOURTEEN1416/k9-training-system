@@ -90,13 +90,13 @@
   - ✅ 合成数据 baseline 训练验证通过（30 epochs / 1.43M 参数 / best_val_acc=46.97% @ epoch 21 / 边界 F1=58.45% / 22 类基线 4.5% × 9 倍提升）
   - ✅ 新鲜单元测试验证：480 passed + 2 skipped + 0 failed（含 ST-GCN+BC 83 测试）
   - ⏸️ **3.1d** 真实数据训练
-  - 目标：22 类准确率 ≥ 85%（真实数据，通过 Label Studio 标注 + 训练循环）
-  - **状态**: ✅ 完成 - 使用 YouTube 自标数据 + 转换管线，682 样本训练，5 epoch 达到 1.0 准确率（`scripts/convert_labelstudio_to_stgcn.py` + `scripts/build_training_dataset.py`）。待精度需求提升或业务关键时重启训练循环。
+  - 目标：22 类准确率 ≥ 85%（真实数据，通过 AimCLR+SMQ+TCL+主动学习管线，见 ADR 0012）
+  - **状态**: ⏸️ 阻塞 - YouTube 自标数据已废弃（2026-08-19，零标注无价值），等待 AimCLR 预训练 + 主动学习标注管线就绪
 - ✅ **3.1d 辅线** 训练数据集构建管线（2026-08-02）
-  - ✅ `scripts/convert_labelstudio_to_stgcn.py` — Label Studio JSON → pyskl pickle 转换器（支持 v1.23+ 视频关键点 + videobbox + frame 索引 + YOLO26-pose keypoints pkl 合并 + 边界标签自动生成）
+  - ✅ `scripts/convert_labelstudio_to_stgcn.py` — Label Studio JSON → pyskl pickle 转换器（保留为通用格式转换工具，但输入源不再来自 YouTube 自标）
   - ✅ `scripts/build_training_dataset.py` — 多源合并 + 划分管线（pyskl pickle 合并 + 按 clip_id 分层无泄漏划分 + 80/20 默认比例 + 统计报告 JSON 输出）
-  - ✅ `scripts/verify_dataset_quality.py` — 数据集质量验证脚本（6 项验证: 格式合规性 + 数值健康性 + 标签分布 + 边界标签对齐 + train/val 泄漏检测 + STGCNBCDataset 兼容性；合成数据测试 5/5 通过 + 泄漏检测验证通过）
-  - ⏳ 待人工标注完成后执行: Label Studio 导出 → `convert_labelstudio_to_stgcn.py` → `verify_dataset_quality.py` → `build_training_dataset.py` → 真实数据训练（目标 ≥ 85%）
+  - ✅ `scripts/verify_dataset_quality.py` — 数据集质量验证脚本（6 项验证: 格式合规性 + 数值健康性 + 标签分布 + 边界标签对齐 + train/val 泄漏检测 + STGCNBCDataset 兼容性）
+  - ⏳ 待 AimCLR+SMQ+TCL 管线就绪后: 主动学习标注 → `convert_labelstudio_to_stgcn.py` → `verify_dataset_quality.py` → `build_training_dataset.py` → 真实数据训练（目标 ≥ 85%）
 - ✅ **3.1e** ST-GCN+BC 部署集成（双轨并行：影子 → 投票 → 主备 → 退役规则引擎）（2026-08-02）
   - ✅ `backend/ml/behavior/stgcn_bc/export_onnx.py::export_onnx` — ONNX 导出（动态 batch+time 轴 + opset 17 + 一致性验证，1e-3 阈值兼容 MSTCN 膨胀卷积浮点误差）
   - ✅ `backend/ml/behavior/stgcn_bc/inference.py::STGCNBCInferer` — 双后端推理器（PyTorch / ONNX Runtime + 滑动窗口 + 边界检测 episode 分割 + softmax/sigmoid 数值稳定性 clip[-50,50]）
