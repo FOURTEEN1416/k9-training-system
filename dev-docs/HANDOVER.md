@@ -1,9 +1,9 @@
 # K9 Training Vision System — 项目交接文档
 
-**版本**: v1.2  
+**版本**: v1.4  
 **日期**: 2026-08-19  
 **项目根目录**: `D:\Desktop\k9-training-system`  
-**接手会话**: 歆歆（sliver-vibe-coding）于 2026-08-18~19 完成接管 + Mamba 编译 + tasks.py 集成路由 + 文档同步
+**接手会话**: 歆歆（sliver-vibe-coding）于 2026-08-18~19 完成接管 + Mamba 编译 + tasks.py 集成路由 + 文档同步；2026-08-19 完成漂移修正（LLM 双阶段决策 + 学术方向确认 + Phase 4 授权纳入）+ 基座方向确认（ADR 0012：数据解阻 + 物理-语义解耦基座，7 方向 37 仓库调研）
 
 ---
 
@@ -38,7 +38,7 @@
 | 行为识别 (VideoMamba) | ✅ | 纯 PyTorch 回退实现（videomamba_skeleton.py），无需 CUDA 编译 |
 | 评分引擎 (FCI-IGP) | ✅ | 7 维评分 + 22 行为映射 + 5 级评级 + DQ 硬约束 |
 | 评分引擎 (USPCA) | ✅ | 通用评分标准 |
-| LLM 行为解释器 | ✅ | Agnes 2.5 Flash API，中文报告生成 |
+| LLM 行为解释器 | ✅ | 实验室阶段 Agnes 2.5 Flash API（中文报告生成）；实用阶段切换本地大模型（ADR 0011 v1.1，环境变量解耦） |
 | 多犬追踪 | ✅ | APTv2 微调 + 24 视频评估，5/24 双达标（MOTA≥70% 达 9/24） |
 | RBAC 权限 | ✅ | 5 角色 + 基地隔离，端到端 25/25 通过 |
 | 训练历史对比 | ✅ | 前端 ECharts 可视化，API 41/41 通过 |
@@ -244,13 +244,13 @@ wsl.exe -d Ubuntu -u root --exec /bin/bash -lc '/root/setup_mamba.sh'
 ### 文档
 | 路径 | 说明 |
 |------|------|
-| `AGENTS.md` | 项目宪法，版本 v1.25 |
+| `AGENTS.md` | 项目宪法，版本 v1.27 |
 | `dev-docs/HANDOVER.md` | 本交接文档 |
 | `dev-docs/README.md` | truth root 索引 |
 | `dev-docs/stage-plan.md` | 阶段总览（v1.6） |
 | `dev-docs/stages/phase-3.md` | Phase 3 计划（✅ 已关闭 v3.3） |
 | `dev-docs/stages/phase-4.md` | Phase 4 计划（🔄 实施中） |
-| `dev-docs/stages/phase-4-transformer-mamba.md` | Transformer-Mamba 基线（✅ 调研+基线完成） |
+| `dev-docs/stages/phase-4-transformer-mamba.md` | Transformer-Mamba 基线（✅ 已授权纳入 Phase 4，2026-08-19） |
 | `dev-docs/decisions/` | ADR 0001-0011 |
 | `dev-docs/research/RESEARCH_TRANSFORMER_MAMBA.md` | Mamba/Transformer 调研 |
 | `docs/user-guide.md` | 用户手册 v0.3.0 |
@@ -261,23 +261,20 @@ wsl.exe -d Ubuntu -u root --exec /bin/bash -lc '/root/setup_mamba.sh'
 
 ### P0 - 关键
 - [x] **WSL 编译 mamba_ssm**：✅ 已完成（2026-08-19，RTX 5060 sm_120）
-- [ ] **真实数据标注**：YouTube 自标数据 (682 片段) 缺少行为标签，需用 Label Studio 标注后训练
 - [x] **Mamba 集成路由**：✅ 已完成（2026-08-19，`behavior_deploy_mode` 支持 10 种模式）
+- [ ] **基座系统 L3 数据飞轮**（2026-08-19 方向确认，ADR 0012）：AimCLR 自监督预训练 + SMQ 无监督时序分割 + TCL 半监督自训练 + 主动学习 100-200 标注 → ST-GCN+BC ≥ 85%
+- [ ] **真实数据标注**：YouTube 自标数据 (682 片段) 缺少行为标签，需用主动学习策略（不确定性采样）标 100-200 片段
 
 ### P1 - 重要
-- [ ] **多犬追踪优化**：conf=0.35 后仍有 3 个负 MOTA 视频，需进一步优化
+- [ ] **LLM 实用阶段本地化**：实验室阶段 Agnes API（数据出本地豁免）→ 实用阶段切换本地大模型（Llama 3.2 1B 或等价），代码已环境变量解耦，配置级切换（ADR 0011 v1.1）
 - [ ] **LLM 报告前端展示**：前端 `/compare` 页面增加 LLM 行为分析按钮
-- [ ] **ST-GCN+BC 真实数据训练**：合成数据 46.97% → 目标 ≥85%，需真实标注数据
-
-### P1 - 重要
-- [ ] **多犬追踪优化**：conf=0.35 后仍有 3 个负 MOTA 视频，需进一步优化
-- [ ] **LLM 报告前端展示**：前端 `/compare` 页面增加 LLM 行为分析按钮
-- [ ] **ST-GCN+BC 真实数据训练**：合成数据 46.97% → 目标 ≥85%，需真实标注数据
+- [ ] **ST-GCN+BC 真实数据训练**：合成数据 46.97% → 目标 ≥85%，通过 L3 数据飞轮产出真实标签后训练
 
 ### P2 - 增强
 - [ ] **ReID 微调**：APTv2 Canidae 12 ID 数据不足，需更多数据才能有效微调 OSNet
-- [ ] **学术论文**：Mamba 基线 85.61% + 多犬追踪 APTv2 验证 → 论文素材
+- [ ] **学术论文**：**可解释评分卡 + 端到端工作犬评估系统 + 物理-语义解耦基座**（2026-08-19 用户确认主方向，目标 Pattern Recognition / ACM MM）→ 论文素材：AimCLR/SMQ/TCL 评估 + 数据飞轮对比 + 端到端闭环 + FCI-IGP 0.63x 延迟
 - [ ] **生产部署**：配置 HTTPS、JWT 密钥、CORS 域名等生产环境设置
+- [ ] **多犬追踪优化**：conf=0.35 后仍有 3 个负 MOTA 视频，需进一步优化
 
 ---
 

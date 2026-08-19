@@ -1,8 +1,8 @@
 # Stage Plan — 工作犬训练系统阶段计划
 
 > Truth source: 基于用户立项研讨（2026-07-27）+ 后续阶段验收
-> 状态: ✅ 已确认（v1.4，2026-08-02 3.7 训练历史对比端到端验收通过 + Phase 3 v3.0 状态同步）
-> 日期: 2026-07-27（v1.0） / 2026-08-01（v1.1） / 2026-08-02（v1.2/v1.3/v1.4）
+> 状态: ✅ 已确认（v1.8，2026-08-19 基座方向确认：ADR 0012 创建 + 数据解阻阶段启动）
+> 日期: 2026-07-27（v1.0） / 2026-08-01（v1.1） / 2026-08-02（v1.2/v1.3/v1.4/v1.5/v1.6） / 2026-08-19（v1.7/v1.8）
 
 ## 1. 阶段总览
 
@@ -12,9 +12,10 @@
 | Phase 0 | ✅ 完成 | 2026-07-26 验收 | 环境 + DB schema + 前后端骨架 |
 | Phase 1 | ✅ 完成 | 2026-07-28 验收 | MVP 端到端闭环（双场景 + YAML 评分） |
 | Phase 2 | ✅ 完成 | 2026-07-30 验收 | 数据飞轮 + 16 行为 + USPCA + 1.2f 补强 |
-| Phase 3 | 🔄 实施中 | 2026-07-30 启动 | ST-GCN+BC + 多犬 + 3D + FCI-IGP + Jetson + 用户权限 + 训练历史对比（v3.0：3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a/b/c + 3.7a/b/c 完成，Git 检查点 `2e6aef3`，631 单元测试通过 + RBAC 端到端 25/25 + 训练历史对比端到端 41/41） |
-| Phase 4 | ⏳ 按需 | 不定 | LLM / Transformer-Mamba / RL |
-| 学术副产物 | ⏳ | Phase 2 后整理 | ACM MM / AAAI Application Track |
+| Phase 3 | ✅ 完成 | 2026-07-30 启动 | ST-GCN+BC + 多犬 + 3D + FCI-IGP + Jetson + 用户权限 + 训练历史对比（v3.3：3.1b/c/d/e + 3.2b/c/d + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a/b/c + 3.7a/b/c + 3.8a/b/c/d 完成；3.2d 多犬追踪于 2026-08-17 补充验证：APTv2 数据集下载 25GB + Canidae 犬科子集提取 + YOLO26-pose fine-tune（Box mAP50=96.1%）+ 24 视频 MOTA/IDF1 评估（5 个双达标，最高 MOTA 93.33%/IDF1 96.55%）+ conf=0.35 优化（MOTA≥70% 达 9/24）；Git 检查点 `2e6aef3`，631 单元测试通过 + RBAC 端到端 25/25 + 训练历史对比端到端 41/41 + 端到端集成 6 PASS + 延迟验证 FCI-IGP 0.63x + 项目守卫 7 PASS + 用户手册 Phase 3 v0.3.0） |
+| Phase 4 | 🔄 实施中 | 2026-08-02 启动 | LLM 行为解释器（实验室 Agnes API，实用期本地模型，ADR 0011 v1.1）+ Transformer-Mamba 长序列（2026-08-19 用户授权纳入：Mamba 基线 85.61% + mamba_ssm WSL 编译 + tasks.py 集成路由）+ RL 评分优化（按需） |
+| **数据解阻（P0）** | 🔄 实施中 | 2026-08-19 启动 | **基座系统 L3 数据飞轮**：AimCLR 自监督预训练 + SMQ 无监督时序分割 + TCL 半监督自训练 + 主动学习 100-200 标注 → ST-GCN+BC ≥ 85%（ADR 0012） |
+| 学术副产物 | 🔄 整理中（2026-08-19 用户确认主方向） | 与产品重心一致 | ACM MM / AAAI Application Track / Pattern Recognition：**可解释评分卡 + 端到端工作犬评估系统 + 物理-语义解耦基座** |
 
 ## 2. Phase 1 详细计划（3-4 周）
 
@@ -55,24 +56,20 @@
 
 ## 3. 学术副产物轨道
 
-**不阻塞主交付**，Phase 1 完成后整理。
+**不阻塞主交付**。2026-08-19 用户确认主方向（与产品重心一致），进入整理中状态。
 
-### 3.1 候选方向
+### 3.1 候选方向（2026-08-19 决策：主方向已定）
 
-| 方向 | 创新点 | 目标会议 | 可行性 |
-|------|--------|---------|--------|
-| A. 可解释 AI 评分卡 | YAML 配置化 + 工作犬行为识别 + 命中规则可解释 | ACM MM Application Track | 高 |
-| B. 幼犬选育数据集 | 公开数据集 + 基准 + 评分规则 | 动物行为学交叉会议 | 中 |
-| C. 双场景统一框架 | 选育 + 测评统一评分引擎 | AAAI Application Track | 中 |
-| D. DogMo 基准 | 在 DogMo 上做行为识别基准 | CVPR Workshop | 高 |
+| 方向 | 创新点 | 目标会议 | 可行性 | 状态 |
+|------|--------|---------|--------|------|
+| **A. 可解释 AI 评分卡 + 端到端工作犬评估系统** | YAML 配置化 + 双场景端到端闭环 + 命中规则可解释 + FCI-IGP 标准映射 | ACM MM Application Track | 高 | ✅ **主方向（用户确认）** |
+| B. 幼犬选育数据集 | 公开数据集 + 基准 + 评分规则 | 动物行为学交叉会议 | 中 | 备选 |
+| C. 双场景统一框架 | 选育 + 测评统一评分引擎 | AAAI Application Track | 中 | 并入 A |
+| D. 跨物种行为识别基准 | InterPet4D + Animal Kingdom | CVPR Workshop | 中 | 备选（消融章节素材） |
 
 ### 3.2 决策时机
 
-Phase 1 完成后，根据实际产出选择最出彩的方向：
-- 若评分引擎做得好 → A
-- 若选育场景数据多 → B
-- 若双场景框架优雅 → C
-- 若 DogMo 实验充分 → D
+~~Phase 1 完成后，根据实际产出选择最出彩的方向~~ → **2026-08-19 已决策**：主方向 A（可解释评分卡 + 端到端工作犬评估系统），与产品重心一致，素材最全（YAML 评分引擎 + 双场景闭环 + ST-GCN+BC/Mamba 对比 + APTv2 多犬验证 + FCI-IGP 0.63x 延迟）。
 
 ### 3.3 学术产出要求
 
@@ -131,3 +128,7 @@ Phase 1 完成后，根据实际产出选择最出彩的方向：
 | v1.2 | 2026-08-02 | **sliver-vibe-coding 接管审计 + Phase 3 v2.8 状态同步**：①Phase 3 行更新为 v2.8（3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a + 3.6b 部分完成）；②新增 Git 检查点 `2e6aef3` + 538 单元测试新鲜验证证据；③对应 phase-3.md v2.8 + AGENTS.md v1.20 + runtime.md v1.4 |
 | v1.3 | 2026-08-02 | **3.6 RBAC 端到端验收通过**：Phase 3 行更新为 v2.9（3.6a/b/c 完成）+ 566 单元测试 + RBAC 端到端 25/25 通过（authentication 6 + role_permission 5 + base_isolation 2 + base_crud 5 + user_management 4 + change_password 3）；对应 phase-3.md v2.9 + AGENTS.md v1.21 + runtime.md v1.5 |
 | v1.4 | 2026-08-02 | **3.7 训练历史对比端到端验收通过 + Phase 3 v3.0 状态同步**：①Phase 3 行更新为 v3.0（3.7a/b/c 完成：/api/scores/compare API + CompareView 前端 ECharts 折线+雷达图 + 单元测试 48/48 + 端到端 41/41 通过）；②631 单元测试新鲜验证 + onnxruntime 自然修复 + FastAPI 0.115.6 204 路由兼容性修复（4 个 204 路由 response_class=Response）；③对应 phase-3.md v3.0 + AGENTS.md v1.22 + runtime.md v1.6 |
+| v1.5 | 2026-08-02 | **3.8a/b/c 系统集成收尾 + 项目守卫脚本补建**：①项目守卫脚本 `scripts/check_project_guardrails.py`（Phase 0 遗留补建，7 项检查 truth 文档存在性+ADR 完整性+阶段验收报告+AGENTS.md 版本+阶段状态一致性+修订历史完整性+阶段文档头部，bootstrap 模式 7 PASS/0 WARN/0 FAIL）；②3.8a 端到端测试 `scripts/phase3_8_e2e_test.py`（6 PASS + 3 SKIP 硬件/数据阻塞）；③3.8b 延迟验证 `scripts/eval_latency.py`（FCI-IGP 0.63x 通过）；④3.8c 部署文档 `dev-docs/deployment/phase3-features-deploy.md`；⑤对应 phase-3.md v3.1 + AGENTS.md v1.23 + runtime.md v1.6 |
+| v1.6 | 2026-08-02 | **3.8d 用户手册更新完成**：①`docs/user-guide.md` 升级至 Phase 3 v0.3.0（13 章节，新增 FCI-IGP 7 维评分 + 22 行为映射 + IGP1/2/3 三阶段 + DQ 硬约束 + 5 级评级 + §6 训练对比章节 + §8.4 RBAC 5 角色 + §8.5 基地管理 + §9.6/9.7/9.8 三新工作流 + 12 新术语 + 7 新 API 端点）；②对应 phase-3.md v3.3 + AGENTS.md v1.24 |
+| v1.7 | 2026-08-19 | **漂移修正（用户决策）**：①Phase 4 行更新（LLM 双阶段：实验室 Agnes API + 实用期本地模型，ADR 0011 v1.1；Transformer-Mamba 2026-08-19 用户授权纳入）；②学术副产物行 ⏳ → 🔄 整理中 + §3 轨道更新（主方向 A 已确认：可解释评分卡 + 端到端工作犬评估系统）；③对应 project-brief.md v2.1 + AGENTS.md v1.26 + phase-4.md + phase-1.md §1.8b + HANDOVER.md v1.3 |
+| v1.8 | 2026-08-19 | **基座系统方向确认**：新增"数据解阻（P0）"阶段行——AimCLR 自监督预训练 + SMQ 无监督时序分割 + TCL 半监督自训练 + 主动学习 100-200 标注 → ST-GCN+BC ≥ 85%（ADR 0012）；学术副产物目标扩展至 Pattern Recognition；系统开发暂停，转向全面解决数据问题 |

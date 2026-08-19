@@ -1,7 +1,7 @@
 # 部署指南（Windows 本地部署）
 
-> 工作犬训练机器视觉识别系统 — Phase 2
-> 适用版本: v0.2.0
+> 工作犬训练机器视觉识别系统 — Phase 3
+> 适用版本: v0.3.0
 > 目标系统: Windows 11（开发/单机部署）
 > 部署模式: 单机本地化（无云依赖，数据不出本机）
 
@@ -24,7 +24,7 @@
 | Windows | 11 / Server 2022+ | 操作系统 |
 | Python | 3.12.x（CPython） | 后端运行时 |
 | Node.js | 20.x LTS | 前端构建 + Label Studio |
-| PostgreSQL | 16.x（端口 5433） | 主数据库 |
+| PostgreSQL | 17.x（端口 5433） | 主数据库 |
 | Redis | 7.x+（端口 6379） | Celery 消息队列 + 结果后端 |
 | NVIDIA Driver | 560.x+（Blackwell 架构需 565+） | GPU 驱动 |
 | CUDA Toolkit | 12.8+（Blackwell 兼容） | PyTorch GPU 后端 |
@@ -53,11 +53,11 @@ node --version  # 应输出 v20.x.x
 npm --version
 ```
 
-### 2.3 PostgreSQL 16（端口 5433）
+### 2.3 PostgreSQL 17（端口 5433）
 
 ```powershell
 # 通过 Chocolatey 安装
-choco install postgresql16 -y
+choco install postgresql17 -y
 
 # 或下载 EnterpriseDB 安装包: https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
 # 安装时端口改为 5433（避免与默认 5432 冲突），superuser 密码自定
@@ -423,7 +423,7 @@ Start-Service k9_frontend
 将 PostgreSQL、Redis、k9_api、k9_worker、k9_frontend 全部设为 `SERVICE_AUTO_START`：
 
 ```powershell
-Set-Service postgresql-x64-16 -StartupType Automatic
+Set-Service postgresql-x64-17 -StartupType Automatic
 Set-Service redis -StartupType Automatic
 Set-Service k9_api -StartupType Automatic
 Set-Service k9_worker -StartupType Automatic
@@ -565,7 +565,7 @@ curl http://127.0.0.1:8000/health
 
 ```powershell
 # 停止服务
-Stop-Service k9_api, k9_worker, k9_frontend, redis, postgresql-x64-16
+Stop-Service k9_api, k9_worker, k9_frontend, redis, postgresql-x64-17
 
 # 删除 NSSM 服务
 nssm remove k9_api confirm

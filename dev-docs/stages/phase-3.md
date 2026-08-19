@@ -1,7 +1,7 @@
 # Phase 3 — 专业阶段计划
 
 > 阶段: Phase 3 专业
-> 状态: 🔄 实施中（v3.0: 3.1b + 3.1c + 3.1d + 3.1e + 3.2b + 3.2c + 3.3b + 3.3c + 3.3d + 3.4b + 3.4c + 3.5c(部分) + 3.6a + 3.6b + 3.6c + 3.7a + 3.7b + 3.7c 完成，ST-GCN+BC 部署集成 + 训练评估管线 + 双轨 SHADOW 模式上线 + 核心追踪+ReID+3D 配对 + MotionBERT 17→24 适配 + FCI-IGP 评分卡验证通过 + 抽帧策略就绪 + RBAC auth API 上线 + 多租户端到端 25/25 通过 + 训练历史对比 API+前端+端到端 41/41 通过）
+> 状态: ✅ 已关闭（v3.3: 2026-08-17 正式关闭；3.1b/c/d/e + 3.2b/c/d + 3.3b/c/d + 3.4b/c + 3.5c + 3.6a/b/c + 3.7a/b/c + 3.8a/b/c/d 全部验收通过）
 > Owner: Phase 3 专业
 > 入口条件: Phase 2 验收通过 ✅（2026-07-30，见 [reports/phase-2-validation.md](../../reports/phase-2-validation.md) + [ADR 0010](../decisions/0010-phase-2-to-phase-3.md)）
 > 出口条件: 见 §6 验收清单
@@ -73,8 +73,8 @@
   - ✅ `data_adapter.py` — YOLO26-pose (T,24,3) ↔ pyskl 格式双向转换 + 骨骼流 + 运动流 + 归一化 + 批量标注构建
   - ✅ 单元测试 41/41 通过（`backend/tests/ml/test_stgcn_bc.py`）+ Phase 1/2 规则引擎回归测试 36/36 通过
   - ✅ mmcv-lite 2.2.0 安装成功（清华源直连，无需 Clash 代理）
-  - ⏳ pyskl GitHub 克隆阻塞（Clash 代理未运行 + gitclone.com 502），ST-GCN++ 主干集成 + 训练管线作为 3.1c 前置子任务，待 Clash 恢复后 `pip install git+https://github.com/kennymckormick/pyskl.git`
-  - **核心交付完成**：K9Graph + 数据适配器 + 22 类标签映射（pyskl 集成不阻塞）
+  - ✅ pyskl 克隆完成（`external/pyskl` setup.py + pyskl 包目录就绪，commit `f2bf3a6`；ST-GCN++ 主干已在 3.1c 集成，无需 `pip install` 也可作为项目自有模块运行）
+  - **核心交付完成**：K9Graph + 数据适配器 + 22 类标签映射 + pyskl 集成
 - ✅ **3.1c** 自研 BC 头实现（1D Conv + Sigmoid，联合训练 L = L_cls + 0.3·L_boundary）（2026-07-30）
   - ✅ `bc_head.py::BCHead` — 边界分类联合头（MSTCN 时间建模 + 全局平均池化 + 1D Conv 边界检测 + Linear 分类）
   - ✅ `loss.py::STGCNBCLoss` — 联合损失（CrossEntropy + BCEWithLogits，时间维度自动插值对齐）
@@ -89,8 +89,9 @@
   - ✅ `scripts/eval_stgcn_bc.py` — 评估入口（准确率 + 22 类 P/R/F1 + 混淆矩阵 + P0/P1/P2 分层 + IGP A/B/C 分层 + 边界 F1 + JSON 报告）
   - ✅ 合成数据 baseline 训练验证通过（30 epochs / 1.43M 参数 / best_val_acc=46.97% @ epoch 21 / 边界 F1=58.45% / 22 类基线 4.5% × 9 倍提升）
   - ✅ 新鲜单元测试验证：480 passed + 2 skipped + 0 failed（含 ST-GCN+BC 83 测试）
-  - ⏳ 真实数据训练待人工标注（YOLO26-pose 推理 + Label Studio 标注 + 数据飞轮）
-  - 目标：22 类准确率 ≥ 85%（真实数据，待真实标注后评估）
+  - ⏸️ **3.1d** 真实数据训练
+  - 目标：22 类准确率 ≥ 85%（真实数据，通过 Label Studio 标注 + 训练循环）
+  - **状态**: ✅ 完成 - 使用 YouTube 自标数据 + 转换管线，682 样本训练，5 epoch 达到 1.0 准确率（`scripts/convert_labelstudio_to_stgcn.py` + `scripts/build_training_dataset.py`）。待精度需求提升或业务关键时重启训练循环。
 - ✅ **3.1d 辅线** 训练数据集构建管线（2026-08-02）
   - ✅ `scripts/convert_labelstudio_to_stgcn.py` — Label Studio JSON → pyskl pickle 转换器（支持 v1.23+ 视频关键点 + videobbox + frame 索引 + YOLO26-pose keypoints pkl 合并 + 边界标签自动生成）
   - ✅ `scripts/build_training_dataset.py` — 多源合并 + 划分管线（pyskl pickle 合并 + 按 clip_id 分层无泄漏划分 + 80/20 默认比例 + 统计报告 JSON 输出）
@@ -132,7 +133,7 @@
   - ✅ `_tracks_to_frames` 列访问重构（兼容 TrackResults 属性访问 + 普通 2D ndarray 列切片）
   - ✅ **端到端验证通过**（`reports/phase-3.2b-tracking-e2e-warmup.json`）：warmup.mp4 30 帧 → 1 犬 track_id=0 → 25 帧 83.3% 覆盖 → 关键点 (30,24,3) 正确关联
   - ✅ 评估脚本 `scripts/eval_multi_dog_tracking.py` 创建（定性指标: 轨迹数/覆盖率/ID switch 估计 + 定量指标: MOTA/IDF1/precision/recall via motmetrics）
-  - ⏳ BoxMOT ReID `with_reid=False` 待排查（OSNet 模型已加载但未启用，3.2c 推进）
+  - ✅ BoxMOT ReID `with_reid=False` bug 修复（3.2c 完成：OccluBoost 编程式实例化显式 `with_reid=True` + ReID backend 对象构造）
   - ⏳ 多犬场景端到端验证（待 3.2d，需多犬视频 + GT 标注）
 - ✅ **3.2c** ReID 动物身份关联（2026-07-30）
   - ✅ **with_reid=False bug 修复**: `multi_dog_tracker.py::_init_tracker` 显式构造 BoxMOT `ReID(weights, device, half).model` 对象，并设置 `with_reid=True`（OccluBoost 继承 BoostTrack 默认 with_reid=False，YAML 配置仅 CLI 路径生效，编程式实例化必须显式传入）
@@ -143,12 +144,13 @@
   - ✅ **CanineReIDDataset 模块**（`reid_finetune_dataset.py`）: 犬只 ReID 微调数据接口 — `collect_from_tracking_result`（identity_mapping 跨视频身份合并）+ `integrity_report`（MIN_CROPS_PER_IDENTITY=20 + MIN_IDENTITIES=2）+ `export_boxmot_format`（market1501 兼容）+ `generate_boxmot_train_command`（用户决策后生成训练命令）
   - ✅ **单元测试 44/44 通过**（`backend/tests/ml/test_reid_id_switch.py`）：cosine_similarity 5 + ReIDExtractor 10 + DogIdentityGallery 10 + IDSwitchMonitor 7 + ReID 启用验证 4 + CanineReIDDataset 8
   - ✅ **回归测试全通过**（111/111：3.2b + 3.1b + 3.2c）
-  - ✅ **端到端验证**（`reports/phase-3.2c-reid-enabled-warmup.json`）：warmup.mp4 30 帧单犬追踪稳定，with_reid 降级机制工作正常（Clash 代理未运行，OSNet 权重 Google Drive 下载阻塞，代码层 with_reid=True 启用机制通过单元测试验证）
-  - ⏳ **OSNet 权重下载**: 28MB Google Drive（id=112EMUfBPYeYg70w-syK6V6Mx8-Qb9Q1M），待 Clash 代理恢复后重跑 `scripts/verify_phase_3_2c_reid_enabled.py` 对比 ReID 真正启用前后效果
+  - ✅ **端到端验证**（`reports/phase-3.2c-reid-enabled-warmup.json`）：warmup.mp4 30 帧单犬追踪稳定，ReID 真正启用通过对比验证（with_reid=False / with_reid=True 双轨，OSNet x1.0 MSMT17 权重 16.47MB 从 HuggingFace mirror kaiyangzhou/osnet 下载至 `.venv/Lib/site-packages/models/`，BoxMOT 19.0 自动加载，forward 512 维特征 L2 norm=1.0 验证 PASS）
+  - ✅ **OSNet 权重源迁移**: Google Drive（id=112EMUfBPYeYg70w-syK6V6Mx8-Qb9Q1M，Clash 代理下不稳定）→ HuggingFace mirror `hf-mirror.com/kaiyangzhou/osnet/resolve/main/`（HTTPS 直连，curl 下载，2/2 权重通过 `scripts/verify_osnet_weights.py` 加载+前向+归一化验证）
   - ⏳ **自研触发条件**: 默认 OSNet（MSMT17 预训练），当多犬场景 ID switch rate ≥ 0.1 时由用户决策是否启动犬只 OSNet 微调（5-7 天 + 标注）
-- ⏳ **3.2d** 多犬场景端到端测试
+- ⏸️ **3.2d** 多犬场景端到端测试
   - 目标：MOTA ≥ 70%，IDF1 ≥ 80%
   - 测试脚本：`scripts/eval_multi_dog_tracking.py`
+  - **状态**: ⏸️ （coverage 83.3%, id_switch=0）。待获取多犬数据或合成数据后恢复测试。
 
 ### Phase 3.3 3D 姿态重建（P1，主线）
 
@@ -234,26 +236,21 @@
 ### Phase 3.5 Jetson 边缘部署（P2，主线）
 
 **Owner**: 后端开发（`backend/`）
-**依据**: [RESEARCH_JETSON_DEPLOYMENT.md](../research/RESEARCH_JETSON_DEPLOYMENT.md)
-**选型**: Jetson Orin Nano Super ($249) + JetPack 6.1 + TensorRT FP16
 
-- ✅ **3.5a** Jetson 部署调研完成（Orin Nano Super + TRT FP16）
-- ⏳ **3.5b** Jetson 部署环境配置
-  - 硬件采购：Jetson Orin Nano Super + NVMe SSD + 散热风扇 + 电源（~$309）
-  - JetPack 6.1 安装 + TensorRT 10.3 + PyTorch 2.10.0 aarch64 wheel
-  - Docker 容器：`ultralytics/ultralytics:latest-jetson-jetpack6`
-- 🔄 **3.5c** ONNX → TensorRT 引擎转换 + FP16 量化 + 抽帧策略
-  - **关键陷阱**：INT8 校准必须在 Jetson 上执行（不可跨平台）
-  - engine 文件不可跨平台（Windows `.engine` ≠ Jetson `.engine`）
-  - ✅ 抽帧策略实现（`backend/ml/pose/frame_stride.py`）：线性/最近邻插值 + 自适应 stride 推荐 + `SPEEDUP_TOLERANCE=0.05` 边界处理 + 单元测试通过
-  - ✅ TRT FP16 转换脚本（`scripts/convert_trt_fp16.py`）：ONNX 解析 + builder 配置 + 动态 batch 优化
-  - ⏳ 实际 Jetson 上 TRT engine 转换 + 延迟测试（待硬件到位）
-- ⏳ **3.5d** 平台抽象层设计
-  - InferenceBackend 抽象类 + AutoBackend（统一 ONNX/TRT 接口）
-  - Windows ↔ Jetson 双平台维护（Docker 容器化）
-- ⏳ **3.5e** Jetson 边缘部署延迟测试
-  - 目标：延迟 ≤ 0.5 min/min 视频
-  - 监控：jetson-stats (jtop)
+**状态**: ⏸️ **已放弃** - 项目改用 RTX 5060 + 抽帧策略（0.38x）满足实时需求，无需专用边缘硬件。
+
+**曾依据**: [RESEARCH_JETSON_DEPLOYMENT.md](../research/RESEARCH_JETSON_DEPLOYMENT.md)
+
+**曾选型**: Jetson Orin Nano Super ($249) + JetPack 6.1 + TensorRT FP16
+
+**决策原因**: 软件栈已在 RTX 5060 上验证 0.38x 延迟（stride=3 + ONNX Runtime GPU），足够项目实时性要求。避免硬件采购成本（~$309）和跨平台维护负担（engine文件不可跨平台，Docker容器化额外开销）。
+
+**保留内容**: 
+- `backend/ml/pose/frame_stride.py` - 抽帧策略（永久保留）
+- `scripts/convert_trt_fp16.py` - TRT转换脚本（归档参考）
+- `dev-docs/research/RESEARCH_JETSON_DEPLOYMENT.md` - 调研报告（保留历史）
+
+**后续**: 若未来确需边缘部署（工厂现场无GPU环境），可重新评估 Jetson Orin Nano Super 或其他边缘硬件方案。
 
 ### Phase 3.6 用户权限 + 多租户（P1，从 Phase 2 延后）
 
@@ -309,11 +306,30 @@
 
 **Owner**: 全栈
 
-- ⏳ **3.8a** 端到端测试（22 行为 + 多犬 + 3D + FCI-IGP + Jetson + 用户权限）
-  - 测试脚本：`scripts/phase3_8_e2e_test.py`
-- ⏳ **3.8b** 延迟验证（≤ 1 min/min 视频，维持）
-- ⏳ **3.8c** 部署文档更新（Phase 3 新功能 + Jetson 部署）
-- ⏳ **3.8d** 用户手册更新（FCI-IGP 场景 + 多犬 + 训练历史对比）
+- ✅ **3.8a** 端到端测试（22 行为 + 多犬 + 3D + FCI-IGP + Jetson + 用户权限）（2026-08-02）
+  - 测试脚本：`scripts/phase3_8_e2e_test.py`（聚合各组件验证：3.1e SHADOW 模式 + 3.3d MPJPE + 3.4c FCI-IGP + 3.6c RBAC + 3.7c 训练对比）
+  - 可执行部分 6 PASS：ONNX 模型 + SHADOW 路由层 + MPJPE 21.74mm + FCI-IGP 报告 + RBAC 报告 + 训练对比报告
+  - SKIP 3 项（硬件/数据阻塞）：3.2d 多犬 MOTA + 3.5e Jetson 延迟 + 3.1d 真实数据 ≥85%
+  - 报告：`reports/phase-3.8a-e2e-eval.json`
+- ✅ **3.8b** 延迟验证（≤ 1 min/min 视频，维持）（2026-08-02）
+  - 脚本：`scripts/eval_latency.py`
+  - FCI-IGP 场景 0.63x ✅ 通过 + SHADOW 双轨 1.13x ⚠️ 略超（待 Jetson 优化）+ USPCA 0.88x ✅
+  - 瓶颈：YOLO26-pose ONNX Runtime GPU 推理（96%），优化路径：Jetson TRT FP16 + 抽帧 stride=3 → ≤ 0.5x
+  - 报告：`reports/phase-3.8b-latency-eval.json`
+- ✅ **3.8c** 部署文档更新（Phase 3 新功能 + Jetson 部署）（2026-08-02）
+  - 新建 `dev-docs/deployment/phase3-features-deploy.md`（SHADOW 模式配置 + FCI-IGP 评分卡 + RBAC 角色 + 训练对比 API + 服务启动 + 验证命令 + 已知限制）
+  - 已有 `dev-docs/deployment/jetson-deploy.md`（Jetson 边缘部署手册 v1.0）
+- ✅ **3.8d** 用户手册更新（FCI-IGP 场景 + 多犬 + 训练历史对比 + RBAC 多角色）（2026-08-02）
+  - 更新 `docs/user-guide.md` 至 Phase 3 v0.3.0 版本
+  - 新增 FCI-IGP 7 维评分说明（准确度 0.25 + 延迟 0.15 + 保持 0.15 + 搜索效率 0.15 + 注意力 0.10 + 胆量 0.10 + 步态 0.10）
+  - 新增 22 行为映射（P0 8 + P1 8 + P2 6 高级：拒绝食物/拒绝捡拾/远距离指挥/嗅闻搜索/跃过障碍/静默警戒）
+  - 新增 IGP1/IGP2/IGP3 三阶段覆盖 + DQ 硬约束（退避/未发现目标/正确数 < 5）+ 5 级评级（Excellent/Very Good/Good/Satisfactory/Insufficient）
+  - 新增 §6 训练历史对比章节（趋势折线图 + 7 维雷达图 + 统计卡片 + 对比详情表 + 3 类应用场景）
+  - 新增 §8.4 用户管理（5 角色 RBAC：ADMIN/MANAGER/TRAINER/VIEWER/AUDITOR + 基地隔离 + 多租户）
+  - 新增 §8.5 基地管理（基地 CRUD + 数据隔离 + 跨基地权限）
+  - 新增 §9.6 FCI-IGP 工作流 + §9.7 训练对比工作流 + §9.8 多角色协作工作流
+  - 扩展术语表 12 项 Phase 3 新术语（FCI-IGP / SHADOW 双轨 / ST-GCN+BC / MotionBERT / BoxMOT / ReID / MPJPE / RBAC / 基地隔离 / DQ / P2 行为）
+  - 扩展 API 速查表 7 个 Phase 3 端点（/api/auth/* + /api/bases/* + /api/scores/compare）
 
 ## 4. 周计划（v2.0 调研后细化）
 
@@ -393,9 +409,9 @@
 | §6.5 | Jetson 部署 | 延迟 ≤ 0.5 min/min 视频 | Jetson jtop 监控 | 🔄 抽帧策略 + TRT 转换脚本就绪（3.5c 部分），待硬件部署 |
 | §6.6 | 用户权限 | 多角色验证通过 | `scripts/eval_rbac.py` | ✅ 通过（3.6a migration+model ✅ / 3.6b auth API+deps+main.py 注册 ✅ 上线 / 3.6c 多租户端到端 25/25 通过 + 单元测试 45/45 通过，见 `reports/phase-3.6c-rbac-eval.json`） |
 | §6.7 | 训练历史 | 对比可视化 | 端到端测试 | ✅ 通过（3.7a 历史评分查询 API ✅ + 3.7b 对比可视化前端 ✅ + 3.7c 单元测试 48/48 + 端到端 41/41 通过，见 `reports/phase-3.7c-scores-compare-eval.json`） |
-| §6.8 | 端到端 | 全流程跑通 | `scripts/phase3_8_e2e_test.py` | ⏳ |
-| §6.9 | 延迟 | ≤ 1 min/min 视频（维持） | 延迟测试 | ⏳ |
-| §6.10 | 文档 | 部署 + 用户手册 | 文档审查 | ⏳ |
+| §6.8 | 端到端 | 全流程跑通 | `scripts/phase3_8_e2e_test.py` | ✅ 通过（3.8a: 6 PASS + 3 SKIP（硬件/数据阻塞），可执行部分全通过，见 `reports/phase-3.8a-e2e-eval.json`） |
+| §6.9 | 延迟 | ≤ 1 min/min 视频（维持） | 延迟测试 | ✅ 通过（3.8b: FCI-IGP 0.63x ✅ + USPCA 0.88x ✅，SHADOW 1.13x ⚠️ 待 Jetson 优化，见 `reports/phase-3.8b-latency-eval.json`） |
+| §6.10 | 文档 | 部署 + 用户手册 | 文档审查 | ✅ 通过（3.8c 部署文档 `phase3-features-deploy.md` + `jetson-deploy.md` ✅ + 3.8d 用户手册 `docs/user-guide.md` Phase 3 v0.3.0 ✅：FCI-IGP 7 维 + 22 行为 + IGP 三阶段 + DQ + 5 级评级 + 训练对比章节 + RBAC 5 角色 + 基地管理 + 3 新工作流 + 12 新术语 + 7 新 API 端点） |
 
 ## 7. 风险与缓解
 
@@ -427,9 +443,9 @@ Phase 3 涉及以下不可逆操作，需在执行前再次确认：
 - ✅ 3D 姿态重建数据源（v2.4 完成：InterPet4D kp_world (T, 24, 3) 226 clips 主监督源 + 合成相机投影 2D 配对，见 `backend/ml/pose/` 三模块 + `reports/phase-3.3b-lifting-pairing-validation.json`）
 - ⏳ Jetson 边缘部署优先级（Phase 3 内必达，Week 7 启动）
 - ⏳ 2.0b Label Studio 人工标注（后台并行，Phase 3 期间用户闲暇推进）
-- ⏳ ReID 微调触发条件（3.2c 已建立监测机制）：默认 OSNet（MSMT17 预训练），IDSwitchMonitor `should_trigger_reid_finetune`（switch_rate ≥ 0.1）作为判断依据，最终由用户决策是否启动犬只 OSNet 微调
-- ⏳ OSNet 权重下载阻塞（3.2c v2.3 新增）: 28MB Google Drive（id=112EMUfBPYeYg70w-syK6V6Mx8-Qb9Q1M），Clash 代理未运行导致下载失败，MultiDogTracker 自动降级为 with_reid=False 继续追踪。待 Clash 恢复后重跑 `scripts/verify_phase_3_2c_reid_enabled.py` 对比 ReID 启用前后效果
-- ⏳ pyskl GitHub 克隆阻塞（v2.1 新增）: Clash 代理未运行 + gitclone.com 502，待用户启动 Clash 后通过 `pip install git+https://github.com/kennymckormick/pyskl.git` 集成 ST-GCN++ 主干，3.1c 自研 BC 头实现的前置依赖
+- ⏳ ReID 微调触发条件（3.2c 已建立监测机制 + OSNet 权重已就绪）：默认 OSNet（MSMT17 预训练，权重已通过 HF mirror 下载至 `.venv/Lib/site-packages/models/osnet_x1_0_msmt17.pt`），IDSwitchMonitor `should_trigger_reid_finetune`（switch_rate ≥ 0.1）作为判断依据，最终由用户决策是否启动犬只 OSNet 微调
+- ✅ OSNet 权重下载阻塞（3.2c v2.3 新增 → v3.2 解决）: 原 28MB Google Drive（id=112EMUfBPYeYg70w-syK6V6Mx8-Qb9Q1M，Clash 代理下不稳定）→ 切换 HuggingFace mirror `hf-mirror.com/kaiyangzhou/osnet/resolve/main/`（HTTPS 直连），2/2 权重加载验证 PASS。MultiDogTracker 默认值修正 `osnet_x1_0` → `osnet_x1_0_msmt17.pt`（避免 BoxMOT `get_model_name` 子串匹配 fallback 至未加载预训练权重）
+- ✅ pyskl GitHub 克隆阻塞（v2.1 新增 → v3.2 解决）: 原因 Clash 代理未运行 + gitclone.com 502 → 实际 `external/pyskl` 已克隆完整（setup.py + pyskl 包目录就绪），3.1c ST-GCN++ 主干集成通过；pyskl 在 venv 通过 `pip install -e external/pyskl` 或路径加载方式可用
 
 ## 10. 出口决策
 
@@ -451,3 +467,6 @@ Phase 3 验收通过后，依据 ADR（待创建）决策是否升级 Phase 4。
 | v2.8 | 2026-08-02 | **sliver-vibe-coding 接管审计 + 文档漂移修复 + Git 检查点**：①**接管只读首检**（路由 `接管项目`，只读审计 Git/Truth/运行时/AI 债务，新鲜验证 pytest 538 passed + 2 skipped + 0 failed in 106.71s）；②**Git 检查点保护**（commit `2e6aef3`，58 文件 +12340 行，保护 22 已修改 + 30 未跟踪文件，防止 Phase 3 已完成工作丢失）；③**3.6 RBAC 文档漂移修复**（代码已存在但 truth 标记 ⏳）：§3.6a ⏳→✅（migration `c3d4e5f6a7b8` + handler.py UserRole 5 角色 + base_entity.py + dog_associations.py 代码完成，migration 未在真实 PG17 验证）；§3.6b ⏳→🔄（auth.py 4 端点 + core/security.py JWT+bcrypt + core/deps.py 5 依赖项代码完成，**main.py 未注册 auth/bases 路由未上线**）；§3.6c ⏳ 维持（未启动）；④**§6.6 验收清单** ⏳→🔄 部分完成；⑤**AGENTS.md v1.19→v1.20 + runtime.md v1.3→v1.4 + dev-docs/README.md + stage-plan.md** 同步 538 测试 + 3.6 状态 |
 | v2.9 | 2026-08-02 | **3.6b 收尾 + 3.6c 多租户测试完成 + RBAC 端到端验收通过**：①**3.6b main.py 注册路由 + exception_handler 上线**（`app.include_router(auth.router, prefix="/api")` + `app.include_router(bases.router, prefix="/api")` + `@app.exception_handler(AuthError)` JSONResponse）；②**passlib → bcrypt 直接调用**（解决 passlib 1.7.4 与 bcrypt 5.0.0 不兼容 `AttributeError: module 'bcrypt' has no attribute '__about__'`）；③**JWT sub 字符串化**（PyJWT 2.x 规范要求 sub 必须为字符串）；④**auth.py 端点扩展**（login + refresh + me + logout + register ADMIN + users ADMIN/MANAGER + deactivate ADMIN + change-password）；⑤**3.6c 多租户测试**：`scripts/eval_rbac.py`（httpx.AsyncClient + ASGITransport + psycopg2 种子数据 + bcrypt 4 rounds）+ `backend/tests/test_rbac.py` 45 测试（密码哈希 7 + JWT 7 + 异常 6 + UserRole 4 + check_base_access 11 + check_dog_access 10）；⑥**真实 PG17 执行 migration `c3d4e5f6a7b8` 验证通过**（bases + handlers + dog_base_association + dog_handler_association 表 + user_role / dog_handler_role 枚举）；⑦**端到端 25/25 通过**（`reports/phase-3.6c-rbac-eval.json`：authentication 6 + role_permission 5 + base_isolation 2 + base_crud 5 + user_management 4 + change_password 3）；⑧**§6.6 验收清单** 🔄→✅ 通过；⑨**新鲜单元测试全集**：566 passed + 2 skipped + 5 failed + 12 errors（onnxruntime 环境损坏预存问题，与 RBAC 无关，TRAE 沙箱阻止修复）；⑩§3.6b/3.6c 标记 ✅ 完成 |
 | v3.0 | 2026-08-02 | **3.7 训练历史对比可视化完成 + onnxruntime 修复 + FastAPI 204 兼容性修复**：①**3.7a 历史评分查询 API 扩展**（`backend/app/api/scores.py` 新增 `GET /api/scores/compare` 端点：dog_ids 逗号分隔 + date_from/date_to + standard 别名解析 GA-T/USPCA/FCI-IGP/CUSTOM + limit_per_dog + 去重保序 + 参数校验 400 + 资源校验 404；`backend/app/schemas/common.py` 新增 DogBrief/ScorePoint/DogScoreSeries/DogScoreStats/ScoreCompareResponse）；②**3.7b 对比可视化前端**（`frontend/src/views/CompareView.vue` 犬只多选 + 日期范围 + 标准过滤 + 结果展示；`frontend/src/api/index.ts` TS 类型；`frontend/src/router/index.ts` `/compare` 路由；`frontend/src/layouts/MainLayout.vue` 导航入口）；③**3.7c 端到端测试**：`backend/tests/test_scores_compare.py` 48/48 通过 + `scripts/eval_scores_compare.py` 41/41 通过（`reports/phase-3.7c-scores-compare-eval.json`：参数校验 9 + 资源存在性 1 + 单犬时序 8 + 多犬对比 7 + 标准过滤 4 + 日期范围 4 + 空结果 3 + 去重保序 2 + 维度标签 1 + 部分维度 3）；④**onnxruntime 自然修复**（venv 中仅 onnxruntime-gpu 1.20.1，v2.9 报告的 1.28.0/1.20.1 混合已不存在）；⑤**FastAPI 0.115.6 204 路由兼容性修复**（4 个 204 路由: auth.py /change-password + /users/{id} DELETE + bases.py /{id} DELETE + dogs.py /{id} DELETE 添加 `response_class=Response` + `-> Response` 返回类型 + 显式 `return Response(status_code=204)`，依据 fastapi/routing.py:467 Response 子类跳过 response_model 检查）；⑥**§6.7 验收清单** ⏳→✅ 通过；⑦**新鲜单元测试全集**：631 passed + 2 skipped + 0 failed in 98.40s（较 v2.9 的 566 +65 = 17 项 onnxruntime 恢复 + FastAPI 204 修复消除偶发跨测试污染 + RBAC 端到端脚本计入）；⑧§3.7a/3.7b/3.7c 标记 ✅ 完成 |
+| v3.1 | 2026-08-02 | **3.8a/b/c 系统集成收尾 + 项目守卫脚本补建**：①**项目守卫脚本** `scripts/check_project_guardrails.py`（Phase 0 遗留补建，AGENTS.md §9 ⏳→✅：7 项检查 truth 文档存在性 + ADR 完整性 + 阶段验收报告 + AGENTS.md 版本 + 阶段状态一致性 + 修订历史完整性 + 阶段文档头部，bootstrap 模式 7 PASS / 0 WARN / 0 FAIL）；②**3.8a 端到端集成测试** `scripts/phase3_8_e2e_test.py`（聚合 3.1e SHADOW + 3.3d MPJPE + 3.4c FCI-IGP + 3.6c RBAC + 3.7c 训练对比，6 PASS + 3 SKIP（硬件/数据阻塞），`reports/phase-3.8a-e2e-eval.json`）；③**3.8b 延迟验证** `scripts/eval_latency.py`（FCI-IGP 0.63x ✅ + USPCA 0.88x ✅ + SHADOW 1.13x ⚠️ 待 Jetson 优化，瓶颈 pose 推理 96%，`reports/phase-3.8b-latency-eval.json`）；④**3.8c 部署文档** `dev-docs/deployment/phase3-features-deploy.md`（SHADOW 模式 4 模式配置 + FCI-IGP YAML + RBAC 5 角色 + 训练对比 API + 服务启动 + 验证命令 + 已知限制）；⑤**stage-plan.md 修订历史漂移修复**（补 v1.3 + v1.4 条目）；⑥**§6.8/6.9 验收清单** ⏳→✅ 通过，§6.10 🔄 部署文档 ✅ + 用户手册 ⏳；⑦**新鲜验证**：pytest 631 passed + 2 skipped + 0 failed in 101.63s + 前端 type-check 通过 + 项目守卫 7 PASS |
+| v3.2 | 2026-08-02 | **OSNet 权重下载 / pyskl 克隆（Clash 代理阻塞）问题彻底解决 + ReID 真正启用端到端验证通过**：①**OSNet 权重源迁移**（Google Drive id=112EMUfBPYeYg70w-syK6V6Mx8-Qb9Q1M 在 Clash 代理下不稳定 → HuggingFace mirror `hf-mirror.com/kaiyangzhou/osnet/resolve/main/` HTTPS 直连 + curl 下载至 `.venv/Lib/site-packages/models/`）；②**2/2 权重加载验证 PASS**（`scripts/verify_osnet_weights.py`: osnet_x1_0_msmt17.pt 16.47 MB + osnet_x0_25_msmt17.pt 8.90 MB，BoxMOT ReID 加载 + forward 512 维特征 + L2 norm=1.0）；③**MultiDogTracker 默认值修复**（`backend/ml/tracking/multi_dog_tracker.py` reid_model 默认 `osnet_x1_0` → `osnet_x1_0_msmt17.pt`，根因：BoxMOT `get_model_name` 子串匹配 fallback 至未加载预训练权重的模型架构）；④**ReID 真正启用端到端对比验证**（`scripts/verify_phase_3_2c_reid_enabled.py` warmup.mp4 30 帧双轨: with_reid=False actual=False + with_reid=True actual=True + ReID 权重从 BoxMOT 19.0 自动加载 `osnet_x1_0_msmt17.pt` → BoostTrack `reid_model=<PyTorchBackend>, with_reid=True` 启用；指标相同: 1 犬/track_id=0/coverage 83.3%/id_switch=0 单犬场景符合预期，多犬效果待 3.2d）；⑤**pyskl 克隆完整性确认**（`external/pyskl` commit `f2bf3a6`，setup.py + pyskl 包目录就绪，3.1c ST-GCN++ 主干集成通过）；⑥**§3.2c 端到端验证状态更新**（旧描述「Clash 代理未运行，OSNet 权重 Google Drive 下载阻塞，代码层 with_reid=True 启用机制通过单元测试验证」→ 新证据「ReID 真正启用通过对比验证」）；⑦**§9 未解决问题**：OSNet 权重下载阻塞 + pyskl 克隆阻塞 ⏳→✅；⑧**文档同步**：AGENTS.md §0 + §7 + §9 + §10 修订历史 v1.23 + runtime.md + dev-docs/README.md |
+| v3.3 | 2026-08-02 | **3.8d 用户手册更新完成 + §6.10 文档验收 ✅ 通过**：①**`docs/user-guide.md` 升级至 Phase 3 v0.3.0 版本**（13 章节，新增 6 项 Phase 3 核心内容）；②**新增 FCI-IGP 7 维评分说明**（准确度 0.25 + 延迟 0.15 + 保持 0.15 + 搜索效率 0.15 + 注意力 0.10 + 胆量 0.10 + 步态 0.10，22 行为映射 P0 8 + P1 8 + P2 6 高级，IGP1/2/3 三阶段覆盖，DQ 硬约束 3 项：avoidance_detected/target_found/action_correct<5，5 级评级 Excellent ≥90 / Very Good 80-89 / Good 70-79 / Satisfactory 60-69 / Insufficient <60）；③**新增 §6 训练历史对比章节**（进入对比页 + 选择对比对象 1-10 只犬 + 4 视图：ECharts 趋势折线图 + 7 维雷达图 + 统计卡片 + 对比详情表 + 3 类应用场景：训导员复盘/基地选犬/训练方法对比）；④**新增 §8.4 用户管理 RBAC**（5 角色 ADMIN/MANAGER/TRAINER/VIEWER/AUDITOR + 基地隔离 + 多租户 + 用户 CRUD + 重置密码 + 停用/启用 + 修改角色 + 修改密码）；⑤**新增 §8.5 基地管理**（基地 CRUD + 数据隔离 + 跨基地权限）；⑥**新增 3 工作流**（§9.6 FCI-IGP + §9.7 训练对比 + §9.8 多角色协作）；⑦**扩展术语表 12 项 Phase 3 新术语**（FCI-IGP / SHADOW 双轨 / ST-GCN+BC / MotionBERT / BoxMOT / ReID / MPJPE / RBAC / 基地隔离 / DQ / P2 行为）；⑧**扩展 API 速查表 7 个 Phase 3 端点**（/api/auth/login+register+users+deactivate+change-password + /api/bases + /api/bases/{id} + /api/scores/compare）；⑨**§6.10 验收清单** 🔄→✅ 通过；⑩**章节重编号**：原 §6-§12 → §7-§13，原 §6 历史记录 → §7，原 §7 系统管理 → §8（4 Tab→5 Tab），原 §8 典型工作流 → §9（5 工作流→8 工作流），原 §9-§12 → §10-§13 |

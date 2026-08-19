@@ -1,8 +1,9 @@
 # Phase 4.2 Transformer-Mamba 长序列行为分析
 
-## 状态: ✅ 调研完成，基线训练完成，待集成
+## 状态: ✅ 已授权纳入 Phase 4（2026-08-19 用户认可），调研完成 + 基线训练完成 + tasks.py 集成路由完成
 
 ## 依据
+- 用户决策（2026-08-19）：认可已完成的 Mamba 基线 + WSL 编译 + tasks.py 集成工作纳入 Phase 4
 - GitHub 调研结果 (2026-08-17)
 - `dev-docs/decisions/0011-phase-4-llm-explainer-adr.md`
 
@@ -33,6 +34,7 @@
 [✓] 安装依赖: mamba_ssm, flash-attn, timm
 [✓] 验证 GPU 推理 (RTX 5060)
 [✓] 准备数据加载器 (Kinetics-400 格式适配 22类)
+[✓] mamba_ssm 1.0.1 + causal-conv1d 1.0.0 WSL 真实编译（RTX 5060 sm_120，见 HANDOVER §6.2）
 ```
 
 ### 阶段 2: 基线实验 (1周)
@@ -40,7 +42,8 @@
 [✓] 复现 VideoMamba on Kinetics-400 (验证 pipeline)
 [✓] 替换头层为 22 类工作犬行为分类
 [✓] 训练评估: accuracy / macro-F1 / 推理延迟
-[✓] 与 ST-GCN+BC 基线对比
+[✓] 与 ST-GCN+BC 基线对比（合成数据 85.61% vs 46.97%）
+[✓] tasks.py 集成路由（behavior_deploy_mode 10 种模式，605 测试零回归）
 ```
 
 ### 阶段 3: 改进实验 (1-2周)
@@ -53,10 +56,10 @@
 
 ### 阶段 4: 集成部署 (1周)
 ```
-[ ] 封装为 backend/ml/behavior/mamba_sequence.py
+[✓] 封装为 backend/ml/behavior/mamba_sequence.py（mamba_ssm 优先 + VideoMambaSkeleton 回退）
 [ ] 添加 ONNX 导出支持
-[ ] 集成至 BehaviorRecognizer 路由层
-[ ] 单元测试 + 端到端验证
+[✓] 集成至 BehaviorRecognizer 路由层（tasks.py 集成路由）
+[✓] 单元测试 + 端到端验证
 ```
 
 ## 预期产出

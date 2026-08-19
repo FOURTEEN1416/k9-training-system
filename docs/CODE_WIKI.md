@@ -615,7 +615,7 @@ handlers ──1:N── dogs ──1:N── training_sessions
 **软件预装**（见 [docs/deployment.md](file:///d:/Desktop/k9-training-system/docs/deployment.md)）：
 - Python 3.12（项目 venv）
 - Node.js 20 LTS
-- PostgreSQL 16+（端口 5433）
+- PostgreSQL 17+（端口 5433）
 - Redis 7+（端口 6379）
 - CUDA Toolkit 12.8+（Blackwell GPU）
 

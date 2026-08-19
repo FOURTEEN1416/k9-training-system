@@ -207,9 +207,10 @@
 **Owner**: 全体
 
 - ✅ **1.8a** 验收报告 `reports/phase-1-validation.md`（15 章，§6.1-§6.8 全部证据归档）
-- ✅ **1.8b** 学术副产物方向选定：**跨物种行为识别基准**（基于 InterPet4D + Animal Kingdom）
-  - 潜在论文方向 3 个：规则引擎 / YAML 评分引擎 / 跨物种姿态迁移
-  - 实验规划 P0/P1/P2 三优先级（见验收报告 §11.3）
+- ✅ **1.8b** 学术副产物方向选定：~~跨物种行为识别基准（基于 InterPet4D + Animal Kingdom）~~ → **2026-08-19 用户决策修订：可解释评分卡 + 端到端工作犬评估系统**（与产品重心一致，见 project-brief.md §4 v2.1）
+  - 论文主线：YAML 可解释评分引擎 + 双场景（选育/测评）端到端闭环 + FCI-IGP 标准映射
+  - 支撑实验素材：规则引擎基线 + ST-GCN+BC 合成 46.97% / Mamba 合成 85.61% 对比 + APTv2 多犬验证 + 端到端 0.63x 延迟（素材清单待整理）
+  - 备选实验方向（不阻塞主线）：跨物种姿态迁移（InterPet4D）可作消融章节
 - ✅ **1.8c** 学术实验整理：Phase 2 并行推进，InterPet4D 真实准确率为 P0 实验
 - ✅ **1.8d** 用户决策：Phase 1 验收通过（**带条件**），1.6d/1.2f 真实验证作为 Phase 2 启动前置条件
 - ✅ **1.8e** 升级决策记录到 [ADR 0005](../decisions/0005-phase-1-to-phase-2.md)
@@ -427,3 +428,4 @@ Phase 1 MVP 验收通过（**带条件**），见 `reports/phase-1-validation.md
 | v2.3 | 2026-07-28 | Phase 1.2f / 1.4h / 1.5 / 1.6 并行验收通过：1.2f 合成数据准确率 92.9% → 跳过 Phase 1.3 PoseC3D；1.4h 前后端联调 9 项集成测试通过（含 conditions.py 短路求值 bug 修复）；1.5 `object_detector.py` YOLO26 COCO 物体检测集成（球/食物/玩具/人/犬筛选 + 单例缓存 + 流式推理）；1.6 `puppy_signals.py` 3 维 9 信号提取 + `puppy_selection.yaml` v1.1.0 升级 + `tasks.py` 集成。待办：1.6d DogMo "Play With Toy" 真实序列验证（待数据集获取）。 |
 | v2.4 | 2026-07-28 | Phase 1.7 验收通过：1.7a/b 双场景端到端冒烟测试（合成视频 → 推理 → PDF 报告，7/7 PASS）；1.7c YAML 评分卡动态修改测试通过（PUT → 热加载 → 评分对比）；1.7d 延迟验证 obedience 0.36x + puppy 0.78x（均 ≤ 1.0x）；1.7e 部署文档 `docs/deployment.md` 完成（Windows + NSSM + 故障排查）；1.7f 用户手册 `docs/user-guide.md` 完成（训导员指南 + 评分卡编辑 + FAQ）。1.6d DogMo 替代验证通过（合成球+犬形状视频跑通选育管线），真实数据集待购买后补做 1.2f 复核。 |
 | v2.5 | 2026-07-28 | Phase 1.8 验收通过（带条件）：1.8a 验收报告 `reports/phase-1-validation.md` 归档（15 章）；1.8b 学术方向选定（跨物种行为识别基准，InterPet4D + Animal Kingdom）；1.8c 学术实验整理（Phase 2 并行，P0/P1/P2 三优先级）；1.8d 用户决策 Phase 1 验收通过（带条件）；1.8e 升级决策 ADR 0005 创建。Phase 2 启动前置条件：1.6d 真实序列验证（InterPet4D kp_world + YouTube 玩球视频）+ 1.2f 真实数据复核（InterPet4D sit/down/stand/come 准确率，复核 Phase 1.3 跳过决策）。配套脚本 `scripts/download_interpet4d.py` + `scripts/validate_phase2_prereq.py` 同步交付。 |
+| v2.6 | 2026-08-19 | **§1.8b 学术方向修订（用户决策）**：跨物种行为识别基准 → **可解释评分卡 + 端到端工作犬评估系统**（与产品重心一致）。论文主线改为 YAML 可解释评分引擎 + 双场景端到端闭环 + FCI-IGP 标准映射，支撑素材含 ST-GCN+BC/Mamba 对比 + APTv2 多犬验证 + 0.63x 延迟；跨物种姿态迁移降级为备选消融章节。同步 project-brief.md v2.1 + AGENTS.md v1.26 + ADR 0005 §1.3 |

@@ -4,19 +4,19 @@
 
 **公开文档与内部 truth 分离**：本目录内容不应直接推送到公开仓库（已在 `.gitignore` 中排除 `.trae/`，但 `dev-docs/` 默认入库；如需私有化，参见 `project-flow.md` 的 dual-repo 管理策略）。
 
-> **修订说明（2026-08-02）**：本次修订同步至 Phase 3 v2.9 实施中状态（3.6 RBAC 端到端验收通过后）。原文档多处理于"⏳ Phase 0"过时状态——实际 Phase 0/1/2 已完成验收（见 `reports/phase-{0,1,2}-validation.md` + AGENTS.md §7），Phase 3 已实施至 3.6c 完成（见 `stages/phase-3.md` v2.9：3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a/b/c 完成）。`design/` / `quality/` / `acceptance/` / `database-design.md` / `backend-boundary.md` 等 truth 文档**未建立**（占位条目移除，避免误导）。
+> **修订说明（2026-08-19）**：本次修订同步至 Phase 4 实施中状态（LLM 双阶段决策 + Transformer-Mamba 授权纳入 + 学术主方向确认，用户决策 2026-08-19，见 ADR 0011 v1.1 + AGENTS.md v1.26）。Phase 0/1/2/3 已完成验收（Phase 3 于 2026-08-17 正式关闭 v3.3，见 `reports/phase-{0,1,2}-validation.md` + AGENTS.md §7）。`design/` / `quality/` / `acceptance/` / `database-design.md` / `backend-boundary.md` 等 truth 文档**未建立**（占位条目移除，避免误导）。
 
 ## 文档索引
 
 ### 项目基础 truth
 | 文档 | 用途 | 状态 |
 |------|------|------|
-| `project-brief.md` | 项目立项 brief（用户、场景、MVP、非目标） | ✅ |
+| `project-brief.md` | 项目立项 brief（用户、场景、MVP、非目标） | ✅ v2.1（2026-08-19 漂移修正） |
 | `function-list.md` | 功能清单与复杂功能文档索引 | ✅ |
 | `technical-selection.md` | 技术选型 truth（栈+框架+架构组合） | ✅ |
-| `architecture.md` | 项目架构（拓扑、owner map、模块边界） | ✅（部分漂移，待同步 Phase 2/3 实际结构） |
+| `architecture.md` | 项目架构（拓扑、owner map、模块边界） | ✅ v1.1（2026-08-01 同步 Phase 2/3 实际结构） |
 | `runtime.md` | 运行时基线（包管理器、版本、启动命令） | ✅ Phase 0 已建立（v1.6，631 单元测试新鲜验证 + onnxruntime 修复 + FastAPI 204 兼容性修复 + 3.7 训练历史对比端到端 41/41 通过） |
-| `stage-plan.md` | 大阶段计划（Phase 0-4） | ✅（v1.3，Phase 3 v3.0 状态同步） |
+| `stage-plan.md` | 大阶段计划（Phase 0-4） | ✅（v1.7，2026-08-19 漂移修正） |
 
 ### 阶段 truth
 | 文档 | 用途 | 状态 |
@@ -24,7 +24,9 @@
 | `stages/phase-0.md` | Phase 0 基础设施计划 | ✅ 完成（2026-07-26 验收） |
 | `stages/phase-1.md` | Phase 1 MVP 计划 | ✅ 完成（2026-07-28 验收，带条件） |
 | `stages/phase-2.md` | Phase 2 核心计划 | ✅ 完成（2026-07-30 验收，v2.7） |
-| `stages/phase-3.md` | Phase 3 专业计划 | 🔄 实施中（v3.0：3.1b/c/d/e + 3.2b/c + 3.3b/c/d + 3.4b/c + 3.5c 部分 + 3.6a/b/c + 3.7a/b/c 完成） |
+| `stages/phase-3.md` | Phase 3 专业计划 | ✅ 已关闭（v3.3：2026-08-17 正式关闭；3.1b/c/d/e + 3.2b/c/d + 3.3b/c/d + 3.4b/c + 3.5c + 3.6a/b/c + 3.7a/b/c + 3.8a/b/c/d 完成） |
+| `stages/phase-4.md` | Phase 4 前沿计划 | 🔄 实施中（v1.1：2026-08-19 LLM 双阶段 + Mamba 授权纳入） |
+| `stages/phase-4-transformer-mamba.md` | Transformer-Mamba 基线 | ✅ 已授权纳入（2026-08-19 用户认可） |
 
 ### 设计/质量/验收 truth
 > `design/` / `quality/` / `acceptance/` 目录**尚未建立**。原 README 列为占位条目但实际未创建——Phase 0-2 期间验收证据统一归档到 `reports/phase-{N}-validation.md`。如需建立独立 truth 目录，Phase 3+ 启动时按需创建。
@@ -41,6 +43,8 @@
 | `decisions/0008-1.2f-supplement-plan.md` | 1.2f 数据补强计划 | ✅ 已确认（v1.6） |
 | `decisions/0009-data-strategy-four-paths.md` | 数据策略四路径 | ✅ 已确认 |
 | `decisions/0010-phase-2-to-phase-3.md` | Phase 2 → Phase 3 升级 | ✅ 已确认 |
+| `decisions/0011-phase-4-llm-explainer-adr.md` | Phase 4 LLM 行为解释器 | ✅ 已实施（v1.1：实验室 Agnes API + 实用期本地模型） |
+| `decisions/0012-foundation-system-direction.md` | 基座系统方向决策 | ✅ 已确认（物理-语义解耦 + 小样本自监督数据飞轮） |
 
 > **ADR 0004 说明**：编号 0004 预留给"PoseC3D 触发但失败时记录"（见 `phase-1.md` §6 + `0003-phase-0-to-phase-1.md` §55）。AGENTS.md §9 已确认 PoseC3D 跳过决策（1.2f 条件通过维持跳过），故 ADR 0004 **未触发创建**——这是设计预期，非缺失。
 
@@ -79,7 +83,7 @@
 
 ## 阶段映射
 
-本项目遵循 sliver-vibe-coding Main Sequence，当前处于 Phase 3 实施中（2026-08-02 sliver-vibe-coding 接管审计后）：
+本项目遵循 sliver-vibe-coding Main Sequence，当前处于 Phase 4 实施中（2026-08-19 漂移修正后）：
 - ✅ 项目空间/Git/dev-docs 已建立
 - ✅ Project brief / Function list / Technical selection / Architecture 已创建
 - ✅ Agent constitution 已创建（`AGENTS.md` v1.21）
@@ -89,5 +93,5 @@
 - ✅ Phase 0 基础设施完成（2026-07-26 验收）
 - ✅ Phase 1 MVP 完成（2026-07-28 验收，带条件）
 - ✅ Phase 2 核心完成（2026-07-30 验收，v2.7 + ADR 0010）
-- 🔄 Phase 3 专业实施中（v3.0：3.1b/c/d/e ST-GCN+BC + 3.2b/c 多犬追踪+ReID + 3.3b/c/d 3D 姿态 + 3.4b/c FCI-IGP + 3.5c 抽帧部分 + 3.6a/b/c RBAC 端到端验收通过 25/25 + 3.7a/b/c 训练历史对比端到端 41/41 通过，Git 检查点 `2e6aef3`）
-- ⏳ Phase 4 前沿按需
+- ✅ Phase 3 专业完成（2026-08-17 正式关闭，v3.3：3.1b/c/d/e + 3.2b/c/d + 3.3b/c/d + 3.4b/c + 3.5c + 3.6a/b/c + 3.7a/b/c + 3.8a/b/c/d 完成，Git 检查点 `2e6aef3`）
+- 🔄 Phase 4 前沿实施中（2026-08-02 启动：LLM 行为解释器 ✅ 实验室 Agnes API / 实用期本地模型 ADR 0011 v1.1 + Transformer-Mamba ✅ 用户 2026-08-19 授权纳入（Mamba 基线 85.61% + WSL 编译 + tasks.py 集成路由）+ RL 按需）
