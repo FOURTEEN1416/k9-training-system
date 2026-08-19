@@ -1,5 +1,7 @@
 # K9 Training Vision System（工作犬训练机器视觉识别系统）
 
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
+
 用于分析工作犬训练视频的机器视觉识别系统：自动检测 24 个犬只关键点、识别 22 种训练行为，并按 FCI-IGP / USPCA / GA-T 标准生成端到端评分报告，无需人工干预。
 
 > **数据隐私**：公安/海关场景，全流程本地部署，数据不出本地（无云依赖）。
