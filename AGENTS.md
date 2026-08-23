@@ -2,13 +2,13 @@
 
 > 工作犬训练机器视觉识别系统的 Agent 行为宪法
 > 基于 sliver-vibe-coding agent-constitution 框架
-> 状态: ✅ v1.30
-> 日期: 2026-08-20
+> 状态: ✅ v1.31
+> 日期: 2026-08-23
 
 ## 0. 项目身份
 
 **项目**：工作犬训练机器视觉识别系统（K9 Training Vision System）
-**当前阶段**：Phase 3 ✅ 工程关闭 / Phase 4 🔄 并行实施中 / **P0 数据解阻 🔄 当前主线（2026-08-20 文档清洗：学术研究为主，产品为副产物）**
+**当前阶段**：Phase 3 ✅ 工程关闭 / Phase 4 🔄 产品升级并行实施中 / **研究线（基座愿景+论文+P0 数据解阻）已于 2026-08-23 移交独立仓库 psd-framework（ADR 0013），本仓库定位收窄为产品验证平台**
 **核心创新**：首次将图像域小样本伪标签方法（姚青 JIA：VFM 骨干 + 锚点学习 + 聚类 + 伪标签）迁移到**时序骨架域**，结合 AimCLR（AAAI 2022）+ SMQ（ICCV 2025）+ TCL（CVPR 2021）形成完整技术栈
 **论文定位**：Pattern Recognition / IJCV — A Physics-Semantics Decoupled Framework for Low-Resource Animal Behavior Recognition under Evolving Evaluation Criteria
 **产品定位**：方法验证载体（Phase 1-3 已完成：YOLO26-pose + ST-GCN+BC + FCI-IGP 评分卡 + 端到端闭环）
@@ -224,3 +224,4 @@
 | v1.28 | 2026-08-19 | **YouTube 自标数据源彻底清除 + Label Studio 废弃**：磁盘/代码/文档全面清理，ADR 0008 v1.7 更新 |
 | v1.29 | 2026-08-19 | **研究方向修正：学术研究为主，产品为副产物**。§0 核心创新更新——首次将图像域小样本伪标签方法（姚青 JIA：VFM 骨干 + 锚点学习 + 聚类 + 伪标签）迁移到时序骨架域。论文定位：Pattern Recognition / IJCV |
 | v1.30 | 2026-08-20 | **全量文档清洗口径确认并执行**：Phase 4 保留并行实施，P0 为当前主线；历史文档允许改写；Label Studio 保留为通用主动学习复核工具；真实 K9 视频取消硬依赖；统一三层指标口径；Phase 3 工程关闭与后验验证边界分离；主端口 8001；公开能力分级；研究创新主张审慎化；新增研究/报告索引与冲突登记册。 |
+| v1.31 | 2026-08-23 | **研究仓库拆分（ADR 0013，用户决策）**：①新建独立仓库 `D:\Desktop\psd-framework` 承载研究线——①基座愿景 + ②PR/IJCV 论文 + ③P0 数据解阻（P0.1-P0.6）；②用户口径确认：④产品系统与⑤Phase 4 升级属产品升级线留在本仓，本仓库定位收窄为产品验证平台；③同步 stage-plan.md v1.12 + stages/data-unblocking.md 冻结 + dev-docs/README + HANDOVER v1.5；④代码资产未搬移，移植映射清单见 psd-framework/docs/assets-map.md，跨仓只允许文档指针禁止 import；⑤Mamba 双角色：产品替换留本仓，85.61% 合成基线允许被新仓移植作论文骨干候选 |

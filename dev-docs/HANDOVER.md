@@ -7,10 +7,12 @@
 > 技术栈: SMQ（ICCV 2025）+ AimCLR（AAAI 2022）+ TCL（CVPR 2021）+ 姚青 JIA 迁移（核心创新）
 > 产品系统: K9 Training Vision System（Phase 1-3 已完成，作为方法验证平台）
 
-**版本**: v1.4  
-**日期**: 2026-08-19  
+**版本**: v1.5  
+**日期**: 2026-08-23  
 **项目根目录**: `D:\Desktop\k9-training-system`  
 **接手会话**: 歆歆（sliver-vibe-coding）于 2026-08-18~19 完成接管 + Mamba 编译 + tasks.py 集成路由 + 文档同步；2026-08-19 完成漂移修正（LLM 双阶段决策 + 学术方向确认 + Phase 4 授权纳入）+ 基座方向确认（ADR 0012：数据解阻 + 物理-语义解耦基座，7 方向 37 仓库调研）
+>
+> **v1.5（2026-08-23）**：用户决策研究仓库拆分（ADR 0013）——P0 数据解阻 + 论文主线移交 `D:\Desktop\psd-framework`；本仓库定位收窄为产品验证平台，Phase 4 产品升级继续。跨仓只允许文档指针，禁止 import；代码复用走 `psd-framework/docs/assets-map.md` 显式移植。
 
 ---
 

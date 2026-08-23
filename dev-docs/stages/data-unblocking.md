@@ -1,6 +1,6 @@
 # 数据解阻（P0）阶段计划
 
-> 状态: 🔄 当前主线实施中（2026-08-20）
+> 状态: ⏸️ 已移交冻结（2026-08-23，ADR 0013）——现行计划由 `D:\Desktop\psd-framework\dev-docs\stage-plan.md` 接管推进；本文件保留为立项期规划记录
 > 依据: ADR 0012（基座系统方向）+ 系统性调研结论（7 方向 37 仓库）
 > 技术栈: SMQ（ICCV 2025）+ AimCLR（AAAI 2022）+ TCL（CVPR 2021）+ **姚青 JIA 迁移（核心创新）**
 > 论文定位: Pattern Recognition / IJCV
