@@ -13,6 +13,8 @@
 **接手会话**: 歆歆（sliver-vibe-coding）于 2026-08-18~19 完成接管 + Mamba 编译 + tasks.py 集成路由 + 文档同步；2026-08-19 完成漂移修正（LLM 双阶段决策 + 学术方向确认 + Phase 4 授权纳入）+ 基座方向确认（ADR 0012：数据解阻 + 物理-语义解耦基座，7 方向 37 仓库调研）
 >
 > **v1.5（2026-08-23）**：用户决策研究仓库拆分（ADR 0013）——P0 数据解阻 + 论文主线移交 `D:\Desktop\psd-framework`；本仓库定位收窄为产品验证平台，Phase 4 产品升级继续。跨仓只允许文档指针，禁止 import；代码复用走 `psd-framework/docs/assets-map.md` 显式移植。
+>
+> **研究线新窗口入口**：`D:\Desktop\psd-framework\dev-docs\HANDOVER.md`（含数据盘点路径、环境基线、下一步任务路由）
 
 ---
 
