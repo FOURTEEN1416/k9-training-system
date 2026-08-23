@@ -1,6 +1,6 @@
 # Phase 4 专业阶段计划
 
-**状态**: 🔄 并行实施中 (2026-08-02 启动，2026-08-19 用户授权 Transformer-Mamba 纳入 + LLM 双阶段决策；P0 数据解阻为当前主线)
+**状态**: 🔄 产品升级并行实施中 (2026-08-02 启动，2026-08-19 用户授权 Transformer-Mamba 纳入 + LLM 双阶段决策；2026-08-23 起 P0 数据解阻已移交 psd-framework 仓库（ADR 0013），本阶段聚焦产品升级)
 **Truth source**: `dev-docs/stages/phase-4.md` + `dev-docs/decisions/0011-phase-4-llm-explainer-adr.md`（v1.1）+ `dev-docs/stages/phase-4-transformer-mamba.md`
 **当前子任务完成**: 4.1 LLM 行为解释器（Agnes API 实验室阶段）/ 4.2 Transformer-Mamba 基线 + mamba_ssm WSL 编译 + tasks.py 集成路由（用户 2026-08-19 认可纳入）
 
