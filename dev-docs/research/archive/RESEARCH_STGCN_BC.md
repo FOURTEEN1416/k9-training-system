@@ -390,7 +390,7 @@ class BehaviorRouter:
 ### 8.3 数据策略: 合成预训练 + 真实微调
 
 1. **预训练**: Phase 2 合成数据（96.3% 规则引擎产出）作为 ST-GCN+BC 预训练集
-2. **微调**: Phase 2.1 数据飞轮 + Label Studio 人工标注（5 视频待标注，project id=1）+ YouTube 自标
+    2. **微调（历史方案）**: Phase 2.1 数据飞轮 + Label Studio 人工标注（当时 5 视频待标注，project id=1）+ YouTube 自标；当前改用 P0 主动学习数据飞轮
 3. **评估**: 留出真实测试集（dog-pose val 同域数据，1703 张已验证）
 
 ### 8.4 部署: ONNX Runtime GPU（Windows）

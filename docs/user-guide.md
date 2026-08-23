@@ -3,7 +3,7 @@
 > 工作犬训练机器视觉识别系统 — Phase 3
 > 适用版本: v0.3.0
 > 目标用户: 工作犬训导员 / 犬只管理人员 / 基地管理员 / 系统管理员
-> 访问地址: http://127.0.0.1:5173（前端） / http://127.0.0.1:8000/docs（API 文档）
+> 访问地址: http://127.0.0.1:5173（前端） / http://127.0.0.1:8001/docs（API 文档）
 
 ## 1. 系统概述
 
@@ -651,7 +651,7 @@ scoring_engine:
 | `/api/finetune/pipeline` | GET | 数据飞轮概览（Phase 2） |
 | `/api/annotations` | GET/POST | 标注任务管理（Phase 2） |
 
-完整 OpenAPI 文档：http://127.0.0.1:8000/docs
+完整 OpenAPI 文档：http://127.0.0.1:8001/docs
 
 ### 13.2 视频拍摄检查清单
 

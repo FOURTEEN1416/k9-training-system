@@ -1,7 +1,7 @@
-# Phase 2 — 核心阶段计划
+# Phase 2 — 核心阶段计划（历史）
 
 > 阶段: Phase 2 核心
-> 状态: ✅ 完成（2026-07-30 验收通过，v2.7；见 [reports/phase-2-validation.md](../../reports/phase-2-validation.md) + [ADR 0010](../decisions/0010-phase-2-to-phase-3.md)）
+> 状态: ✅ 历史阶段已关闭（2026-07-30 验收通过，v2.7）；本文件中的 YouTube/旧数据飞轮是当时路径，当前以 ADR 0012 与 P0 阶段计划为准。
 > Owner: Phase 2 核心
 > 入口条件: Phase 1 验收通过 ✅ + 1.6d/1.2f 前置条件达成 ✅（ADR 0005 v1.1 + ADR 0006 v1.1）
 > 出口条件: 见 §6 验收清单（§6.1-§6.8 全部通过，详见验收报告）

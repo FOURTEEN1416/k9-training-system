@@ -19,7 +19,7 @@
 
 ### 1.2 用户决策
 
-用户确认 **Case A：升级 Phase 2**，真实视频补强作为 Phase 2 首批任务。同时推进 **Case B：1.2f 补强方案调研**（含视频+标签数据集 + YouTube 自标），作为 Phase 2 并行任务。
+用户确认 **Case A：升级 Phase 2**，真实视频补强作为 Phase 2 首批任务。同时推进 **Case B：1.2f 补强方案调研**（含视频+标签数据集 + YouTube 自标），作为当时的 Phase 2 历史并行任务；该路径后来由 ADR 0012 替代。
 
 ### 1.3 Phase 2 范围（来自 function-list.md + stage-plan.md）
 

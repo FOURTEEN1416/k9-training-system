@@ -85,7 +85,7 @@ Phase 1 验收"带条件"指以下两项作为 **Phase 2 启动前置条件**（
 [已执行] 用户决策（2026-07-28）: Case A + Case B 并行
     ↓
 ✅ Case A: 确认升级 Phase 2（ADR 0007）→ 真实视频补强作为 Phase 2 首批任务
-✅ Case B: 1.2f 补强方案（ADR 0008）→ Animal Kingdom 申请 + YouTube 自标 + Label Studio
+✅ Case B: 1.2f 补强方案（历史 ADR 0008）→ Animal Kingdom 申请 + YouTube 自标 + Label Studio；后续由 ADR 0012 替代
     ↓
 [当前] Phase 2 已启动（详见 stages/phase-2.md）
 ```

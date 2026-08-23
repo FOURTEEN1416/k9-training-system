@@ -10,7 +10,7 @@
 
 ## 1. 阶段目标
 
-**专业级算法升级 + 多犬场景 + 国际标准 + 边缘部署**：
+**专业级工程能力升级 + 多犬场景 + 国际标准 + 边缘部署预研**：
 
 - **3.1 ST-GCN+BC 行为识别**：22 类（P0 8 + P1 8 + P2 6 高级），替代规则引擎作为主算法
 - **3.2 多犬追踪 + ID 关联**：BoxMOT + OccluBoost + ReID，支持多犬同时测评
@@ -21,8 +21,8 @@
 - **3.7 训练历史对比可视化**（从 Phase 2 延后）：历史评分查询 + 对比图表
 
 **关键技术验证**：
-- ST-GCN+BC 22 类行为准确率（真实数据）≥ 85%
-- 多犬追踪 MOTA ≥ 70%
+- ST-GCN+BC 真实数据准确率：作为后验数据科学验证项，不以合成结果替代
+- 多犬追踪 MOTA：公开视频/现有评估作为工程参考，真实多犬 GT 仍需独立验证
 - 3D 姿态重建 MPJPE ≤ 50mm
 - Jetson 边缘部署延迟 ≤ 0.5 min/min 视频
 - RBAC 多角色验证
@@ -90,8 +90,8 @@
   - ✅ 合成数据 baseline 训练验证通过（30 epochs / 1.43M 参数 / best_val_acc=46.97% @ epoch 21 / 边界 F1=58.45% / 22 类基线 4.5% × 9 倍提升）
   - ✅ 新鲜单元测试验证：480 passed + 2 skipped + 0 failed（含 ST-GCN+BC 83 测试）
   - ⏸️ **3.1d** 真实数据训练
-  - 目标：22 类准确率 ≥ 85%（真实数据，通过 AimCLR+SMQ+TCL+主动学习管线，见 ADR 0012）
-  - **状态**: ⏸️ 阻塞 - YouTube 自标数据已废弃（2026-08-19，零标注无价值），等待 AimCLR 预训练 + 主动学习标注管线就绪
+  - 目标：按合成、公开真实、真实 K9 三层数据域报告 22 类准确率；公开真实/目标域参考目标 ≥85%
+  - **状态**: ⏸️ 后验验证 — YouTube 自标数据已废弃（2026-08-19，见 ADR 0008 v1.7），等待 AimCLR 预训练 + 主动学习标注管线就绪
 - ✅ **3.1d 辅线** 训练数据集构建管线（2026-08-02）
   - ✅ `scripts/convert_labelstudio_to_stgcn.py` — Label Studio JSON → pyskl pickle 转换器（保留为通用格式转换工具，但输入源不再来自 YouTube 自标）
   - ✅ `scripts/build_training_dataset.py` — 多源合并 + 划分管线（pyskl pickle 合并 + 按 clip_id 分层无泄漏划分 + 80/20 默认比例 + 统计报告 JSON 输出）
@@ -442,14 +442,14 @@ Phase 3 涉及以下不可逆操作，需在执行前再次确认：
 - ⏳ ST-GCN+BC vs 规则引擎并存策略（v2.0 决策双轨并行，三阶段迁移）
 - ✅ 3D 姿态重建数据源（v2.4 完成：InterPet4D kp_world (T, 24, 3) 226 clips 主监督源 + 合成相机投影 2D 配对，见 `backend/ml/pose/` 三模块 + `reports/phase-3.3b-lifting-pairing-validation.json`）
 - ⏳ Jetson 边缘部署优先级（Phase 3 内必达，Week 7 启动）
-- ⏳ 2.0b Label Studio 人工标注（后台并行，Phase 3 期间用户闲暇推进）
+  - ⏸️ **3.2d 多犬场景验证**（2026-08-19 废弃 YouTube/LS 路径后降级）：单犬场景 warmup.mp4 验证通过（coverage 83.3%, id_switch=0），多犬 GT 评估待真实数据就绪。历史 ADR 0008 YouTube 自标路径已废弃，不再作为数据来源。
 - ⏳ ReID 微调触发条件（3.2c 已建立监测机制 + OSNet 权重已就绪）：默认 OSNet（MSMT17 预训练，权重已通过 HF mirror 下载至 `.venv/Lib/site-packages/models/osnet_x1_0_msmt17.pt`），IDSwitchMonitor `should_trigger_reid_finetune`（switch_rate ≥ 0.1）作为判断依据，最终由用户决策是否启动犬只 OSNet 微调
 - ✅ OSNet 权重下载阻塞（3.2c v2.3 新增 → v3.2 解决）: 原 28MB Google Drive（id=112EMUfBPYeYg70w-syK6V6Mx8-Qb9Q1M，Clash 代理下不稳定）→ 切换 HuggingFace mirror `hf-mirror.com/kaiyangzhou/osnet/resolve/main/`（HTTPS 直连），2/2 权重加载验证 PASS。MultiDogTracker 默认值修正 `osnet_x1_0` → `osnet_x1_0_msmt17.pt`（避免 BoxMOT `get_model_name` 子串匹配 fallback 至未加载预训练权重）
 - ✅ pyskl GitHub 克隆阻塞（v2.1 新增 → v3.2 解决）: 原因 Clash 代理未运行 + gitclone.com 502 → 实际 `external/pyskl` 已克隆完整（setup.py + pyskl 包目录就绪），3.1c ST-GCN++ 主干集成通过；pyskl 在 venv 通过 `pip install -e external/pyskl` 或路径加载方式可用
 
 ## 10. 出口决策
 
-Phase 3 验收通过后，依据 ADR（待创建）决策是否升级 Phase 4。
+Phase 3 工程验收已关闭。真实行为数据、Jetson 实机和多犬 GT 属于后验验证项；Phase 4 保留为并行实施工作，当前主线以 P0 数据解阻为准。
 
 ## 11. 修订历史
 

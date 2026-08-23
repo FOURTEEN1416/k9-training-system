@@ -1,6 +1,6 @@
 # Phase 4 专业阶段计划
 
-**状态**: 🔄 实施中 (2026-08-02 启动，2026-08-19 用户授权 Transformer-Mamba 纳入 + LLM 双阶段决策)
+**状态**: 🔄 并行实施中 (2026-08-02 启动，2026-08-19 用户授权 Transformer-Mamba 纳入 + LLM 双阶段决策；P0 数据解阻为当前主线)
 **Truth source**: `dev-docs/stages/phase-4.md` + `dev-docs/decisions/0011-phase-4-llm-explainer-adr.md`（v1.1）+ `dev-docs/stages/phase-4-transformer-mamba.md`
 **当前子任务完成**: 4.1 LLM 行为解释器（Agnes API 实验室阶段）/ 4.2 Transformer-Mamba 基线 + mamba_ssm WSL 编译 + tasks.py 集成路由（用户 2026-08-19 认可纳入）
 
@@ -88,7 +88,7 @@
 ### 遗留 deferred 项
 - [⏸️] LLM 实用阶段本地模型切换: 实验室 Agnes API → 本地 Llama 3.2 1B（数据隐私硬约束，列入 HANDOVER P1）
 - [⏸️] Jetson 硬件部署: 已在 RTX 5060 上验证软件优化足够
-- [⏸️] 真实数据训练: ST-GCN+BC / Mamba 均需真实标注数据升级（YouTube 自标 682 片段未标注）
+- [⏸️] 真实数据训练: ST-GCN+BC / Mamba 均需主动学习标注数据升级（Label Studio 仅保留为通用人工复核工具；YouTube 数据源已废弃，见 ADR 0008 v1.7）
 
 ### 下一步
 1. 继续 Transformer-Mamba 改进实验（MS-Temba + 消融，按需）

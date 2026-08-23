@@ -1,7 +1,7 @@
-# Phase 1 — MVP 阶段计划
+# Phase 1 — MVP 阶段计划（历史）
 
 > 阶段: Phase 1 MVP
-> 状态: ✅ 完成（2026-07-28 验收通过，带条件；v1.2 修订 1.6d/1.2f 前置条件达成，见 [reports/phase-1-validation.md](../../reports/phase-1-validation.md) + ADR 0005 v1.1）
+> 状态: ✅ 历史阶段已关闭（2026-07-28 验收通过，带条件）；本文件中的 DogMo/YouTube 路径是当时决策背景，当前以 P0 数据解阻路线为准。
 > Owner: Phase 1 MVP
 > 入口条件: Phase 0 验收通过 ✅ + 立项研讨完成 ✅
 > 出口条件: 见 §6 验收清单（全部通过，详见验收报告）

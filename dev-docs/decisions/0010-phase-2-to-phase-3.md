@@ -49,10 +49,10 @@ ADR 0007 §2.3 原 Phase 2 出口条件中，**用户权限多角色验证**已�
 
 ### 1.4 Phase 2 范围外但已完成的重要工作
 
-- **ONNX pose task bug 修复**（`inference.py:150` 显式 `task='pose'`）：ONNX/Engine 模型无 task 元数据，ultralytics 默认回退 `detect` 导致 keypoints=None，检测率 0%。修复后 YouTube 5 视频检测率恢复 38.3%-80.5%
+- **ONNX pose task bug 修复**（`inference.py:150` 显式 `task='pose'`）：ONNX/Engine 模型无 task 元数据，ultralytics 默认回退 `detect` 导致 keypoints=None，检测率 0%。修复后 YouTube 5 视频检测率恢复 38.3%-80.5%（该 YouTube 数据路径已于 2026-08-19 废弃，bug 修复本身仍有效）
 - **keypoint-MoSeq 无监督行为发现**（ADR 0009 Path 1）：226 clips / 43 syllables / 138347 帧，32 mapped + 11 待人工
 - **弱监督自训练**（ADR 0009 Path 4）：8880 窗口 + RF 99.8% CV，模型 `data/weak_supervised/weak_supervised_rf.pkl`
-- **Label Studio 标注环境**：v1.23 + sandbox 兼容启动脚本 + 5 YouTube 视频 + 20543 帧预标注（63.1% 检测率），待人工标注（后台并行）
+- **Label Studio 标注环境**（已废弃）：v1.23 + sandbox 兼容启动脚本 + 5 YouTube 视频 + 20543 帧预标注（63.1% 检测率），2026-08-19 随 YouTube 路径废弃而清除，LS 仅保留为通用人工复核工具
 
 ## 2. 决策
 
@@ -137,9 +137,9 @@ Phase 3 涉及以下不可逆操作，需在执行前再次确认：
 
 - ⏳ Phase 3 详细子阶段分解（待调研后写入 `stages/phase-3.md`）
 - ⏳ ST-GCN+BC vs 规则引擎并存策略（迁移期双轨 vs 直接替换）
-- ⏳ 3D 姿态重建数据源（多视角视频采集 vs 公开数据集）
-- ⏳ Jetson 边缘部署优先级（Phase 3 内必达 vs Phase 4 按需）
-- ⏳ 2.0b Label Studio 人工标注（后台并行，Phase 3 期间用户闲暇推进）
+- ✅ 3D 姿态重建数据源（v2.4 完成：InterPet4D kp_world (T, 24, 3) 226 clips 主监督源 + 合成相机投影 2D 配对）
+- ⏸️ **Jetson 边缘部署优先级**（2026-08-19 已放弃，RTX 5060 软件优化满足实时需求）
+- ⏸️ **2.0b Label Studio 人工标注**（2026-08-19 随 YouTube 路径废弃而清除；LS 仅保留为通用人工复核工具）
 
 ## 7. 修订历史
 

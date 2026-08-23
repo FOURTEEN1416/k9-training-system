@@ -23,13 +23,13 @@
 |------|------|------|
 | Windows | 11 / Server 2022+ | 操作系统 |
 | Python | 3.12.x（CPython） | 后端运行时 |
-| Node.js | 20.x LTS | 前端构建 + Label Studio |
+| Node.js | 22.16.0 实测（20+ 兼容范围） | 前端构建 |
 | PostgreSQL | 17.x（端口 5433） | 主数据库 |
 | Redis | 7.x+（端口 6379） | Celery 消息队列 + 结果后端 |
 | NVIDIA Driver | 560.x+（Blackwell 架构需 565+） | GPU 驱动 |
 | CUDA Toolkit | 12.8+（Blackwell 兼容） | PyTorch GPU 后端 |
 | Git | 2.40+ | 代码版本控制 |
-| Label Studio | 1.23+（端口 8080，Phase 2 可选） | 数据飞轮人工标注 |
+| Label Studio | 可选 | P0 主动学习片段的通用人工复核工具，不绑定 YouTube |
 
 ## 2. 软件预安装
 
@@ -149,7 +149,7 @@ Copy-Item backend\.env.example .env
 # 编辑 .env 文件，按需修改：
 #   DATABASE_URL / PG_DSN: 数据库连接串（密码与 §2.3 一致）
 #   REDIS_URL / CELERY_BROKER_URL / CELERY_RESULT_BACKEND
-#   APP_PORT: API 端口（默认 8000）
+#   APP_PORT: API 端口（默认 8001）
 #   CORS_ORIGINS: 前端访问源
 ```
 
@@ -247,19 +247,19 @@ celery -A backend.workers.celery_app worker -l info --pool solo -n k9_worker@%h
 
 ```powershell
 # 开发模式（热重载，仅开发用）
-.venv\Scripts\python.exe -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
+.venv\Scripts\python.exe -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8001
 
 # 生产模式（稳定，推荐生产用）
-.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --workers 1
+.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8001 --workers 1
 ```
 
 **验证**：
 ```powershell
-curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8001/health
 # 应返回 {"status":"ok","version":"0.1.0","environment":"development"}
 ```
 
-**API 文档**：浏览器访问 http://127.0.0.1:8000/docs
+**API 文档**：浏览器访问 http://127.0.0.1:8001/docs
 
 ### 4.6 启动前端
 
@@ -274,11 +274,11 @@ npx serve frontend\dist -l 5173
 ```
 
 **Vite 代理配置**（`frontend/vite.config.ts`）：
-- `/api` → `http://127.0.0.1:8000`（后端 API）
+- `/api` → `http://127.0.0.1:8001`（后端 API）
 - `/health` → 后端健康检查
 - `/docs` → 后端 Swagger UI
 
-若后端端口非 8000，编辑 `frontend/.env`：
+若后端端口不是 8001，编辑 `frontend/.env`：
 ```
 VITE_BACKEND_HOST=127.0.0.1
 VITE_BACKEND_PORT=8001
@@ -286,7 +286,7 @@ VITE_BACKEND_PORT=8001
 
 ### 4.7 主动学习标注管线（Phase 2 可选，数据飞轮标注用）
 
-> YouTube 自标数据源已废弃（2026-08-19），标注流程改为 AimCLR+SMQ+TCL+主动学习管线。
+> YouTube 自标数据源已废弃（2026-08-19）。Label Studio 如启用，仅作为 P0 主动学习片段的通用人工复核工具；标注流程由 AimCLR+SMQ+TCL+主动学习管线定义。
 > 详见 `dev-docs/decisions/0012-foundation-system-direction.md`
 
 ```powershell
@@ -304,10 +304,10 @@ VITE_BACKEND_PORT=8001
 
 ```powershell
 # 后端
-curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8001/health
 
 # Celery（通过 API 间接验证）
-curl http://127.0.0.1:8000/docs  # 找到 /api/health 相关接口
+curl http://127.0.0.1:8001/docs  # 找到 /api/health 相关接口
 ```
 
 ### 5.2 端到端冒烟测试
@@ -392,7 +392,7 @@ choco install nssm -y
 
 # 注册 FastAPI 服务
 nssm install k9_api "D:\Desktop\k9-training-system\.venv\Scripts\python.exe" `
-  "-m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000"
+  "-m uvicorn backend.app.main:app --host 127.0.0.1 --port 8001"
 nssm set k9_api AppDirectory "D:\Desktop\k9-training-system"
 nssm set k9_api AppEnvironmentExtra "PYTHONUNBUFFERED=1"
 nssm set k9_api Start SERVICE_AUTO_START
@@ -495,8 +495,8 @@ redis-cli LLEN celery  # 队列长度
 
 ```powershell
 # 查看占用进程
-netstat -ano | findstr ":8000.*LISTENING"
-# 替换 8000 为冲突端口
+netstat -ano | findstr ":8001.*LISTENING"
+# 如 8001 冲突，修改 APP_PORT 与 VITE_BACKEND_PORT 后同步启动命令
 
 # 终止进程（PID 从上一条命令获取）
 Stop-Process -Id <PID> -Force
@@ -545,7 +545,7 @@ python -c "import reportlab; print(reportlab.Version)"
 **排查**：
 ```powershell
 # 1. 确认后端启动
-curl http://127.0.0.1:8000/health
+curl http://127.0.0.1:8001/health
 
 # 2. 确认 Vite 代理配置（frontend/vite.config.ts）
 #    target 应指向后端实际端口
@@ -581,9 +581,9 @@ psql -U postgres -p 5433 -c "DROP USER k9system;"
 |------|------|------|
 | PostgreSQL | 5433 | 主数据库 |
 | Redis | 6379 | Celery broker/result |
-| FastAPI | 8000（默认） / 8001 | 后端 API |
+| FastAPI | 8001（主端口，可配置） | 后端 API |
 | Vite Dev | 5173 | 前端开发服务器 |
-| Label Studio | 8080（Phase 2 可选） | 数据飞轮人工标注 |
+| Label Studio | 可选 | P0 主动学习人工复核 |
 | Flower | 5555（可选） | Celery 监控面板 |
 
 ### 9.2 关键路径
@@ -610,7 +610,7 @@ psql -U postgres -p 5433 -c "DROP USER k9system;"
 | `REDIS_URL` | `redis://127.0.0.1:6379/0` | Redis 连接 |
 | `CELERY_BROKER_URL` | `redis://127.0.0.1:6379/1` | Celery broker |
 | `CELERY_RESULT_BACKEND` | `redis://127.0.0.1:6379/2` | Celery 结果后端 |
-| `APP_PORT` | `8000` | API 端口 |
+| `APP_PORT` | `8001` | API 端口 |
 | `CORS_ORIGINS` | `["http://127.0.0.1:5173",...]` | 允许的前端源 |
 | `VITE_BACKEND_HOST` | `127.0.0.1` | 前端代理目标 |
-| `VITE_BACKEND_PORT` | `8000` | 前端代理目标端口 |
+| `VITE_BACKEND_PORT` | `8001` | 前端代理目标端口 |

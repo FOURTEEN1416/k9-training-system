@@ -2,13 +2,13 @@
 
 > 工作犬训练机器视觉识别系统的 Agent 行为宪法
 > 基于 sliver-vibe-coding agent-constitution 框架
-> 状态: ✅ v1.27
-> 日期: 2026-08-19
+> 状态: ✅ v1.30
+> 日期: 2026-08-20
 
 ## 0. 项目身份
 
 **项目**：工作犬训练机器视觉识别系统（K9 Training Vision System）
-**当前阶段**：Phase 3 ✅ 完成 / Phase 4 🔄 实施中 / **P0 数据解阻 🔄 实施中（2026-08-19 研究方向修正：学术研究为主，产品为副产物）**
+**当前阶段**：Phase 3 ✅ 工程关闭 / Phase 4 🔄 并行实施中 / **P0 数据解阻 🔄 当前主线（2026-08-20 文档清洗：学术研究为主，产品为副产物）**
 **核心创新**：首次将图像域小样本伪标签方法（姚青 JIA：VFM 骨干 + 锚点学习 + 聚类 + 伪标签）迁移到**时序骨架域**，结合 AimCLR（AAAI 2022）+ SMQ（ICCV 2025）+ TCL（CVPR 2021）形成完整技术栈
 **论文定位**：Pattern Recognition / IJCV — A Physics-Semantics Decoupled Framework for Low-Resource Animal Behavior Recognition under Evolving Evaluation Criteria
 **产品定位**：方法验证载体（Phase 1-3 已完成：YOLO26-pose + ST-GCN+BC + FCI-IGP 评分卡 + 端到端闭环）
@@ -158,7 +158,7 @@
 | Phase 1 MVP | ✅ 完成（2026-07-28 验收，带条件） | YOLO26-pose + 规则引擎 + 评分 + 前后端 + 端到端闭环（见 reports/phase-1-validation.md v1.2 + ADR 0005 v1.1） |
 | Phase 2 核心 | ✅ 完成（2026-07-30 验收，见 reports/phase-2-validation.md + ADR 0010） | 数据飞轮 + 16 行为 + USPCA + 1.2f 补强 |
 | Phase 3 专业 | ✅ 完成（2026-08-17 正式关闭，见 `dev-docs/stages/phase-3.md` v3.3：3.1b/c/d/e + 3.2b/c/d + 3.3b/c/d + 3.4b/c + 3.5c + 3.6a/b/c + 3.7a/b/c + 3.8a/b/c/d 全部验收通过 + 3.2d 多犬追踪补充验证；Git 检查点 `2e6aef3`） | ST-GCN+BC + 多犬 + 3D + FCI-IGP + Jetson + 用户权限 + 训练历史对比 |
-| Phase 4 前沿 | 🔄 实施中（2026-08-02 启动，用户授权：LLM 行为解释器（实验室阶段 Agnes API，实用期本地模型，ADR 0011 v1.1）+ Transformer-Mamba（2026-08-19 用户认可纳入，Mamba 基线 + mamba_ssm WSL 编译 + tasks.py 集成）+ RL 按需） | LLM / Transformer-Mamba / RL |
+| Phase 4 前沿 | 🔄 并行实施中（2026-08-02 启动，用户授权：LLM 行为解释器（实验室阶段 Agnes API，实用期本地模型，ADR 0011 v1.1）+ Transformer-Mamba（2026-08-19 用户认可纳入，Mamba 基线 + mamba_ssm WSL 编译 + tasks.py 集成）+ RL 按需；当前主线为 P0 数据解阻） | LLM / Transformer-Mamba / RL |
 
 ## 8. 防漂移规则
 
@@ -223,3 +223,4 @@
 | v1.27 | 2026-08-19 | **基座系统方向确认（ADR 0012）**：①§0 当前阶段补充基座方向——"适应动态业务逻辑的视觉基座系统（物理-语义解耦 + 小样本自监督数据飞轮）"，系统开发暂停，转向全面解决数据问题；②§9 新增基座方向确认记录——7 方向 37 仓库 GitHub-First 调研支持，SMQ ICCV 2025 + AimCLR AAAI 2022 + TCL CVPR 2021 技术栈；③同步 stage-plan.md v1.8（新增数据解阻阶段行）+ HANDOVER.md v1.4（P0/P1 待办更新）+ dev-docs/README.md（ADR 0012 索引） |
 | v1.28 | 2026-08-19 | **YouTube 自标数据源彻底清除 + Label Studio 废弃**：磁盘/代码/文档全面清理，ADR 0008 v1.7 更新 |
 | v1.29 | 2026-08-19 | **研究方向修正：学术研究为主，产品为副产物**。§0 核心创新更新——首次将图像域小样本伪标签方法（姚青 JIA：VFM 骨干 + 锚点学习 + 聚类 + 伪标签）迁移到时序骨架域。论文定位：Pattern Recognition / IJCV |
+| v1.30 | 2026-08-20 | **全量文档清洗口径确认并执行**：Phase 4 保留并行实施，P0 为当前主线；历史文档允许改写；Label Studio 保留为通用主动学习复核工具；真实 K9 视频取消硬依赖；统一三层指标口径；Phase 3 工程关闭与后验验证边界分离；主端口 8001；公开能力分级；研究创新主张审慎化；新增研究/报告索引与冲突登记册。 |

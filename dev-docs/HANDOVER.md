@@ -1,7 +1,8 @@
 # K9 Training Vision System — 项目交接文档
 
 > 项目性质: **学术研究项目**（产品系统作为方法验证载体）
-> 核心创新: 首次将图像域小样本伪标签方法（姚青 JIA：VFM 骨干 + 锚点学习 + 聚类 + 伪标签）迁移到时序骨架域
+> 当前主线: **P0 数据解阻**；Phase 4 保留为并行实施工作
+> 核心创新候选: 拟将图像域小样本伪标签方法（姚青 JIA：VFM 骨干 + 锚点学习 + 聚类 + 伪标签）迁移到时序骨架域；首次性待论文检索核验
 > 论文定位: Pattern Recognition / IJCV — A Physics-Semantics Decoupled Framework for Low-Resource Animal Behavior Recognition under Evolving Evaluation Criteria
 > 技术栈: SMQ（ICCV 2025）+ AimCLR（AAAI 2022）+ TCL（CVPR 2021）+ 姚青 JIA 迁移（核心创新）
 > 产品系统: K9 Training Vision System（Phase 1-3 已完成，作为方法验证平台）
@@ -32,7 +33,7 @@
 | Phase 1 | ✅ 完成 | MVP 端到端闭环（双场景 + YAML 评分） |
 | Phase 2 | ✅ 完成 | 数据飞轮 + 16 行为 + USPCA |
 | Phase 3 | ✅ 已关闭（2026-08-17） | 全部子阶段 3.1b-3.8d 验收通过 + 3.2d 补充验证 |
-| Phase 4 | 🔄 实施中 | LLM 解释器 ✅ / Transformer-Mamba 基线 ✅ / **mamba_ssm 真实编译 ✅（RTX 5060 sm_120）** / tasks.py 集成路由 ✅ |
+| Phase 4 | 🔄 并行实施中 | LLM 解释器 ✅ / Transformer-Mamba 基线 ✅ / **mamba_ssm 真实编译 ✅（RTX 5060 sm_120）** / tasks.py 集成路由 ✅；不替代 P0 主线 |
 
 ### 2.2 核心模块
 
@@ -249,14 +250,14 @@ wsl.exe -d Ubuntu -u root --exec /bin/bash -lc '/root/setup_mamba.sh'
 ### 文档
 | 路径 | 说明 |
 |------|------|
-| `AGENTS.md` | 项目宪法，版本 v1.27 |
+| `AGENTS.md` | 项目宪法，版本 v1.30 |
 | `dev-docs/HANDOVER.md` | 本交接文档 |
 | `dev-docs/README.md` | truth root 索引 |
-| `dev-docs/stage-plan.md` | 阶段总览（v1.6） |
+| `dev-docs/stage-plan.md` | 阶段总览（v1.11，P0 主线 + Phase 4 并行） |
 | `dev-docs/stages/phase-3.md` | Phase 3 计划（✅ 已关闭 v3.3） |
-| `dev-docs/stages/phase-4.md` | Phase 4 计划（🔄 实施中） |
+| `dev-docs/stages/phase-4.md` | Phase 4 计划（🔄 并行实施中） |
 | `dev-docs/stages/phase-4-transformer-mamba.md` | Transformer-Mamba 基线（✅ 已授权纳入 Phase 4，2026-08-19） |
-| `dev-docs/decisions/` | ADR 0001-0011 |
+| `dev-docs/decisions/` | ADR 0001-0012 |
 | `dev-docs/research/RESEARCH_TRANSFORMER_MAMBA.md` | Mamba/Transformer 调研 |
 | `docs/user-guide.md` | 用户手册 v0.3.0 |
 
@@ -268,7 +269,7 @@ wsl.exe -d Ubuntu -u root --exec /bin/bash -lc '/root/setup_mamba.sh'
 - [x] **WSL 编译 mamba_ssm**：✅ 已完成（2026-08-19，RTX 5060 sm_120）
 - [x] **Mamba 集成路由**：✅ 已完成（2026-08-19，`behavior_deploy_mode` 支持 10 种模式）
 - [ ] **基座系统 L3 数据飞轮**（2026-08-19 方向确认，ADR 0012）：AimCLR 自监督预训练 + SMQ 无监督时序分割 + TCL 半监督自训练 + 主动学习 100-200 标注 → ST-GCN+BC ≥ 85%
-- [ ] **真实数据标注**：YouTube 自标数据已废弃（2026-08-19，零标注无价值），标注管线改为 AimCLR+SMQ+TCL+主动学习（ADR 0012），需标 100-200 片段
+- [ ] **真实数据标注**：YouTube 专用路径已废弃，标注管线改为 AimCLR+SMQ+TCL+主动学习（ADR 0012）；Label Studio 仅作为通用人工复核工具，需标 100-200 片段
 
 ### P1 - 重要
 - [ ] **LLM 实用阶段本地化**：实验室阶段 Agnes API（数据出本地豁免）→ 实用阶段切换本地大模型（Llama 3.2 1B 或等价），代码已环境变量解耦，配置级切换（ADR 0011 v1.1）
