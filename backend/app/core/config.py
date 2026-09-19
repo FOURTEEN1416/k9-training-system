@@ -79,7 +79,10 @@ class Settings(BaseSettings):
     )
 
     # === 应用 ===
-    app_env: Literal["development", "test", "production"] = "development"
+    # 默认 production（fail-safe）：APP_ENV 未设置时按最严语义处理，拒绝弱/占位凭据。
+    # 需要开发语义请**显式**设置 APP_ENV=development（backend/.env.example 已给出该行）。
+    # 与 ai-girlfriend 的 is_explicit_dev（不落入 dev 兜底）保持同一标准。
+    app_env: Literal["development", "test", "production"] = "production"
     app_host: str = "127.0.0.1"
     app_port: int = 8000
     app_log_level: str = "INFO"
