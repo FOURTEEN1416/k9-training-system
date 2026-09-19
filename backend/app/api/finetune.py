@@ -4,14 +4,14 @@ Owner: 后端开发（见 AGENTS.md §2.2）
 Phase: 2.1e
 依据: dev-docs/stages/phase-2.md §2.1e
 
-数据飞轮闭环:
-    上传视频 → 触发标注 → 同步标注 → 触发微调 → 激活模型 → 回到上传
+数据飞轮闭环（诚实描述，2026-09-19）:
+    上传视频 → 创建标注任务 → [离线标注导入] → 触发微调 → 激活模型 → 回到上传
 
 已有端点（其他路由）:
-    POST /api/videos/upload          上传视频（Phase 1.4d）
-    POST /api/annotations/tasks      创建标注任务（Phase 2.1b）
-    POST /api/annotations/sync       同步 LS 标注（Phase 2.1b）
-    POST /api/models/{id}/activate   激活模型（Phase 1.4a）
+    POST /api/videos/upload          上传视频（Phase 1.4d；需 JWT）
+    POST /api/annotations/tasks      创建标注任务（Phase 2.1b；需 JWT）
+    POST /api/annotations/sync       **501 Not Implemented** — LS 同步未实现/管线已废弃
+    POST /api/models/{id}/activate   激活模型（Phase 1.4a；需 ADMIN/MANAGER）
 
 本路由新增:
     POST /api/finetune/trigger       触发微调训练（异步）
@@ -33,11 +33,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.config import settings
 from backend.app.core.database import get_db, AsyncSessionLocal
+from backend.app.core.deps import get_current_handler, require_roles
+from backend.app.models.handler import Handler, UserRole
 from backend.app.models.ml_model import MLModel, ModelType
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/finetune", tags=["finetune"])
+router = APIRouter(
+    prefix="/finetune",
+    tags=["finetune"],
+    dependencies=[Depends(get_current_handler)],
+)
+CurrentHandler = Annotated[Handler, Depends(get_current_handler)]
+AdminOrManager = Annotated[Handler, Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER))]
 
 DbSession = Annotated[AsyncSession, Depends(get_db)]
 
@@ -136,8 +144,9 @@ async def trigger_finetune(
     request: FinetuneTriggerRequest,
     background_tasks: BackgroundTasks,
     db: DbSession,
+    me: AdminOrManager,
 ) -> dict:
-    """触发数据飞轮微调训练（异步）。
+    """触发数据飞轮微调训练（异步）。仅 ADMIN / MANAGER。
 
     流程:
         1. 检查是否有已完成的标注数据
@@ -161,7 +170,10 @@ async def trigger_finetune(
     if completed_count == 0:
         raise HTTPException(
             status_code=412,
-            detail="无已完成标注任务。请先在 Label Studio 标注并调用 POST /api/annotations/sync",
+            detail=(
+                "无已完成标注任务。POST /api/annotations/sync 未实现（501，LS 管线已废弃）。"
+                "请用 scripts/ 离线导入标注，并将 annotation_tasks.status 置为 completed 后重试。"
+            ),
         )
 
     # 触发后台任务
@@ -268,7 +280,10 @@ def _next_action(completed_annotations: int, active_models: int) -> str:
     if _finetune_status["running"]:
         return "微调训练中，请等待完成"
     if completed_annotations == 0:
-        return "请在 Label Studio 完成标注后调用 POST /api/annotations/sync"
+        return (
+            "请通过离线脚本导入标注并完成 annotation_tasks；"
+            "POST /api/annotations/sync 返回 501（未实现）"
+        )
     if active_models == 0:
         return "请激活一个模型: POST /api/models/{id}/activate"
     return "可以上传新视频测试: POST /api/videos/upload"

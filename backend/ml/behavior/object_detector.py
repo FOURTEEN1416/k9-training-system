@@ -387,6 +387,7 @@ class ObjectDetector:
     def load_pkl(pkl_path: str | Path) -> dict:
         """加载 pkl."""
         with open(pkl_path, "rb") as fp:
+            # SECURITY: trusted local cache only — pickle.load is unsafe on untrusted input.
             return pickle.load(fp)
 
 

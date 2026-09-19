@@ -293,6 +293,9 @@ def load_pyskl_pickle(pkl_path: str) -> List[Dict]:
         标准化后的 List[Dict]，keypoint 字段为 (T, 24, 3)
     """
     with open(pkl_path, "rb") as f:
+        # SECURITY: pickle.load can execute arbitrary code. Only load trusted,
+        # local training caches (never network/shared untrusted paths).
+        # Prefer safetensors/npz/json for new pipelines.
         raw = pickle.load(f)
 
     samples: List[Dict] = []

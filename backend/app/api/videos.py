@@ -33,14 +33,32 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.config import settings
 from backend.app.core.database import get_db
+from backend.app.core.deps import get_current_handler, require_roles
+from backend.app.models.handler import Handler, UserRole
 from backend.app.models.video import Video, VideoStatus, VALID_SCENES
 from backend.app.schemas.common import VideoRead, VideoStatusRead
 from backend.workers.tasks import ingest_video
 
-router = APIRouter(prefix="/videos", tags=["videos"])
+router = APIRouter(
+    prefix="/videos",
+    tags=["videos"],
+    dependencies=[Depends(get_current_handler)],
+)
 
 
 DbSession = Annotated[AsyncSession, Depends(get_db)]
+CurrentHandler = Annotated[Handler, Depends(get_current_handler)]
+Writer = Annotated[
+    Handler,
+    Depends(
+        require_roles(
+            UserRole.ADMIN,
+            UserRole.MANAGER,
+            UserRole.HANDLER,
+            UserRole.RESEARCHER,
+        )
+    ),
+]
 
 
 @router.get("", response_model=list[VideoRead])
@@ -120,12 +138,13 @@ async def download_report(video_id: int, db: DbSession):
 @router.post("/upload", response_model=VideoRead, status_code=status.HTTP_201_CREATED)
 async def upload_video(
     db: DbSession,
+    me: Writer,
     file: UploadFile = File(...),
     dog_id: Optional[int] = Form(default=None),
     handler_id: Optional[int] = Form(default=None),
     scene: str = Form(default="obedience_trial"),
 ) -> Video:
-    """上传训练视频并异步触发推理.
+    """上传训练视频并异步触发推理（需 JWT；VIEWER 不可上传）.
 
     Args:
         file: 视频文件（mp4/avi/mov/mkv/webm）

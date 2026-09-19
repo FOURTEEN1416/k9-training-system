@@ -18,7 +18,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.database import get_db
+from backend.app.core.deps import get_current_handler
 from backend.app.models.dog import Dog
+from backend.app.models.handler import Handler
 from backend.app.models.score import Score
 from backend.app.models.training_session import ScoringStandard
 from backend.app.models.video import Video
@@ -31,10 +33,15 @@ from backend.app.schemas.common import (
     ScoreRead,
 )
 
-router = APIRouter(prefix="/scores", tags=["scores"])
+router = APIRouter(
+    prefix="/scores",
+    tags=["scores"],
+    dependencies=[Depends(get_current_handler)],
+)
 
 
 DbSession = Annotated[AsyncSession, Depends(get_db)]
+CurrentHandler = Annotated[Handler, Depends(get_current_handler)]
 
 
 # 7 维评分维度定义：(模型属性名, 中文标签)

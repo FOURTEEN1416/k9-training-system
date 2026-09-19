@@ -58,6 +58,7 @@ def validate_pyskl_pickle(pkl_path: str) -> Dict:
         return {"valid": False, "error": f"文件不存在: {pkl_path}"}
 
     with open(pkl_path, "rb") as f:
+        # SECURITY: trusted local annotations only — pickle.load can execute code.
         samples: List[Dict] = pickle.load(f)
 
     result = {

@@ -416,6 +416,7 @@ def _try_import_torch():
 
 def load_pkl(pkl_path: Path) -> List[Dict]:
     with open(pkl_path, "rb") as f:
+        # SECURITY: trusted local dataset only — pickle.load can execute code.
         data = pickle.load(f)
     if not isinstance(data, list):
         raise ValueError(f"{pkl_path} 内容非 List[Dict]: {type(data)}")

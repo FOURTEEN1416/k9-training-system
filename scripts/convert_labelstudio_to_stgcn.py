@@ -244,6 +244,7 @@ def convert_labelstudio_to_pyskl(
         kpts_pkl_path = keypoints_dir / f"{video_id}.pkl"
         if kpts_pkl_path.exists():
             with open(kpts_pkl_path, "rb") as f:
+                # SECURITY: trusted local LS export only — pickle.load can execute code.
                 kpts_data = pickle.load(f)
             kpts_seq = kpts_data.get("keypoints_sequence", np.zeros((0, 24, 3)))
             total_frames = len(kpts_seq)

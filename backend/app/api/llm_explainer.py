@@ -5,24 +5,35 @@ Phase: 4.1
 依据: ADR 0011 Phase 4 LLM行为解释器
 
 提供 /api/llm/explain 端点，接受行为概率和评分，返回中文分析报告。
+鉴权：需有效 JWT（findings H1/M2 — 禁止匿名烧 LLM 额度）。
 """
 
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
 
 from ...ml.behavior.llm_explainer import explain_behavior
+from ..core.deps import get_current_handler
+from ..models.handler import Handler
 
-router = APIRouter(prefix="/llm", tags=["LLM行为解释器"])
+router = APIRouter(
+    prefix="/llm",
+    tags=["LLM行为解释器"],
+    dependencies=[Depends(get_current_handler)],
+)
+
+CurrentHandler = Annotated[Handler, Depends(get_current_handler)]
 
 
 # 请求模型
 class LLMExplainRequest(BaseModel):
     """LLM行为解释请求模型。"""
-    video_id: str = "..."
-    duration_sec: int = 90
-    probabilities: list = [...]
-    scores: list = [...]
-    behaviors: list = None
+    video_id: str
+    duration_sec: int = Field(default=90, ge=0)
+    probabilities: list = Field(default_factory=list)
+    scores: list = Field(default_factory=list)
+    behaviors: list | None = None
 
 
 # 响应模型
@@ -38,9 +49,9 @@ class LLMExplainResponse(BaseModel):
     "/explain",
     response_model=LLMExplainResponse,
     summary="生成行为分析报告",
-    description="基于 ST-GCN+BC 22类行为概率和 FCI-IGP 7维评分生成中文行为分析报告",
+    description="基于 ST-GCN+BC 22类行为概率和 FCI-IGP 7维评分生成中文行为分析报告（需 JWT）",
 )
-async def explain(request: LLMExplainRequest):
+async def explain(request: LLMExplainRequest, me: CurrentHandler):
     """生成行为分析报告。
 
     接受行为概率分布和FCI-IGP评分，调用外部 LLM API
@@ -70,8 +81,9 @@ async def explain(request: LLMExplainRequest):
         )
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
+        # Do not leak upstream provider response bodies (findings M2).
         raise HTTPException(
             status_code=500,
-            detail=f"生成行为分析报告时发生错误: {str(e)}",
+            detail="生成行为分析报告时发生错误（上游 LLM 调用失败）。详见服务端日志。",
         )

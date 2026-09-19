@@ -61,6 +61,7 @@ def load_pyskl_sources(source_paths: List[str]) -> List[Dict]:
             print(f"⚠️  跳过不存在的数据源: {path}")
             continue
         with open(p, "rb") as f:
+            # SECURITY: trusted local dataset only — pickle.load can execute code.
             samples = pickle.load(f)
         for s in samples:
             s["_source"] = p.name  # 标记来源

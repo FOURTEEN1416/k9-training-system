@@ -5,8 +5,17 @@ Phase: 1.0
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
+
+# Explicit TEST env path — must be set BEFORE any backend.app.core.config import.
+# Production secrets are never used as test defaults (see config.py _enforce_secret_policy).
+os.environ.setdefault("APP_ENV", "test")
+os.environ.setdefault(
+    "AUTH_SECRET_KEY",
+    "TEST-ONLY-k9-training-system-not-for-prod-32chars!!",
+)
 
 import cv2
 import numpy as np

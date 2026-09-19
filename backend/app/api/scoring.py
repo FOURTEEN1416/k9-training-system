@@ -17,6 +17,8 @@ import yaml
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from backend.app.core.config import settings
+from backend.app.core.deps import get_current_handler, require_roles
+from backend.app.models.handler import Handler, UserRole
 from backend.app.schemas.common import (
     ScoringConfigRead,
     ScoringConfigUpdate,
@@ -27,7 +29,14 @@ from backend.ml.scoring import ScoringContext, ScoringEngine
 from backend.ml.scoring.conditions import ConditionError
 from backend.ml.scoring.schema import ScoringCardSpec
 
-router = APIRouter(prefix="/scoring", tags=["scoring"])
+router = APIRouter(
+    prefix="/scoring",
+    tags=["scoring"],
+    dependencies=[Depends(get_current_handler)],
+)
+
+CurrentHandler = Annotated[Handler, Depends(get_current_handler)]
+AdminOnly = Annotated[Handler, Depends(require_roles(UserRole.ADMIN))]
 
 
 # 评分卡 YAML 路径
@@ -90,8 +99,12 @@ async def get_scoring_config(scene: str) -> ScoringConfigRead:
 
 
 @router.put("/configs/{scene}", response_model=ScoringConfigRead)
-async def update_scoring_config(scene: str, payload: ScoringConfigUpdate) -> ScoringConfigRead:
-    """更新评分卡 YAML（触发热加载）。
+async def update_scoring_config(
+    scene: str,
+    payload: ScoringConfigUpdate,
+    me: AdminOnly,
+) -> ScoringConfigRead:
+    """更新评分卡 YAML（触发热加载）。仅 ADMIN（findings H3）。
 
     流程:
         1. 解析 YAML 校验语法

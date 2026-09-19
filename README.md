@@ -24,7 +24,10 @@
 - **后端**：Python 3.12 / FastAPI / SQLAlchemy / PostgreSQL 17 / Redis + Celery
 - **深度学习**：PyTorch 2.11+cu128 / YOLO26-pose / ST-GCN+BC / Mamba (mamba_ssm) / OSNet ReID
 - **前端**：Vue 3 + TypeScript + ECharts（训练历史对比可视化）
-- **权限**：JWT + bcrypt，5 角色 RBAC（ADMIN/MANAGER/TRAINER/VIEWER/AUDITOR）+ 基地隔离
+- **权限**：JWT + bcrypt，5 角色 RBAC（与代码 `UserRole` 一致）+ 基地隔离
+  - 角色：`ADMIN` / `MANAGER` / `RESEARCHER` / `HANDLER` / `VIEWER`
+  - 业务路由（dogs/videos/annotations/finetune/models/scores/scoring/llm）均已挂 `Depends(get_current_handler)`；
+    写操作额外限制角色（如评分卡 PUT 仅 ADMIN，模型注册/激活与 finetune trigger 为 ADMIN/MANAGER）
 
 ## 系统流程
 
@@ -48,19 +51,40 @@
 # 1. Redis
 redis-server --port 6379
 
-# 2. PostgreSQL 17（127.0.0.1:5433）
+# 2. PostgreSQL 17（127.0.0.1:5433）— 口令必须经 .env 配置，见下「安全」
 
 # 3. Celery Worker
 .venv\Scripts\python.exe -m celery -A backend.workers.celery_app worker --loglevel=info --pool=solo
 
-# 4. FastAPI
-.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8001
+# 4. FastAPI（默认端口与 config.app_port / .env.example 一致：8000）
+.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 
 # 5. 前端（开发模式）
 cd frontend && npm run dev
 ```
 
-环境变量参考 `backend/.env.example`（数据库、Redis、LLM API 等配置）。
+环境变量参考 `backend/.env.example`（数据库、Redis、JWT `AUTH_SECRET_KEY`、LLM API 等配置）。
+
+### 安全（必读）
+
+本仓库曾为 **public** GitHub（`FOURTEEN1416/k9-training-system`）。历史提交中的
+`backend/app/core/config.py` 曾硬编码数据库口令、Label Studio 口令与 JWT 默认 secret。
+
+**用户必须轮换这些凭据**——它们仍存在于公开 git 历史中，即使当前工作树已改为占位符：
+
+1. 更换 PostgreSQL 密码（不要再用历史默认值）
+2. 更换 Label Studio 密码（若曾使用）
+3. 生成全新 `AUTH_SECRET_KEY`（≥32 字符），并使旧 JWT 全部失效
+4. `APP_ENV=production` 时启动会拒绝占位符/弱密钥；开发/测试见 `config.py` 与 `tests/conftest.py`
+
+另：训练/评估链路中的 `pickle.load` **只允许加载本机可信数据**，勿加载网络或来路不明的 `.pkl`。
+
+### 标注同步说明（诚实契约）
+
+`POST /api/annotations/sync` **未实现**，路由返回 **501 Not Implemented**。
+Label Studio 管线已废弃（ADR 0012）；请使用 `scripts/` 离线导入标注，并将
+`annotation_tasks.status` 置为 `completed` 后再触发微调。历史文档中的
+`/annotations/ls/*` 端点亦不存在。
 
 ### 运行测试
 

@@ -578,6 +578,7 @@ def _cli() -> int:
     args = parser.parse_args()
 
     with open(args.kpts, "rb") as fp:
+        # SECURITY: trusted local files only — pickle.load executes arbitrary code.
         kpts_seq = pickle.load(fp)
     if isinstance(kpts_seq, dict) and "keypoints" in kpts_seq:
         kpts_seq = kpts_seq["keypoints"]
@@ -586,6 +587,7 @@ def _cli() -> int:
 
     # 加载物体检测 pkl（ObjectDetector._save_pkl 输出格式）
     with open(args.detections, "rb") as fp:
+        # SECURITY: trusted local files only — pickle.load executes arbitrary code.
         det_payload = pickle.load(fp)
 
     # 重建 VideoDetectionResult
