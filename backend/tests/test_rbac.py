@@ -36,6 +36,38 @@ from backend.app.models.handler import ROLE_HIERARCHY, Handler, UserRole
 pytestmark = pytest.mark.fast
 
 
+class TestTokenPayloadRobustness:
+    """畸形 JWT claim 必须转 401（InvalidTokenError），不得冒泡成 500。
+
+    （2026-10-20 对抗验收：渗透用例 C-jwt-missing-sub / C-jwt-sub-non-numeric
+      实测 /api/auth/me 返回 500。）
+    """
+
+    @pytest.mark.parametrize(
+        "payload",
+        [
+            {"role": "admin", "exp": 1e12, "iat": 1e12},               # 缺 sub
+            {"sub": "not-a-number", "role": "admin", "exp": 1e12, "iat": 1e12},  # sub 非数字
+            {"sub": "1", "exp": 1e12, "iat": 1e12},                     # 缺 role
+            {"sub": "1", "role": "admin", "iat": 1e12},                 # 缺 exp
+            {"sub": None, "role": "admin", "exp": 1e12, "iat": 1e12},   # sub 为 null
+        ],
+    )
+    def test_malformed_payload_raises_invalid_token(self, payload):
+        with pytest.raises(InvalidTokenError):
+            TokenPayload.from_dict(payload)
+
+    def test_wellformed_payload_still_parses(self):
+        # exp/iat 用合理时间戳（datetime.fromtimestamp 有年份上限，1e12 会溢出）
+        ts = datetime.now(tz=timezone.utc).timestamp() + 3600
+        tp = TokenPayload.from_dict(
+            {"sub": "7", "role": "handler", "base_id": None,
+             "is_superuser": False, "exp": ts, "iat": ts}
+        )
+        assert tp.sub == 7
+        assert tp.role == "handler"
+
+
 # ============================================================
 # 1. 密码哈希（bcrypt 直接调用）
 # ============================================================

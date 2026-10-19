@@ -242,6 +242,84 @@ async def check_dog_access(
     raise InsufficientPermissionError("无权访问此犬只")
 
 
+def visible_dog_id_select(handler: Handler):
+    """返回该用户可见的 ``Dog.id`` 子查询；``None`` 表示全局可见（ADMIN/超管）。
+
+    单一真源（2026-10-20 对抗验收修复）：dogs / videos / scores / annotations 等
+    资源级可见性一律由此派生，避免各端点各自实现造成口径漂移。
+
+    口径:
+        ADMIN/超管 → 全局
+        HANDLER    → 自有犬只 + 多对多关联犬只
+        MANAGER/RESEARCHER/VIEWER → 本基地犬只 + 未过期的临时基地授权犬只
+        其他（未分配基地的非 ADMIN）→ 空集（deny-by-default）
+    """
+    from datetime import datetime, timezone
+
+    from sqlalchemy import false, or_
+
+    if handler.is_superuser or handler.role == UserRole.ADMIN:
+        return None
+
+    conds = []
+    if handler.role == UserRole.HANDLER:
+        conds.append(Dog.handler_id == handler.id)
+        conds.append(
+            Dog.id.in_(
+                select(DogHandlerAssociation.dog_id).where(
+                    DogHandlerAssociation.handler_id == handler.id
+                )
+            )
+        )
+    elif handler.base_id is not None:
+        conds.append(Dog.home_base_id == handler.base_id)
+        conds.append(
+            Dog.id.in_(
+                select(DogBaseAssociation.dog_id).where(
+                    DogBaseAssociation.base_id == handler.base_id,
+                    or_(
+                        DogBaseAssociation.expires_at.is_(None),
+                        DogBaseAssociation.expires_at > datetime.now(tz=timezone.utc),
+                    ),
+                )
+            )
+        )
+
+    stmt = select(Dog.id)
+    return stmt.where(or_(*conds)) if conds else stmt.where(false())
+
+
+async def check_video_access(
+    db: AsyncSession,
+    handler: Handler,
+    video_id: int,
+    require_write: bool = False,
+) -> "object":
+    """视频资源级鉴权（经 ``video.dog_id`` 归属复用犬只口径）。
+
+    - 视频有关联犬只 → 走 ``check_dog_access``（同一套基地/归属语义）
+    - 视频无关联犬只 → 仅 ADMIN/超管 或 上传者本人可访问
+    - 不存在或无权 → 统一 404（防资源枚举）
+    """
+    from backend.app.models.video import Video
+
+    video = await db.get(Video, video_id)
+    if video is None:
+        raise AuthError("视频不存在", status_code=404)
+
+    if handler.is_superuser or handler.role == UserRole.ADMIN:
+        return video
+
+    if video.dog_id is not None:
+        await check_dog_access(db, handler, video.dog_id, require_write=require_write)
+        return video
+
+    if video.handler_id is not None and video.handler_id == handler.id:
+        return video
+
+    raise AuthError("视频不存在", status_code=404)
+
+
 def require_dog_access(
     dog_id_param: str = "dog_id",
     require_write: bool = False,

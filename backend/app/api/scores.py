@@ -14,11 +14,16 @@ from datetime import datetime
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.database import get_db
-from backend.app.core.deps import get_current_handler
+from backend.app.core.deps import (
+    check_dog_access,
+    check_video_access,
+    get_current_handler,
+    visible_dog_id_select,
+)
 from backend.app.models.dog import Dog
 from backend.app.models.handler import Handler
 from backend.app.models.score import Score
@@ -146,12 +151,19 @@ def _avg_dimensions(points: list[ScorePoint]) -> dict[str, float]:
 @router.get("", response_model=list[ScoreRead])
 async def list_scores(
     db: DbSession,
+    me: CurrentHandler,
     video_id: Optional[int] = None,
     limit: int = 50,
     offset: int = 0,
 ) -> list[Score]:
-    """列出评分。"""
+    """列出评分（需 JWT；非 ADMIN 仅见可见视频的评分）。"""
     stmt = select(Score).order_by(Score.id.desc()).limit(limit).offset(offset)
+    visibility = visible_dog_id_select(me)
+    if visibility is not None:
+        visible_videos = select(Video.id).where(
+            or_(Video.dog_id.in_(visibility), Video.handler_id == me.id)
+        )
+        stmt = stmt.where(Score.video_id.in_(visible_videos))
     if video_id is not None:
         stmt = stmt.where(Score.video_id == video_id)
     result = await db.execute(stmt)
@@ -167,6 +179,7 @@ async def list_scores(
 @router.get("/compare", response_model=ScoreCompareResponse)
 async def compare_scores(
     db: DbSession,
+    me: CurrentHandler,
     dog_ids: str = Query(
         ...,
         description="逗号分隔的犬只 ID 列表，如 `1,2,3`，最多 10 只",
@@ -251,6 +264,9 @@ async def compare_scores(
             status_code=404,
             detail=f"犬只不存在: {missing}",
         )
+    # 1b. 资源级鉴权：对每只犬逐一校验可见性（防跨基地横向对比）
+    for _dog_id in unique_dog_ids:
+        await check_dog_access(db, me, _dog_id, require_write=False)
     # 按用户传入顺序排序
     dogs_sorted = sorted(dogs_db, key=lambda d: unique_dog_ids.index(d.id))
     dog_briefs = [
@@ -364,6 +380,7 @@ async def compare_scores(
 async def list_scores_by_dog(
     dog_id: int,
     db: DbSession,
+    me: CurrentHandler,
     standard: Optional[str] = None,
     limit: int = 100,
     offset: int = 0,
@@ -384,6 +401,9 @@ async def list_scores_by_dog(
     Returns:
         评分列表（按创建时间降序，最新在前）
     """
+    # 资源级鉴权：须对目标犬只有读权限（防跨基地查询）
+    await check_dog_access(db, me, dog_id, require_write=False)
+
     # Score join Video on video_id, filter by Video.dog_id
     stmt = (
         select(Score)
@@ -401,9 +421,10 @@ async def list_scores_by_dog(
 
 
 @router.get("/{score_id}", response_model=ScoreRead)
-async def get_score(score_id: int, db: DbSession) -> Score:
-    """获取单条评分。"""
+async def get_score(score_id: int, db: DbSession, me: CurrentHandler) -> Score:
+    """获取单条评分（需 JWT；经所属视频/犬只鉴权，越权返回 404）。"""
     score = await db.get(Score, score_id)
     if score is None:
         raise HTTPException(status_code=404, detail=f"Score {score_id} not found")
+    await check_video_access(db, me, score.video_id)
     return score

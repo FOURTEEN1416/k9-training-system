@@ -46,20 +46,25 @@ from typing import Annotated, Callable, Literal, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel, Field, model_validator
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 
 from backend.app.core.database import get_db
 from backend.app.core.config import settings
-from backend.app.core.deps import get_current_handler
+from backend.app.core.deps import (
+    check_video_access,
+    get_current_handler,
+    require_roles,
+    visible_dog_id_select,
+)
 from backend.app.models.annotation import (
     Annotation, AnnotationSource, AnnotationTask, AnnotationTaskStatus, AnnotationType,
 )
 from backend.app.models.behavior import Behavior
 from backend.app.models.dog import Dog
 from backend.app.models.dog_associations import DogHandlerAssociation
-from backend.app.models.handler import Handler
+from backend.app.models.handler import Handler, UserRole
 from backend.app.models.video import Video
 from backend.app.schemas.common import (
     AnnotationRead, AnnotationTaskCreate, AnnotationTaskRead,
@@ -83,6 +88,15 @@ router = APIRouter(
 DbSession = Annotated[AsyncSession, Depends(get_db)]
 CurrentHandler = Annotated[Handler, Depends(get_current_handler)]
 SyncFactory = Annotated[Callable[[], Session], Depends(get_sync_session_factory)]
+# 写侧角色（VIEWER 只读；2026-10-20 对抗验收：此前 VIEWER 可创建标注任务）
+Writer = Annotated[
+    Handler,
+    Depends(
+        require_roles(
+            UserRole.ADMIN, UserRole.MANAGER, UserRole.HANDLER, UserRole.RESEARCHER
+        )
+    ),
+]
 
 
 class AnnotationSyncRequest(BaseModel):
@@ -721,17 +735,18 @@ def _complete_sync(factory: Callable[[], Session], me: Handler, task_id: int) ->
 async def create_annotation_task(
     payload: AnnotationTaskCreate,
     db: DbSession,
-    me: CurrentHandler,
+    me: Writer,
 ) -> AnnotationTask:
-    """创建标注任务。
+    """创建标注任务（需 ADMIN/MANAGER/HANDLER/RESEARCHER；VIEWER 只读）。
 
-    1. 校验视频存在
+    1. 校验视频存在且在当前用户可见范围内
     2. 创建 AnnotationTask 记录
     3. （已废弃）不再自动在 Label Studio 创建 task
     """
     video = await db.get(Video, payload.video_id)
     if video is None:
         raise HTTPException(status_code=404, detail=f"视频 {payload.video_id} 不存在")
+    await check_video_access(db, me, payload.video_id)
 
     task = AnnotationTask(
         video_id=payload.video_id,
@@ -777,13 +792,20 @@ async def sync_annotations_stub(
 @router.get("/tasks", response_model=list[AnnotationTaskRead])
 async def list_annotation_tasks(
     db: DbSession,
+    me: CurrentHandler,
     status_filter: Optional[str] = Query(default=None, alias="status"),
     video_id: Optional[int] = None,
     limit: int = 50,
     offset: int = 0,
 ) -> list[AnnotationTask]:
-    """列出标注任务（可按状态/视频筛选）。"""
+    """列出标注任务（需 JWT；非 ADMIN 仅见可见视频下的任务）。"""
     stmt = select(AnnotationTask).order_by(AnnotationTask.id.desc()).limit(limit).offset(offset)
+    visibility = visible_dog_id_select(me)
+    if visibility is not None:
+        visible_videos = select(Video.id).where(
+            or_(Video.dog_id.in_(visibility), Video.handler_id == me.id)
+        )
+        stmt = stmt.where(AnnotationTask.video_id.in_(visible_videos))
     if status_filter:
         try:
             stmt = stmt.where(AnnotationTask.status == AnnotationTaskStatus(status_filter))
@@ -796,11 +818,12 @@ async def list_annotation_tasks(
 
 
 @router.get("/tasks/{task_id}", response_model=AnnotationTaskRead)
-async def get_annotation_task(task_id: int, db: DbSession) -> AnnotationTask:
-    """获取标注任务详情。"""
+async def get_annotation_task(task_id: int, db: DbSession, me: CurrentHandler) -> AnnotationTask:
+    """获取标注任务详情（需 JWT；越权返回 404）。"""
     task = await db.get(AnnotationTask, task_id)
     if task is None:
         raise HTTPException(status_code=404, detail=f"标注任务 {task_id} 不存在")
+    await check_video_access(db, me, task.video_id)
     return task
 
 
@@ -808,13 +831,15 @@ async def get_annotation_task(task_id: int, db: DbSession) -> AnnotationTask:
 async def list_task_annotations(
     task_id: int,
     db: DbSession,
+    me: CurrentHandler,
     annotation_type: Optional[str] = None,
     source: Optional[str] = None,
 ) -> list[Annotation]:
-    """获取任务下的标注数据。"""
+    """获取任务下的标注数据（需 JWT；越权返回 404）。"""
     task = await db.get(AnnotationTask, task_id)
     if task is None:
         raise HTTPException(status_code=404, detail=f"标注任务 {task_id} 不存在")
+    await check_video_access(db, me, task.video_id)
 
     stmt = select(Annotation).where(Annotation.task_id == task_id)
     if annotation_type:

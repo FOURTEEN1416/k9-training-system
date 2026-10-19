@@ -30,12 +30,17 @@ from fastapi import (
     status,
 )
 from fastapi.responses import FileResponse
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.app.core.config import settings
 from backend.app.core.database import get_db
-from backend.app.core.deps import get_current_handler, require_roles
+from backend.app.core.deps import (
+    check_video_access,
+    get_current_handler,
+    require_roles,
+    visible_dog_id_select,
+)
 from backend.app.models.handler import Handler, UserRole
 from backend.app.models.video import Video, VideoStatus, VALID_SCENES
 from backend.app.schemas.common import (
@@ -75,14 +80,20 @@ Writer = Annotated[
 @router.get("", response_model=list[VideoRead])
 async def list_videos(
     db: DbSession,
+    me: CurrentHandler,
     dog_id: Optional[int] = None,
     status_filter: Optional[str] = None,
     scene: Optional[str] = None,
     limit: int = 50,
     offset: int = 0,
 ) -> list[Video]:
-    """列出视频。"""
+    """列出视频（需 JWT；非 ADMIN 仅见本基地 / 本人关联犬只所属视频）。"""
     stmt = select(Video).order_by(Video.id.desc()).limit(limit).offset(offset)
+    visibility = visible_dog_id_select(me)
+    if visibility is not None:
+        stmt = stmt.where(
+            or_(Video.dog_id.in_(visibility), Video.handler_id == me.id)
+        )
     if dog_id is not None:
         stmt = stmt.where(Video.dog_id == dog_id)
     if status_filter is not None:
@@ -201,36 +212,28 @@ def _summarize_processing_stats(
 
 
 @router.get("/{video_id}", response_model=VideoRead)
-async def get_video(video_id: int, db: DbSession) -> Video:
-    """获取单个视频元数据。"""
-    video = await db.get(Video, video_id)
-    if video is None:
-        raise HTTPException(status_code=404, detail=f"Video {video_id} not found")
-    return video
+async def get_video(video_id: int, db: DbSession, me: CurrentHandler) -> Video:
+    """获取单个视频元数据（需 JWT；越权返回 404）。"""
+    return await check_video_access(db, me, video_id)
 
 
 @router.get("/{video_id}/status", response_model=VideoStatusRead)
-async def get_video_status(video_id: int, db: DbSession) -> Video:
-    """轮询视频推理状态。
+async def get_video_status(video_id: int, db: DbSession, me: CurrentHandler) -> Video:
+    """轮询视频推理状态（需 JWT；越权返回 404）。
 
     返回 status / scene / error_message / report_path / processed_at。
     前端按 1-2 秒间隔轮询，status == "completed" 后请求 /report 下载 PDF。
     """
-    video = await db.get(Video, video_id)
-    if video is None:
-        raise HTTPException(status_code=404, detail=f"Video {video_id} not found")
-    return video
+    return await check_video_access(db, me, video_id)
 
 
 @router.get("/{video_id}/report")
-async def download_report(video_id: int, db: DbSession):
-    """下载 PDF 评分报告。
+async def download_report(video_id: int, db: DbSession, me: CurrentHandler):
+    """下载 PDF 评分报告（需 JWT；越权返回 404）。
 
     仅在 video.status == completed 且 report_path 存在时可用。
     """
-    video = await db.get(Video, video_id)
-    if video is None:
-        raise HTTPException(status_code=404, detail=f"Video {video_id} not found")
+    video = await check_video_access(db, me, video_id)
     if video.status != VideoStatus.COMPLETED:
         raise HTTPException(
             status_code=409,

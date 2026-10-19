@@ -26,10 +26,25 @@ from backend.app.api.scores import (
     _score_dimensions,
     compare_scores,
 )
+from backend.app.models.handler import UserRole
 from backend.app.models.training_session import ScoringStandard
 from backend.app.schemas.common import ScorePoint
 
 pytestmark = pytest.mark.fast
+
+
+def _admin_principal() -> MagicMock:
+    """资源级鉴权主体（ADMIN → check_dog_access 直接放行，不干扰本例断言）。
+
+    2026-10-20 对抗验收：compare_scores 新增 me 参数做跨基地鉴权，
+    端点函数被直接调用时需显式传入主体。
+    """
+    me = MagicMock()
+    me.role = UserRole.ADMIN
+    me.is_superuser = False
+    me.base_id = None
+    me.id = 1
+    return me
 
 
 # ============================================================
@@ -394,6 +409,7 @@ async def _call_compare(
     """
     return await compare_scores(
         db=db,
+        me=_admin_principal(),
         dog_ids=dog_ids,
         date_from=date_from,
         date_to=date_to,

@@ -40,7 +40,8 @@ async def _check_redis() -> ComponentHealth:
     )
     try:
         await client.ping()
-        return ComponentHealth(status="ok", detail=f"redis reachable ({settings.redis_url})")
+        # 不回显连接串（渗透用例 OBS-health-redis-url：避免向未认证调用方泄露内网地址）
+        return ComponentHealth(status="ok", detail="redis reachable")
     except Exception as e:  # noqa: BLE001
         return ComponentHealth(status="down", detail=f"{type(e).__name__}: {e}")
     finally:

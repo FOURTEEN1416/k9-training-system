@@ -113,14 +113,24 @@ class TokenPayload:
 
     @classmethod
     def from_dict(cls, d: dict) -> "TokenPayload":
-        return cls(
-            sub=int(d["sub"]),
-            role=str(d["role"]),
-            base_id=d.get("base_id"),
-            is_superuser=bool(d.get("is_superuser", False)),
-            exp=datetime.fromtimestamp(d["exp"], tz=timezone.utc),
-            iat=datetime.fromtimestamp(d["iat"], tz=timezone.utc),
-        )
+        """从 JWT payload 构造。
+
+        畸形 claim（缺 sub/exp/iat、sub 非数字等）一律转 ``InvalidTokenError``（401），
+        不得让 KeyError/ValueError 冒泡成 500——那是信息泄露面也是可用性面。
+        （2026-10-20 对抗验收：渗透用例 C-jwt-missing-sub / C-jwt-sub-non-numeric
+          实测 500，已修）
+        """
+        try:
+            return cls(
+                sub=int(d["sub"]),
+                role=str(d["role"]),
+                base_id=d.get("base_id"),
+                is_superuser=bool(d.get("is_superuser", False)),
+                exp=datetime.fromtimestamp(d["exp"], tz=timezone.utc),
+                iat=datetime.fromtimestamp(d["iat"], tz=timezone.utc),
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            raise InvalidTokenError(f"令牌载荷非法: {type(exc).__name__}") from exc
 
 
 def create_access_token(
