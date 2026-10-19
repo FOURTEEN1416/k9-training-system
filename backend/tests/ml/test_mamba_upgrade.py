@@ -6,14 +6,20 @@ import numpy as np
 import torch
 
 from backend.ml.behavior.mamba_inference import MambaInferer
-from backend.ml.behavior.mamba_sequence import get_model, load_mamba_class, resolve_mamba_ssm_source_root
+from backend.ml.behavior.mamba_sequence import (
+    PROJECT_ROOT,
+    get_model,
+    load_mamba_class,
+    resolve_mamba_ssm_source_root,
+)
 from backend.app.core.config import Settings
 from backend.workers import tasks
 
 
 def test_resolve_mamba_ssm_source_root_points_to_videomamba() -> None:
     root = resolve_mamba_ssm_source_root()
-    assert root == Path(r"D:\Desktop\k9-training-system\external\VideoMamba\mamba")
+    # 期望路径由仓库实际位置推导（不硬编码绝对路径，防目录迁移后漂移）
+    assert root == PROJECT_ROOT / "external" / "VideoMamba" / "mamba"
     assert root.name == "mamba"
 
 

@@ -13,7 +13,7 @@ SECURITY (2026-09-19 fix):
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -170,7 +170,11 @@ class Settings(BaseSettings):
     )
 
     # === Phase 4 Mamba 部署 ===
-    behavior_deploy_mode: Literal[
+    # P0-4（production-readiness-gap-plan.md）：未显式配置时按 app_env 推断默认——
+    #   production → rule_only（真实识别精度未过线前，不默认深度模型路径）；
+    #   development/test → shadow（研究对比用影子模式）。
+    # 显式设置 BEHAVIOR_DEPLOY_MODE 可覆盖任何环境。
+    behavior_deploy_mode: Optional[Literal[
         "shadow",
         "vote",
         "primary_stgcn",
@@ -181,7 +185,7 @@ class Settings(BaseSettings):
         "mamba_bc_shadow",
         "mamba_bc_vote",
         "rule_only",
-    ] = "shadow"
+    ]] = None
 
     @model_validator(mode="after")
     def _enforce_secret_policy(self) -> "Settings":
@@ -211,6 +215,12 @@ class Settings(BaseSettings):
             raise ValueError(
                 "Rejected leaked JWT secret default (was public on GitHub). "
                 "Generate a new AUTH_SECRET_KEY (≥32 chars) and ROTATE all issued tokens."
+            )
+
+        # P0-4 默认部署模式推断（未显式配置时）：production 保守 rule_only
+        if self.behavior_deploy_mode is None:
+            self.behavior_deploy_mode = (
+                "rule_only" if self.app_env == "production" else "shadow"
             )
 
         if self.app_env == "test":

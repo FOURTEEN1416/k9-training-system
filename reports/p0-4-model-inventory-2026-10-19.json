@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-19",
+  "groups": {
+    "pose_yolo": {
+      "candidates": [
+        "D:\\Desktop\\PR论文\\k9-training-system\\runs\\train-2\\weights\\best.onnx",
+        "D:\\Desktop\\PR论文\\k9-training-system\\runs\\train-2\\weights\\best.pt",
+        "D:\\Desktop\\PR论文\\k9-training-system\\yolo26n-pose.pt"
+      ],
+      "resolved_path": "D:\\Desktop\\PR论文\\k9-training-system\\runs\\train-2\\weights\\best.onnx",
+      "present": true,
+      "loadable": true,
+      "engine": "onnxruntime",
+      "detail": "inputs=1 providers=['CPUExecutionProvider']"
+    },
+    "stgcn_bc": {
+      "candidates": [
+        "D:\\Desktop\\PR论文\\k9-training-system\\data\\models\\stgcn_bc\\stgcn_bc_dog24.onnx",
+        "D:\\Desktop\\PR论文\\k9-training-system\\runs\\stgcn_bc_synthetic\\best.pt"
+      ],
+      "resolved_path": "D:\\Desktop\\PR论文\\k9-training-system\\data\\models\\stgcn_bc\\stgcn_bc_dog24.onnx",
+      "present": true,
+      "loadable": true,
+      "engine": "onnxruntime",
+      "detail": "inputs=1 providers=['CPUExecutionProvider']"
+    },
+    "mamba": {
+      "candidates": [
+        "D:\\Desktop\\PR论文\\k9-training-system\\data\\models\\mamba\\mamba_dog24.onnx",
+        "D:\\Desktop\\PR论文\\k9-training-system\\runs\\mamba_synthetic\\best.pt"
+      ],
+      "resolved_path": "D:\\Desktop\\PR论文\\k9-training-system\\runs\\mamba_synthetic\\best.pt",
+      "present": true,
+      "loadable": true,
+      "engine": "torch",
+      "detail": "dict keys(sample)=['epoch', 'model_state_dict', 'optimizer_state_dict', 'val_acc', 'best_val_acc']"
+    },
+    "mamba_bc": {
+      "candidates": [
+        "D:\\Desktop\\PR论文\\k9-training-system\\data\\models\\mamba_bc\\mamba_bc_dog24.onnx",
+        "D:\\Desktop\\PR论文\\k9-training-system\\runs\\mamba_bc_synthetic\\best.pt"
+      ],
+      "resolved_path": "D:\\Desktop\\PR论文\\k9-training-system\\data\\models\\mamba_bc\\mamba_bc_dog24.onnx",
+      "present": true,
+      "loadable": true,
+      "engine": "onnxruntime",
+      "detail": "inputs=1 providers=['CPUExecutionProvider']"
+    },
+    "motionbert": {
+      "candidates": [
+        "D:\\Desktop\\PR论文\\k9-training-system\\data\\models\\motionbert_dog24\\motionbert_dog24.onnx",
+        "D:\\Desktop\\PR论文\\k9-training-system\\data\\models\\MB_lite_pretrain.pth.tar",
+        "D:\\Desktop\\PR论文\\k9-training-system\\data\\models\\MB_lite_pretrain.bin"
+      ],
+      "resolved_path": "D:\\Desktop\\PR论文\\k9-training-system\\data\\models\\motionbert_dog24\\motionbert_dog24.onnx",
+      "present": true,
+      "loadable": true,
+      "engine": "onnxruntime",
+      "detail": "inputs=1 providers=['CPUExecutionProvider']"
+    }
+  }
+}
