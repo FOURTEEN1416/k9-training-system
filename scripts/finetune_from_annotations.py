@@ -76,7 +76,7 @@ async def export_annotations_to_yolo(output_dir: Path) -> dict:
                    v.id as v_id, v.original_filename, v.storage_path, v.width, v.height, v.fps, v.duration_sec
             FROM annotation_tasks t
             JOIN videos v ON t.video_id = v.id
-            WHERE t.status = 'completed'
+            WHERE t.status = 'COMPLETED'
         """)
         result = await db.execute(stmt)
         rows = result.all()
@@ -98,7 +98,7 @@ async def export_annotations_to_yolo(output_dir: Path) -> dict:
             ann_stmt = text("""
                 SELECT id, frame_idx, data_json, confidence
                 FROM annotations
-                WHERE task_id = :tid AND annotation_type = 'keypoint'
+                WHERE task_id = :tid AND annotation_type = 'KEYPOINT'
                 ORDER BY frame_idx
             """)
             ann_result = await db.execute(ann_stmt, {"tid": task_id})

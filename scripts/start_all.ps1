@@ -162,7 +162,10 @@ Save-Ledger 'postgres' $true 'ok'
 # ---------------------------------------------------------------
 Write-Step '3. Alembic 迁移（upgrade head）'
 
-Push-Location (Join-Path $Root 'backend')
+# 注意（2026-10-20 对抗验收修复）：alembic.ini 在仓库根，且必须从根目录调用——
+# cwd 落在 backend/ 时 `import alembic` 会命中本仓 backend/alembic/（迁移目录）而遮蔽
+# 真正的 alembic 库，报 "No module named alembic.__main__" / "No module named alembic.config"。
+Push-Location $Root
 $alembicOut = & $VenvPython -m alembic upgrade head 2>&1
 $alembicCode = $LASTEXITCODE
 Pop-Location
