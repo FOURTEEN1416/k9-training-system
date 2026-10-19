@@ -46,6 +46,9 @@
 | `decisions/0010-phase-2-to-phase-3.md` | Phase 2 → Phase 3 升级 | ✅ 已确认 |
 | `decisions/0011-phase-4-llm-explainer-adr.md` | Phase 4 LLM 行为解释器 | ✅ 已实施（v1.1：实验室 Agnes API + 实用期本地模型） |
 | `decisions/0012-foundation-system-direction.md` | 基座系统方向决策 | ✅ 已确认（物理-语义解耦 + 小样本自监督数据飞轮） |
+| `decisions/0013-research-repo-split.md` | 研究仓库拆分（研究线移交 psd-framework） | ✅ 已确认（2026-08-23） |
+| `decisions/0014-k9-to-psd-phase41-migration-audit.md` | K9→PSD Phase 4.1 迁移审计 | ✅ 已完成（2026-08-24） |
+| `decisions/0015-k9-bench-v0-protocol.md` | K9-Bench-v0 真实识别评测协议（预注册） | 📋 预注册（待用户裁决数据范围后生效冻结） |
 
 > **ADR 0004 说明**：编号 0004 预留给"PoseC3D 触发但失败时记录"（见 `phase-1.md` §6 + `0003-phase-0-to-phase-1.md` §55）。AGENTS.md §9 已确认 PoseC3D 跳过决策（1.2f 条件通过维持跳过），故 ADR 0004 **未触发创建**——这是设计预期，非缺失。
 
