@@ -1,0 +1,4847 @@
+{
+  "protocol_version": "pen-v0.1",
+  "task": "P2-3",
+  "timestamp": "2026-10-19T23:23:17.788708+00:00",
+  "target": {
+    "base_url": "http://127.0.0.1:8000",
+    "transport": "live-http",
+    "health": {
+      "ok": true,
+      "http_status": 200,
+      "status": "ok",
+      "version": "0.1.0",
+      "environment": "development",
+      "deploy_mode": "shadow",
+      "checks": {
+        "database": {
+          "status": "ok",
+          "detail": "database reachable"
+        },
+        "redis": {
+          "status": "ok",
+          "detail": "redis reachable (redis://127.0.0.1:6379/0)"
+        },
+        "models": {
+          "status": "ok",
+          "detail": "all model groups present"
+        }
+      },
+      "reason": null
+    }
+  },
+  "snapshot": {
+    "git_head": "8c91be65ff728f1188307dc6d9dfa8ba8c01011d",
+    "git_dirty_count": 22,
+    "git_dirty_paths": [
+      "backend/app/api/annotations.py",
+      "backend/app/api/finetune.py",
+      "backend/app/api/videos.py",
+      "backend/app/models/video.py",
+      "backend/app/schemas/common.py",
+      "backend/workers/celery_app.py",
+      "backend/workers/tasks.py",
+      "frontend/src/router/index.ts",
+      "frontend/src/views/HistoryView.vue",
+      "frontend/src/views/UploadView.vue",
+      "backend/alembic/versions/d4e5f6a7b8c9_ops_p1_6_processing_observability.py",
+      "backend/alembic/versions/e5f6a7b8c9d0_p1_2_flywheel_review_enums.py",
+      "backend/app/services/training_export.py",
+      "backend/tests/test_flywheel_chain.py",
+      "backend/tests/test_ops_reliability.py",
+      "backend/workers/finetune_tasks.py",
+      "dev-docs/decisions/0016-production-contingency-plan.md",
+      "docs/release-checklist.md",
+      "frontend/src/views/AnnotationReviewView.vue",
+      "reports/p2-3-rbac-pen-baseline.json",
+      "reports/p2-3-rbac-pen-test-2026-10-19.json",
+      "scripts/eval_rbac_pen_test.py"
+    ],
+    "git_tags_count": 0,
+    "git_tags": [],
+    "service": {
+      "pids": [
+        21968,
+        31864
+      ],
+      "pid": 31864,
+      "create_time": 1792401795.5133216,
+      "create_time_utc": "2026-10-19T09:23:15.513322+00:00",
+      "cmdline": "D:\\Desktop\\PR论文\\k9-training-system\\.venv\\Scripts\\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000"
+    },
+    "reload_enabled": false,
+    "openapi_sha256": "f4f0e8ccbf2e5fcc31098d0bfbaf915d31dee5c984e52e8c01dfd77afe933550",
+    "health": {
+      "ok": true,
+      "http_status": 200,
+      "status": "ok",
+      "version": "0.1.0",
+      "environment": "development",
+      "deploy_mode": "shadow",
+      "checks": {
+        "database": {
+          "status": "ok",
+          "detail": "database reachable"
+        },
+        "redis": {
+          "status": "ok",
+          "detail": "redis reachable (redis://127.0.0.1:6379/0)"
+        },
+        "models": {
+          "status": "ok",
+          "detail": "all model groups present"
+        }
+      },
+      "reason": null
+    },
+    "tracked_files": [
+      {
+        "module": "auth",
+        "path": "backend/app/api/auth.py",
+        "sha256": "ae913267bb378589ad7b7567961c84830d37ad7254e06687164da8fc943b8bae",
+        "mtime_utc": "2026-08-02T04:55:43.523758+00:00",
+        "exists": true
+      },
+      {
+        "module": "dogs",
+        "path": "backend/app/api/dogs.py",
+        "sha256": "6a341b7fe8a6bb8f5447126e1d5a80a752bca921bebc6afe55c20f17e0234413",
+        "mtime_utc": "2026-09-19T04:34:12.304566+00:00",
+        "exists": true
+      },
+      {
+        "module": "videos",
+        "path": "backend/app/api/videos.py",
+        "sha256": "4c5559fcc803a4f892f86c29c89a9898bb72e893cefee742cb581caf181b2969",
+        "mtime_utc": "2026-10-19T15:44:25.933799+00:00",
+        "exists": true
+      },
+      {
+        "module": "scores",
+        "path": "backend/app/api/scores.py",
+        "sha256": "f5cfabb42fbe784a844e7af6aab1bd86372dd896994e16e23203011756e89887",
+        "mtime_utc": "2026-09-19T04:34:37.999918+00:00",
+        "exists": true
+      },
+      {
+        "module": "annotations",
+        "path": "backend/app/api/annotations.py",
+        "sha256": "b4deba66fd77f46ed80208a20204b7b1e4e72e7c4dd9d2d523a8e410e23804fc",
+        "mtime_utc": "2026-10-19T15:46:31.629356+00:00",
+        "exists": true
+      },
+      {
+        "module": "bases",
+        "path": "backend/app/api/bases.py",
+        "sha256": "95561062122abc30e887046b84807c2ed9fa0efe0480560bb133f243ca194892",
+        "mtime_utc": "2026-08-02T04:55:44.101115+00:00",
+        "exists": true
+      },
+      {
+        "module": "scoring",
+        "path": "backend/app/api/scoring.py",
+        "sha256": "4a596536df46359037201f4cd46a512a8b8e93d4249bd59b47ce28a2b26afa6c",
+        "mtime_utc": "2026-09-19T04:34:35.029819+00:00",
+        "exists": true
+      },
+      {
+        "module": "models",
+        "path": "backend/app/api/models.py",
+        "sha256": "7f4f44dd6042aad296e703d91b4ae82e917e0443da397dc3b604929a8b82247a",
+        "mtime_utc": "2026-09-19T04:34:29.404236+00:00",
+        "exists": true
+      },
+      {
+        "module": "finetune",
+        "path": "backend/app/api/finetune.py",
+        "sha256": "673110c5757ef762f77c68e68af1c0a0f606251fff0790be5211ced60f7b3cc3",
+        "mtime_utc": "2026-10-19T15:56:29.489018+00:00",
+        "exists": true
+      },
+      {
+        "module": "health",
+        "path": "backend/app/api/health.py",
+        "sha256": "9646e4eeae0d1fa311f03965ac5e8626ef7f5190a577f2d13bec3b3f0e951971",
+        "mtime_utc": "2026-10-19T09:17:20.235806+00:00",
+        "exists": true
+      },
+      {
+        "module": "llm_explainer",
+        "path": "backend/app/api/llm_explainer.py",
+        "sha256": "83c323eb9e1e24cc5ebf0403bc67d059ba79777a7874776c3f693bc5f250d695",
+        "mtime_utc": "2026-09-19T04:36:08.750471+00:00",
+        "exists": true
+      },
+      {
+        "module": "deps",
+        "path": "backend/app/core/deps.py",
+        "sha256": "b8a395f27b61c5035a3817f44556950723fb7134ff2bd3433052f47d78e65333",
+        "mtime_utc": "2026-08-02T02:51:02.610749+00:00",
+        "exists": true
+      },
+      {
+        "module": "security",
+        "path": "backend/app/core/security.py",
+        "sha256": "acb6837f463c79e0afc2a5da9ad85e63714f065b23f38ea6acc8f32f8c19f905",
+        "mtime_utc": "2026-08-02T03:57:33.987418+00:00",
+        "exists": true
+      },
+      {
+        "module": "main",
+        "path": "backend/app/main.py",
+        "sha256": "18bb0c4520ab677d9362c9ebad3d9607045e2dedf014252f72e56921b61d5884",
+        "mtime_utc": "2026-09-18T23:57:29.151228+00:00",
+        "exists": true
+      },
+      {
+        "module": "schemas",
+        "path": "backend/app/schemas/common.py",
+        "sha256": "da622fd3b7e4f3a6a626f4bb70cd5f687fc549752e92ef65e756144b2e5a177d",
+        "mtime_utc": "2026-10-19T15:25:14.657390+00:00",
+        "exists": true
+      }
+    ],
+    "stale_modules": [
+      "videos",
+      "annotations",
+      "finetune",
+      "schemas"
+    ],
+    "snapshot_warning": "module_changed_after_service_start: videos, annotations, finetune, schemas; service_runs_without_reload",
+    "methodology": "陈旧判定 = 模块 mtime > 服务进程 create_time；按 endpoint 所属模块归因。schemas/common.py 等共享依赖的改动记录在 tracked_files，但不单独归因到每个用例。"
+  },
+  "preconditions": {
+    "health": {
+      "ok": true,
+      "http_status": 200,
+      "status": "ok",
+      "version": "0.1.0",
+      "environment": "development",
+      "deploy_mode": "shadow",
+      "checks": {
+        "database": {
+          "status": "ok",
+          "detail": "database reachable"
+        },
+        "redis": {
+          "status": "ok",
+          "detail": "redis reachable (redis://127.0.0.1:6379/0)"
+        },
+        "models": {
+          "status": "ok",
+          "detail": "all model groups present"
+        }
+      },
+      "reason": null
+    },
+    "db_connected": true,
+    "ids": {
+      "base_a": 110,
+      "base_b": 111,
+      "superadmin": 422,
+      "admin_nosuper": 423,
+      "manager_a": 424,
+      "manager_b": 425,
+      "handler_a1": 426,
+      "handler_b1": 427,
+      "researcher_a": 428,
+      "viewer_a": 429,
+      "viewer_b": 430,
+      "victim_user_b": 431,
+      "disabled_a": 432,
+      "del_super": 433,
+      "del_admin": 434,
+      "victim_dog_b": 193,
+      "victim_dog_b_del_manager_a": 194,
+      "victim_dog_b_del_researcher_a": 195,
+      "victim_dog_b_del_handler_a1": 196,
+      "victim_dog_b_del_viewer_a": 197,
+      "victim_video_b": 134,
+      "victim_score_b": 75,
+      "victim_task_b": 30,
+      "victim_annotation": 27,
+      "model_pose": 1
+    },
+    "login_status": {
+      "superadmin": 200,
+      "admin_nosuper": 200,
+      "manager_a": 200,
+      "manager_b": 200,
+      "handler_a1": 200,
+      "handler_b1": 200,
+      "researcher_a": 200,
+      "viewer_a": 200,
+      "viewer_b": 200,
+      "victim_user_b": 200,
+      "disabled_a": 401
+    },
+    "secret_matches_service": true,
+    "victim_probes": [
+      {
+        "probe": "dog",
+        "module": "dogs",
+        "status": 200,
+        "stale_module": false
+      },
+      {
+        "probe": "video",
+        "module": "videos",
+        "status": 200,
+        "stale_module": true
+      },
+      {
+        "probe": "video_status",
+        "module": "videos",
+        "status": 200,
+        "stale_module": true
+      },
+      {
+        "probe": "video_report",
+        "module": "videos",
+        "status": 200,
+        "stale_module": true
+      },
+      {
+        "probe": "score",
+        "module": "scores",
+        "status": 200,
+        "stale_module": false
+      },
+      {
+        "probe": "task",
+        "module": "annotations",
+        "status": 500,
+        "stale_module": true
+      },
+      {
+        "probe": "task_annotations",
+        "module": "annotations",
+        "status": 500,
+        "stale_module": true
+      }
+    ],
+    "failures": []
+  },
+  "severity_policy": {
+    "CRITICAL": "跨租户写/删成功；未认证访问受保护端点成功；伪造/篡改/禁用账号 token 被接受；非超管创建超管",
+    "HIGH": "跨租户读/列表泄漏；畸形 token 触发 5xx；VIEWER 跨基地创建标注任务",
+    "MEDIUM": "审计日志缺失（P2-3 验收缺口）",
+    "INFO": "health 暴露 redis URL；openapi 公开；role claim 被忽略"
+  },
+  "exit_policy": {
+    "0": "执行成功且无达到 --fail-on 阈值的发现",
+    "1": "达到阈值",
+    "2": "前置失败（服务/健康门/DB/种子/404 前置/快照/清理/脱敏/远程未授权）",
+    "fail_on": {
+      "critical": "仅 CRITICAL 触发 1（默认）",
+      "high": "CRITICAL + HIGH 触发 1",
+      "any": "CRITICAL + HIGH + MEDIUM 触发 1",
+      "none": "永不因发现触发 1（前置失败仍可 2）"
+    },
+    "baseline": "提供 --baseline 时，只有新增或严重度升级的发现触发阈值；已修复项列入 resolved。--write-baseline 写完后仍按当前发现执行阈值。"
+  },
+  "suites": [
+    {
+      "name": "A-unauthorized-scan",
+      "category": "A-unauthorized-scan",
+      "status": "partial",
+      "invalid_reason": "module_changed_after_service_start: annotations; module_changed_after_service_start: finetune; module_changed_after_service_start: videos",
+      "cases": [
+        {
+          "case_id": "A-unauth-post-api-annotations-sync",
+          "title": "未认证访问 POST /api/annotations/sync",
+          "method": "POST",
+          "endpoint": "/api/annotations/sync",
+          "endpoint_template": "/api/annotations/sync",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-annotations-tasks",
+          "title": "未认证访问 GET /api/annotations/tasks",
+          "method": "GET",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-annotations-tasks",
+          "title": "未认证访问 POST /api/annotations/tasks",
+          "method": "POST",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-annotations-tasks-task-id",
+          "title": "未认证访问 GET /api/annotations/tasks/{task_id}",
+          "method": "GET",
+          "endpoint": "/api/annotations/tasks/1",
+          "endpoint_template": "/api/annotations/tasks/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-annotations-tasks-task-id-annotations",
+          "title": "未认证访问 GET /api/annotations/tasks/{task_id}/annotations",
+          "method": "GET",
+          "endpoint": "/api/annotations/tasks/1/annotations",
+          "endpoint_template": "/api/annotations/tasks/1/annotations",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-auth-change-password",
+          "title": "未认证访问 POST /api/auth/change-password",
+          "method": "POST",
+          "endpoint": "/api/auth/change-password",
+          "endpoint_template": "/api/auth/change-password",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/auth/change-password",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-auth-me",
+          "title": "未认证访问 GET /api/auth/me",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-auth-register",
+          "title": "未认证访问 POST /api/auth/register",
+          "method": "POST",
+          "endpoint": "/api/auth/register",
+          "endpoint_template": "/api/auth/register",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/auth/register",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-auth-users",
+          "title": "未认证访问 GET /api/auth/users",
+          "method": "GET",
+          "endpoint": "/api/auth/users",
+          "endpoint_template": "/api/auth/users",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/auth/users",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-auth-users-user-id",
+          "title": "未认证访问 GET /api/auth/users/{user_id}",
+          "method": "GET",
+          "endpoint": "/api/auth/users/1",
+          "endpoint_template": "/api/auth/users/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/auth/users/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-put-api-auth-users-user-id",
+          "title": "未认证访问 PUT /api/auth/users/{user_id}",
+          "method": "PUT",
+          "endpoint": "/api/auth/users/1",
+          "endpoint_template": "/api/auth/users/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/auth/users/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-delete-api-auth-users-user-id",
+          "title": "未认证访问 DELETE /api/auth/users/{user_id}",
+          "method": "DELETE",
+          "endpoint": "/api/auth/users/1",
+          "endpoint_template": "/api/auth/users/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/auth/users/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-bases",
+          "title": "未认证访问 GET /api/bases",
+          "method": "GET",
+          "endpoint": "/api/bases",
+          "endpoint_template": "/api/bases",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/bases",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-bases",
+          "title": "未认证访问 POST /api/bases",
+          "method": "POST",
+          "endpoint": "/api/bases",
+          "endpoint_template": "/api/bases",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/bases",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-bases-base-id",
+          "title": "未认证访问 GET /api/bases/{base_id}",
+          "method": "GET",
+          "endpoint": "/api/bases/1",
+          "endpoint_template": "/api/bases/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/bases/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-put-api-bases-base-id",
+          "title": "未认证访问 PUT /api/bases/{base_id}",
+          "method": "PUT",
+          "endpoint": "/api/bases/1",
+          "endpoint_template": "/api/bases/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/bases/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-delete-api-bases-base-id",
+          "title": "未认证访问 DELETE /api/bases/{base_id}",
+          "method": "DELETE",
+          "endpoint": "/api/bases/1",
+          "endpoint_template": "/api/bases/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/bases/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-dogs",
+          "title": "未认证访问 GET /api/dogs",
+          "method": "GET",
+          "endpoint": "/api/dogs",
+          "endpoint_template": "/api/dogs",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/dogs",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-dogs",
+          "title": "未认证访问 POST /api/dogs",
+          "method": "POST",
+          "endpoint": "/api/dogs",
+          "endpoint_template": "/api/dogs",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/dogs",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-dogs-dog-id",
+          "title": "未认证访问 GET /api/dogs/{dog_id}",
+          "method": "GET",
+          "endpoint": "/api/dogs/1",
+          "endpoint_template": "/api/dogs/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/dogs/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-put-api-dogs-dog-id",
+          "title": "未认证访问 PUT /api/dogs/{dog_id}",
+          "method": "PUT",
+          "endpoint": "/api/dogs/1",
+          "endpoint_template": "/api/dogs/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/dogs/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-delete-api-dogs-dog-id",
+          "title": "未认证访问 DELETE /api/dogs/{dog_id}",
+          "method": "DELETE",
+          "endpoint": "/api/dogs/1",
+          "endpoint_template": "/api/dogs/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/dogs/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-finetune-pipeline",
+          "title": "未认证访问 GET /api/finetune/pipeline",
+          "method": "GET",
+          "endpoint": "/api/finetune/pipeline",
+          "endpoint_template": "/api/finetune/pipeline",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: finetune",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "finetune"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-finetune-status",
+          "title": "未认证访问 GET /api/finetune/status",
+          "method": "GET",
+          "endpoint": "/api/finetune/status",
+          "endpoint_template": "/api/finetune/status",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: finetune",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "finetune"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-finetune-trigger",
+          "title": "未认证访问 POST /api/finetune/trigger",
+          "method": "POST",
+          "endpoint": "/api/finetune/trigger",
+          "endpoint_template": "/api/finetune/trigger",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: finetune",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "finetune"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-llm-explain",
+          "title": "未认证访问 POST /api/llm/explain",
+          "method": "POST",
+          "endpoint": "/api/llm/explain",
+          "endpoint_template": "/api/llm/explain",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/llm/explain",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-models",
+          "title": "未认证访问 GET /api/models",
+          "method": "GET",
+          "endpoint": "/api/models",
+          "endpoint_template": "/api/models",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/models",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-models-current",
+          "title": "未认证访问 GET /api/models/current",
+          "method": "GET",
+          "endpoint": "/api/models/current",
+          "endpoint_template": "/api/models/current",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/models/current",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-models-register",
+          "title": "未认证访问 POST /api/models/register",
+          "method": "POST",
+          "endpoint": "/api/models/register",
+          "endpoint_template": "/api/models/register",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/models/register",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-models-model-id",
+          "title": "未认证访问 GET /api/models/{model_id}",
+          "method": "GET",
+          "endpoint": "/api/models/1",
+          "endpoint_template": "/api/models/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/models/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-models-model-id-activate",
+          "title": "未认证访问 POST /api/models/{model_id}/activate",
+          "method": "POST",
+          "endpoint": "/api/models/1/activate",
+          "endpoint_template": "/api/models/1/activate",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/models/1/activate",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-scores",
+          "title": "未认证访问 GET /api/scores",
+          "method": "GET",
+          "endpoint": "/api/scores",
+          "endpoint_template": "/api/scores",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-scores-by-dog-dog-id",
+          "title": "未认证访问 GET /api/scores/by-dog/{dog_id}",
+          "method": "GET",
+          "endpoint": "/api/scores/by-dog/1",
+          "endpoint_template": "/api/scores/by-dog/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/by-dog/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-scores-compare",
+          "title": "未认证访问 GET /api/scores/compare",
+          "method": "GET",
+          "endpoint": "/api/scores/compare",
+          "endpoint_template": "/api/scores/compare",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/compare",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-scores-score-id",
+          "title": "未认证访问 GET /api/scores/{score_id}",
+          "method": "GET",
+          "endpoint": "/api/scores/1",
+          "endpoint_template": "/api/scores/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-scoring-configs",
+          "title": "未认证访问 GET /api/scoring/configs",
+          "method": "GET",
+          "endpoint": "/api/scoring/configs",
+          "endpoint_template": "/api/scoring/configs",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scoring/configs",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-scoring-configs-scene",
+          "title": "未认证访问 GET /api/scoring/configs/{scene}",
+          "method": "GET",
+          "endpoint": "/api/scoring/configs/1",
+          "endpoint_template": "/api/scoring/configs/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scoring/configs/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-put-api-scoring-configs-scene",
+          "title": "未认证访问 PUT /api/scoring/configs/{scene}",
+          "method": "PUT",
+          "endpoint": "/api/scoring/configs/1",
+          "endpoint_template": "/api/scoring/configs/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scoring/configs/1",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-scoring-evaluate",
+          "title": "未认证访问 POST /api/scoring/evaluate",
+          "method": "POST",
+          "endpoint": "/api/scoring/evaluate",
+          "endpoint_template": "/api/scoring/evaluate",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scoring/evaluate",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-videos",
+          "title": "未认证访问 GET /api/videos",
+          "method": "GET",
+          "endpoint": "/api/videos",
+          "endpoint_template": "/api/videos",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-post-api-videos-upload",
+          "title": "未认证访问 POST /api/videos/upload",
+          "method": "POST",
+          "endpoint": "/api/videos/upload",
+          "endpoint_template": "/api/videos/upload",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-videos-video-id",
+          "title": "未认证访问 GET /api/videos/{video_id}",
+          "method": "GET",
+          "endpoint": "/api/videos/1",
+          "endpoint_template": "/api/videos/1",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-videos-video-id-report",
+          "title": "未认证访问 GET /api/videos/{video_id}/report",
+          "method": "GET",
+          "endpoint": "/api/videos/1/report",
+          "endpoint_template": "/api/videos/1/report",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "A-unauth-get-api-videos-video-id-status",
+          "title": "未认证访问 GET /api/videos/{video_id}/status",
+          "method": "GET",
+          "endpoint": "/api/videos/1/status",
+          "endpoint_template": "/api/videos/1/status",
+          "identity": "anonymous",
+          "expected_status": 401,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        }
+      ]
+    },
+    {
+      "name": "B-cross-base-isolation",
+      "category": "B-cross-base-isolation",
+      "status": "fail",
+      "invalid_reason": "module_changed_after_service_start: annotations; module_changed_after_service_start: videos",
+      "cases": [
+        {
+          "case_id": "B-dog-get-manager_a",
+          "title": "跨基地读取犬只档案",
+          "method": "GET",
+          "endpoint": "/api/dogs/193",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/dogs/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "167"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-dog-get-researcher_a",
+          "title": "跨基地读取犬只档案",
+          "method": "GET",
+          "endpoint": "/api/dogs/193",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b}",
+          "identity": "researcher_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/dogs/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "167"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-dog-get-handler_a1",
+          "title": "跨基地读取犬只档案",
+          "method": "GET",
+          "endpoint": "/api/dogs/193",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b}",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/dogs/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "167"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-dog-get-viewer_a",
+          "title": "跨基地读取犬只档案",
+          "method": "GET",
+          "endpoint": "/api/dogs/193",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b}",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/dogs/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "167"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-dog-get-viewer_b",
+          "title": "B 基地 viewer 读取本基地犬只（正向对照）",
+          "method": "GET",
+          "endpoint": "/api/dogs/193",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b}",
+          "identity": "viewer_b",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "endpoint": "/api/dogs/193",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "167"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-dog-put-manager_a",
+          "title": "跨基地修改犬只档案",
+          "method": "PUT",
+          "endpoint": "/api/dogs/193",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "CRITICAL",
+          "category": "cross_base_write",
+          "evidence": {
+            "endpoint": "/api/dogs/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "167"
+          },
+          "remediation": "写路由必须叠加资源级归属校验（check_dog_access(require_write=True)），不能只依赖角色门；跨基地删除/修改返回 403。"
+        },
+        {
+          "case_id": "B-dog-put-researcher_a",
+          "title": "跨基地修改犬只档案",
+          "method": "PUT",
+          "endpoint": "/api/dogs/193",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b}",
+          "identity": "researcher_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "CRITICAL",
+          "category": "cross_base_write",
+          "evidence": {
+            "endpoint": "/api/dogs/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "167"
+          },
+          "remediation": "写路由必须叠加资源级归属校验（check_dog_access(require_write=True)），不能只依赖角色门；跨基地删除/修改返回 403。"
+        },
+        {
+          "case_id": "B-dog-put-handler_a1",
+          "title": "跨基地修改犬只档案",
+          "method": "PUT",
+          "endpoint": "/api/dogs/193",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b}",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "CRITICAL",
+          "category": "cross_base_write",
+          "evidence": {
+            "endpoint": "/api/dogs/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "167"
+          },
+          "remediation": "写路由必须叠加资源级归属校验（check_dog_access(require_write=True)），不能只依赖角色门；跨基地删除/修改返回 403。"
+        },
+        {
+          "case_id": "B-dog-put-viewer_a",
+          "title": "跨基地修改犬只档案",
+          "method": "PUT",
+          "endpoint": "/api/dogs/193",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b}",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_write",
+          "evidence": {
+            "endpoint": "/api/dogs/193",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin, manager, handler, researcher（当前: viewer）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "94"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-dog-delete-manager_a",
+          "title": "跨基地删除犬只档案",
+          "method": "DELETE",
+          "endpoint": "/api/dogs/194",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b_del_manager_a}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 204,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_204",
+          "severity": "CRITICAL",
+          "category": "cross_base_write",
+          "evidence": {
+            "endpoint": "/api/dogs/194",
+            "expected_status": 403,
+            "actual_status": 204,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": null,
+            "content_length": null
+          },
+          "remediation": "写路由必须叠加资源级归属校验（check_dog_access(require_write=True)），不能只依赖角色门；跨基地删除/修改返回 403。"
+        },
+        {
+          "case_id": "B-dog-delete-researcher_a",
+          "title": "跨基地删除犬只档案",
+          "method": "DELETE",
+          "endpoint": "/api/dogs/195",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b_del_researcher_a}",
+          "identity": "researcher_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_write",
+          "evidence": {
+            "endpoint": "/api/dogs/195",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin, manager（当前: researcher）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "77"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-dog-delete-handler_a1",
+          "title": "跨基地删除犬只档案",
+          "method": "DELETE",
+          "endpoint": "/api/dogs/196",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b_del_handler_a1}",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_write",
+          "evidence": {
+            "endpoint": "/api/dogs/196",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin, manager（当前: handler）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "74"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-dog-delete-viewer_a",
+          "title": "跨基地删除犬只档案",
+          "method": "DELETE",
+          "endpoint": "/api/dogs/197",
+          "endpoint_template": "/api/dogs/{ids.victim_dog_b_del_viewer_a}",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_write",
+          "evidence": {
+            "endpoint": "/api/dogs/197",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin, manager（当前: viewer）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "73"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-dog-list-manager_a",
+          "title": "犬只列表跨基地泄漏",
+          "method": "GET",
+          "endpoint": "/api/dogs",
+          "endpoint_template": "/api/dogs",
+          "identity": "manager_a",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "cross_base_ids_present",
+          "severity": "HIGH",
+          "category": "list_leak",
+          "evidence": {
+            "endpoint": "/api/dogs",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": 26,
+            "seed_ids_present": [
+              193
+            ],
+            "foreign_real_rows_count": 21,
+            "content_type": "application/json",
+            "content_length": "4904"
+          },
+          "remediation": "列表端点按 me.base_id / handler 归属过滤；ADMIN/超管才返回全量；MANAGER 只看本基地，HANDLER 只看自有或关联犬只。"
+        },
+        {
+          "case_id": "B-dog-list-viewer_a",
+          "title": "犬只列表跨基地泄漏",
+          "method": "GET",
+          "endpoint": "/api/dogs",
+          "endpoint_template": "/api/dogs",
+          "identity": "viewer_a",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "cross_base_ids_present",
+          "severity": "HIGH",
+          "category": "list_leak",
+          "evidence": {
+            "endpoint": "/api/dogs",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": 26,
+            "seed_ids_present": [
+              193
+            ],
+            "foreign_real_rows_count": 21,
+            "content_type": "application/json",
+            "content_length": "4904"
+          },
+          "remediation": "列表端点按 me.base_id / handler 归属过滤；ADMIN/超管才返回全量；MANAGER 只看本基地，HANDLER 只看自有或关联犬只。"
+        },
+        {
+          "case_id": "B-video-get-manager_a",
+          "title": "跨基地读取视频元数据",
+          "method": "GET",
+          "endpoint": "/api/videos/134",
+          "endpoint_template": "/api/videos/{ids.victim_video_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-video-get-researcher_a",
+          "title": "跨基地读取视频元数据",
+          "method": "GET",
+          "endpoint": "/api/videos/134",
+          "endpoint_template": "/api/videos/{ids.victim_video_b}",
+          "identity": "researcher_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-video-get-handler_a1",
+          "title": "跨基地读取视频元数据",
+          "method": "GET",
+          "endpoint": "/api/videos/134",
+          "endpoint_template": "/api/videos/{ids.victim_video_b}",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-video-get-viewer_a",
+          "title": "跨基地读取视频元数据",
+          "method": "GET",
+          "endpoint": "/api/videos/134",
+          "endpoint_template": "/api/videos/{ids.victim_video_b}",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-video-status-manager_a",
+          "title": "跨基地轮询视频状态",
+          "method": "GET",
+          "endpoint": "/api/videos/134/status",
+          "endpoint_template": "/api/videos/{ids.victim_video_b}/status",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-video-report-manager_a",
+          "title": "跨基地下载 PDF 报告",
+          "method": "GET",
+          "endpoint": "/api/videos/134/report",
+          "endpoint_template": "/api/videos/{ids.victim_video_b}/report",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-video-status-viewer_a",
+          "title": "跨基地轮询视频状态",
+          "method": "GET",
+          "endpoint": "/api/videos/134/status",
+          "endpoint_template": "/api/videos/{ids.victim_video_b}/status",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-video-report-viewer_a",
+          "title": "跨基地下载 PDF 报告",
+          "method": "GET",
+          "endpoint": "/api/videos/134/report",
+          "endpoint_template": "/api/videos/{ids.victim_video_b}/report",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-video-list-manager_a",
+          "title": "视频列表按 dog_id 跨基地泄漏",
+          "method": "GET",
+          "endpoint": "/api/videos?dog_id=193",
+          "endpoint_template": "/api/videos?dog_id={ids.victim_dog_b}",
+          "identity": "manager_a",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "list_leak",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-video-report-viewer_b",
+          "title": "B 基地 viewer 下载本基地报告（正向对照）",
+          "method": "GET",
+          "endpoint": "/api/videos/134/report",
+          "endpoint_template": "/api/videos/{ids.victim_video_b}/report",
+          "identity": "viewer_b",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-score-get-manager_a",
+          "title": "跨基地读取单条评分",
+          "method": "GET",
+          "endpoint": "/api/scores/75",
+          "endpoint_template": "/api/scores/{ids.victim_score_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/75",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "269"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-score-by-dog-manager_a",
+          "title": "跨基地读取犬只历史评分",
+          "method": "GET",
+          "endpoint": "/api/scores/by-dog/193",
+          "endpoint_template": "/api/scores/by-dog/{ids.victim_dog_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/by-dog/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "271"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-score-get-researcher_a",
+          "title": "跨基地读取单条评分",
+          "method": "GET",
+          "endpoint": "/api/scores/75",
+          "endpoint_template": "/api/scores/{ids.victim_score_b}",
+          "identity": "researcher_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/75",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "269"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-score-by-dog-researcher_a",
+          "title": "跨基地读取犬只历史评分",
+          "method": "GET",
+          "endpoint": "/api/scores/by-dog/193",
+          "endpoint_template": "/api/scores/by-dog/{ids.victim_dog_b}",
+          "identity": "researcher_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/by-dog/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "271"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-score-get-handler_a1",
+          "title": "跨基地读取单条评分",
+          "method": "GET",
+          "endpoint": "/api/scores/75",
+          "endpoint_template": "/api/scores/{ids.victim_score_b}",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/75",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "269"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-score-by-dog-handler_a1",
+          "title": "跨基地读取犬只历史评分",
+          "method": "GET",
+          "endpoint": "/api/scores/by-dog/193",
+          "endpoint_template": "/api/scores/by-dog/{ids.victim_dog_b}",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/by-dog/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "271"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-score-get-viewer_a",
+          "title": "跨基地读取单条评分",
+          "method": "GET",
+          "endpoint": "/api/scores/75",
+          "endpoint_template": "/api/scores/{ids.victim_score_b}",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/75",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "269"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-score-by-dog-viewer_a",
+          "title": "跨基地读取犬只历史评分",
+          "method": "GET",
+          "endpoint": "/api/scores/by-dog/193",
+          "endpoint_template": "/api/scores/by-dog/{ids.victim_dog_b}",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/by-dog/193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "271"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-score-compare-manager_a",
+          "title": "跨基地训练对比查询",
+          "method": "GET",
+          "endpoint": "/api/scores/compare?dog_ids=193",
+          "endpoint_template": "/api/scores/compare?dog_ids={ids.victim_dog_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/compare?dog_ids=193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "836"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-score-list-manager_a",
+          "title": "评分列表跨基地泄漏",
+          "method": "GET",
+          "endpoint": "/api/scores",
+          "endpoint_template": "/api/scores",
+          "identity": "manager_a",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "cross_base_ids_present",
+          "severity": "HIGH",
+          "category": "list_leak",
+          "evidence": {
+            "endpoint": "/api/scores",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": 1,
+            "seed_ids_present": [
+              75
+            ],
+            "foreign_real_rows_count": 0,
+            "content_type": "application/json",
+            "content_length": "271"
+          },
+          "remediation": "列表端点按 me.base_id / handler 归属过滤；ADMIN/超管才返回全量；MANAGER 只看本基地，HANDLER 只看自有或关联犬只。"
+        },
+        {
+          "case_id": "B-score-compare-viewer_a",
+          "title": "跨基地训练对比查询",
+          "method": "GET",
+          "endpoint": "/api/scores/compare?dog_ids=193",
+          "endpoint_template": "/api/scores/compare?dog_ids={ids.victim_dog_b}",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "unexpected_status_200",
+          "severity": "HIGH",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/scores/compare?dog_ids=193",
+            "expected_status": 403,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "836"
+          },
+          "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+        },
+        {
+          "case_id": "B-score-list-viewer_a",
+          "title": "评分列表跨基地泄漏",
+          "method": "GET",
+          "endpoint": "/api/scores",
+          "endpoint_template": "/api/scores",
+          "identity": "viewer_a",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "cross_base_ids_present",
+          "severity": "HIGH",
+          "category": "list_leak",
+          "evidence": {
+            "endpoint": "/api/scores",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": 1,
+            "seed_ids_present": [
+              75
+            ],
+            "foreign_real_rows_count": 0,
+            "content_type": "application/json",
+            "content_length": "271"
+          },
+          "remediation": "列表端点按 me.base_id / handler 归属过滤；ADMIN/超管才返回全量；MANAGER 只看本基地，HANDLER 只看自有或关联犬只。"
+        },
+        {
+          "case_id": "B-score-get-viewer_b",
+          "title": "B 基地 viewer 读取本基地评分（正向对照）",
+          "method": "GET",
+          "endpoint": "/api/scores/75",
+          "endpoint_template": "/api/scores/{ids.victim_score_b}",
+          "identity": "viewer_b",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "endpoint": "/api/scores/75",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "269"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-anno-task-get-manager_a",
+          "title": "跨基地读取标注任务",
+          "method": "GET",
+          "endpoint": "/api/annotations/tasks/30",
+          "endpoint_template": "/api/annotations/tasks/{ids.victim_task_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-anno-task-annotations-manager_a",
+          "title": "跨基地读取标注数据",
+          "method": "GET",
+          "endpoint": "/api/annotations/tasks/30/annotations",
+          "endpoint_template": "/api/annotations/tasks/{ids.victim_task_b}/annotations",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-anno-task-list-manager_a",
+          "title": "标注任务列表跨基地泄漏",
+          "method": "GET",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "manager_a",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "list_leak",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-anno-task-get-viewer_a",
+          "title": "跨基地读取标注任务",
+          "method": "GET",
+          "endpoint": "/api/annotations/tasks/30",
+          "endpoint_template": "/api/annotations/tasks/{ids.victim_task_b}",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-anno-task-annotations-viewer_a",
+          "title": "跨基地读取标注数据",
+          "method": "GET",
+          "endpoint": "/api/annotations/tasks/30/annotations",
+          "endpoint_template": "/api/annotations/tasks/{ids.victim_task_b}/annotations",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-anno-task-list-viewer_a",
+          "title": "标注任务列表跨基地泄漏",
+          "method": "GET",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "viewer_a",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "list_leak",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-anno-task-create-admin_nosuper",
+          "title": "有权角色创建标注任务（正向对照）",
+          "method": "POST",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "admin_nosuper",
+          "expected_status": 201,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-anno-task-create-manager_a",
+          "title": "有权角色创建标注任务（正向对照）",
+          "method": "POST",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "manager_a",
+          "expected_status": 201,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-anno-task-create-handler_a1",
+          "title": "有权角色创建标注任务（正向对照）",
+          "method": "POST",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "handler_a1",
+          "expected_status": 201,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-anno-task-create-viewer_a",
+          "title": "VIEWER 跨基地创建标注任务",
+          "method": "POST",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_write",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-users-get-manager_a",
+          "title": "MANAGER 跨基地读取用户详情",
+          "method": "GET",
+          "endpoint": "/api/auth/users/425",
+          "endpoint_template": "/api/auth/users/{ids.manager_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/auth/users/425",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "无权查看其他基地用户",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "43"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-base-get-manager_a",
+          "title": "MANAGER 跨基地读取基地详情",
+          "method": "GET",
+          "endpoint": "/api/bases/111",
+          "endpoint_template": "/api/bases/{ids.base_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_read",
+          "evidence": {
+            "endpoint": "/api/bases/111",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "无权查看其他基地",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "37"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-users-put-manager_a",
+          "title": "MANAGER 跨基地修改用户",
+          "method": "PUT",
+          "endpoint": "/api/auth/users/431",
+          "endpoint_template": "/api/auth/users/{ids.victim_user_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_write",
+          "evidence": {
+            "endpoint": "/api/auth/users/431",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "仅 ADMIN 可修改用户信息",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "44"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-users-delete-manager_a",
+          "title": "MANAGER 跨基地禁用用户",
+          "method": "DELETE",
+          "endpoint": "/api/auth/users/431",
+          "endpoint_template": "/api/auth/users/{ids.victim_user_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "cross_base_write",
+          "evidence": {
+            "endpoint": "/api/auth/users/431",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "角色权限不足（需要 ≥ admin，当前 manager）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "70"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "B-users-list-manager_a",
+          "title": "用户列表跨基地泄漏",
+          "method": "GET",
+          "endpoint": "/api/auth/users",
+          "endpoint_template": "/api/auth/users",
+          "identity": "manager_a",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "list_leak",
+          "evidence": {
+            "endpoint": "/api/auth/users",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": 8,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": 0,
+            "content_type": "application/json",
+            "content_length": "1604"
+          },
+          "remediation": ""
+        }
+      ]
+    },
+    {
+      "name": "C-role-and-jwt",
+      "category": "C-role-and-jwt",
+      "status": "fail",
+      "invalid_reason": "dangerous_positive_write_disabled; module_changed_after_service_start: annotations; module_changed_after_service_start: finetune; module_changed_after_service_start: videos",
+      "cases": [
+        {
+          "case_id": "C-register-superadmin",
+          "title": "超管创建普通用户",
+          "method": "POST",
+          "endpoint": "/api/auth/register",
+          "endpoint_template": "/api/auth/register",
+          "identity": "superadmin",
+          "expected_status": 201,
+          "actual_status": 201,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/auth/register",
+            "expected_status": 201,
+            "actual_status": 201,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "198"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-register-admin_nosuper",
+          "title": "非超管尝试创建超管（响应必须降级为 false）",
+          "method": "POST",
+          "endpoint": "/api/auth/register",
+          "endpoint_template": "/api/auth/register",
+          "identity": "admin_nosuper",
+          "expected_status": 201,
+          "actual_status": 201,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/auth/register",
+            "expected_status": 201,
+            "actual_status": 201,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "208",
+            "is_superuser": false
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-register-manager_a",
+          "title": "MANAGER 创建用户",
+          "method": "POST",
+          "endpoint": "/api/auth/register",
+          "endpoint_template": "/api/auth/register",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/auth/register",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "角色权限不足（需要 ≥ admin，当前 manager）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "70"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-register-handler_a1",
+          "title": "HANDLER 创建用户",
+          "method": "POST",
+          "endpoint": "/api/auth/register",
+          "endpoint_template": "/api/auth/register",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/auth/register",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "角色权限不足（需要 ≥ admin，当前 handler）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "70"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-register-viewer_a",
+          "title": "VIEWER 创建用户",
+          "method": "POST",
+          "endpoint": "/api/auth/register",
+          "endpoint_template": "/api/auth/register",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/auth/register",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "角色权限不足（需要 ≥ admin，当前 viewer）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "69"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-register-disabled_a",
+          "title": "禁用账号创建用户",
+          "method": "POST",
+          "endpoint": "/api/auth/register",
+          "endpoint_template": "/api/auth/register",
+          "identity": "disabled_a",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/auth/register",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-users-list-superadmin",
+          "title": "超管列出用户",
+          "method": "GET",
+          "endpoint": "/api/auth/users",
+          "endpoint_template": "/api/auth/users",
+          "identity": "superadmin",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "endpoint": "/api/auth/users",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "3183"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-users-list-admin_nosuper",
+          "title": "ADMIN 列出用户",
+          "method": "GET",
+          "endpoint": "/api/auth/users",
+          "endpoint_template": "/api/auth/users",
+          "identity": "admin_nosuper",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "endpoint": "/api/auth/users",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "3183"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-users-list-manager_a",
+          "title": "MANAGER 列出本基地用户",
+          "method": "GET",
+          "endpoint": "/api/auth/users",
+          "endpoint_template": "/api/auth/users",
+          "identity": "manager_a",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "endpoint": "/api/auth/users",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "2012"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-users-list-handler_a1",
+          "title": "HANDLER 列出用户",
+          "method": "GET",
+          "endpoint": "/api/auth/users",
+          "endpoint_template": "/api/auth/users",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/auth/users",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "角色权限不足（需要 ≥ manager，当前 handler）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "72"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-users-list-viewer_a",
+          "title": "VIEWER 列出用户",
+          "method": "GET",
+          "endpoint": "/api/auth/users",
+          "endpoint_template": "/api/auth/users",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/auth/users",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "角色权限不足（需要 ≥ manager，当前 viewer）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "71"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-users-list-disabled_a",
+          "title": "禁用账号列出用户",
+          "method": "GET",
+          "endpoint": "/api/auth/users",
+          "endpoint_template": "/api/auth/users",
+          "identity": "disabled_a",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/auth/users",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-user-delete-superadmin",
+          "title": "超管禁用临时用户",
+          "method": "DELETE",
+          "endpoint": "/api/auth/users/433",
+          "endpoint_template": "/api/auth/users/{ids.del_super}",
+          "identity": "superadmin",
+          "expected_status": 204,
+          "actual_status": 204,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "endpoint": "/api/auth/users/433",
+            "expected_status": 204,
+            "actual_status": 204,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": null,
+            "content_length": null
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-user-delete-admin_nosuper",
+          "title": "ADMIN 禁用临时用户",
+          "method": "DELETE",
+          "endpoint": "/api/auth/users/434",
+          "endpoint_template": "/api/auth/users/{ids.del_admin}",
+          "identity": "admin_nosuper",
+          "expected_status": 204,
+          "actual_status": 204,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "endpoint": "/api/auth/users/434",
+            "expected_status": 204,
+            "actual_status": 204,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": null,
+            "content_length": null
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-user-delete-manager_a",
+          "title": "MANAGER 禁用用户",
+          "method": "DELETE",
+          "endpoint": "/api/auth/users/431",
+          "endpoint_template": "/api/auth/users/{ids.victim_user_b}",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/auth/users/431",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "角色权限不足（需要 ≥ admin，当前 manager）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "70"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-base-create-superadmin",
+          "title": "超管创建基地（临时 pen_rbac_ 前缀）",
+          "method": "POST",
+          "endpoint": "/api/bases",
+          "endpoint_template": "/api/bases",
+          "identity": "superadmin",
+          "expected_status": 201,
+          "actual_status": 201,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/bases",
+            "expected_status": 201,
+            "actual_status": 201,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "156"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-base-create-admin_nosuper",
+          "title": "ADMIN 创建基地（临时 pen_rbac_ 前缀）",
+          "method": "POST",
+          "endpoint": "/api/bases",
+          "endpoint_template": "/api/bases",
+          "identity": "admin_nosuper",
+          "expected_status": 201,
+          "actual_status": 201,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/bases",
+            "expected_status": 201,
+            "actual_status": 201,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "156"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-base-create-manager_a",
+          "title": "MANAGER 创建基地",
+          "method": "POST",
+          "endpoint": "/api/bases",
+          "endpoint_template": "/api/bases",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/bases",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin（当前: manager）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "65"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-base-create-handler_a1",
+          "title": "HANDLER 创建基地",
+          "method": "POST",
+          "endpoint": "/api/bases",
+          "endpoint_template": "/api/bases",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/bases",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin（当前: handler）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "65"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-dog-create-handler_a1",
+          "title": "HANDLER 创建犬只（临时 pen_rbac_ 前缀）",
+          "method": "POST",
+          "endpoint": "/api/dogs",
+          "endpoint_template": "/api/dogs",
+          "identity": "handler_a1",
+          "expected_status": 201,
+          "actual_status": 201,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "endpoint": "/api/dogs",
+            "expected_status": 201,
+            "actual_status": 201,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "170"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-dog-create-viewer_a",
+          "title": "VIEWER 创建犬只",
+          "method": "POST",
+          "endpoint": "/api/dogs",
+          "endpoint_template": "/api/dogs",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/dogs",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin, manager, handler, researcher（当前: viewer）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "94"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-scoring-put-superadmin",
+          "title": "超管写评分卡（危险正向，SKIP）",
+          "method": "PUT",
+          "endpoint": "/api/scoring/configs/obedience_trial",
+          "endpoint_template": "/api/scoring/configs/obedience_trial",
+          "identity": "superadmin",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "skipped",
+          "invalid_reason": "dangerous_positive_write_disabled",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "reason": "would mutate real scoring card / activate global model / trigger finetune / upload"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-scoring-put-admin_nosuper",
+          "title": "ADMIN 写评分卡（危险正向，SKIP）",
+          "method": "PUT",
+          "endpoint": "/api/scoring/configs/obedience_trial",
+          "endpoint_template": "/api/scoring/configs/obedience_trial",
+          "identity": "admin_nosuper",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "skipped",
+          "invalid_reason": "dangerous_positive_write_disabled",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "reason": "would mutate real scoring card / activate global model / trigger finetune / upload"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-scoring-put-manager_a",
+          "title": "MANAGER 写评分卡",
+          "method": "PUT",
+          "endpoint": "/api/scoring/configs/obedience_trial",
+          "endpoint_template": "/api/scoring/configs/obedience_trial",
+          "identity": "manager_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/scoring/configs/obedience_trial",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin（当前: manager）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "65"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-scoring-put-viewer_a",
+          "title": "VIEWER 写评分卡",
+          "method": "PUT",
+          "endpoint": "/api/scoring/configs/obedience_trial",
+          "endpoint_template": "/api/scoring/configs/obedience_trial",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/scoring/configs/obedience_trial",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin（当前: viewer）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "64"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-model-activate-superadmin",
+          "title": "超管激活模型（危险正向，SKIP）",
+          "method": "POST",
+          "endpoint": "/api/models/1/activate",
+          "endpoint_template": "/api/models/{ids.model_pose}/activate",
+          "identity": "superadmin",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "skipped",
+          "invalid_reason": "dangerous_positive_write_disabled",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "reason": "would mutate real scoring card / activate global model / trigger finetune / upload"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-model-activate-manager_a",
+          "title": "MANAGER 激活模型（危险正向，SKIP）",
+          "method": "POST",
+          "endpoint": "/api/models/1/activate",
+          "endpoint_template": "/api/models/{ids.model_pose}/activate",
+          "identity": "manager_a",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "skipped",
+          "invalid_reason": "dangerous_positive_write_disabled",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "reason": "would mutate real scoring card / activate global model / trigger finetune / upload"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-model-activate-viewer_a",
+          "title": "VIEWER 激活模型",
+          "method": "POST",
+          "endpoint": "/api/models/1/activate",
+          "endpoint_template": "/api/models/{ids.model_pose}/activate",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/models/1/activate",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin, manager（当前: viewer）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "73"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-model-activate-handler_a1",
+          "title": "HANDLER 激活模型",
+          "method": "POST",
+          "endpoint": "/api/models/1/activate",
+          "endpoint_template": "/api/models/{ids.model_pose}/activate",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "endpoint": "/api/models/1/activate",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "需要以下角色之一: admin, manager（当前: handler）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "74"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-finetune-status-superadmin",
+          "title": "超管查询飞轮状态",
+          "method": "GET",
+          "endpoint": "/api/finetune/status",
+          "endpoint_template": "/api/finetune/status",
+          "identity": "superadmin",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: finetune",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "finetune"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-finetune-status-handler_a1",
+          "title": "HANDLER 查询飞轮状态（只读）",
+          "method": "GET",
+          "endpoint": "/api/finetune/status",
+          "endpoint_template": "/api/finetune/status",
+          "identity": "handler_a1",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: finetune",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "finetune"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-finetune-status-viewer_a",
+          "title": "VIEWER 查询飞轮状态（只读）",
+          "method": "GET",
+          "endpoint": "/api/finetune/status",
+          "endpoint_template": "/api/finetune/status",
+          "identity": "viewer_a",
+          "expected_status": 200,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: finetune",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "finetune"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-finetune-trigger-superadmin",
+          "title": "超管触发微调（危险正向，SKIP）",
+          "method": "POST",
+          "endpoint": "/api/finetune/trigger",
+          "endpoint_template": "/api/finetune/trigger",
+          "identity": "superadmin",
+          "expected_status": 202,
+          "actual_status": null,
+          "status": "skipped",
+          "invalid_reason": "dangerous_positive_write_disabled",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "reason": "would mutate real scoring card / activate global model / trigger finetune / upload"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-finetune-trigger-manager_a",
+          "title": "MANAGER 触发微调（危险正向，SKIP）",
+          "method": "POST",
+          "endpoint": "/api/finetune/trigger",
+          "endpoint_template": "/api/finetune/trigger",
+          "identity": "manager_a",
+          "expected_status": 202,
+          "actual_status": null,
+          "status": "skipped",
+          "invalid_reason": "dangerous_positive_write_disabled",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "reason": "would mutate real scoring card / activate global model / trigger finetune / upload"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-finetune-trigger-viewer_a",
+          "title": "VIEWER 触发微调",
+          "method": "POST",
+          "endpoint": "/api/finetune/trigger",
+          "endpoint_template": "/api/finetune/trigger",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: finetune",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "finetune"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-finetune-trigger-handler_a1",
+          "title": "HANDLER 触发微调",
+          "method": "POST",
+          "endpoint": "/api/finetune/trigger",
+          "endpoint_template": "/api/finetune/trigger",
+          "identity": "handler_a1",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: finetune",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "finetune"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-video-upload-superadmin",
+          "title": "超管上传视频（危险正向，SKIP）",
+          "method": "POST",
+          "endpoint": "/api/videos/upload",
+          "endpoint_template": "/api/videos/upload",
+          "identity": "superadmin",
+          "expected_status": 201,
+          "actual_status": null,
+          "status": "skipped",
+          "invalid_reason": "dangerous_positive_write_disabled",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "reason": "would mutate real scoring card / activate global model / trigger finetune / upload"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-video-upload-viewer_a",
+          "title": "VIEWER 上传视频",
+          "method": "POST",
+          "endpoint": "/api/videos/upload",
+          "endpoint_template": "/api/videos/upload",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: videos",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "videos"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-anno-create-admin_nosuper",
+          "title": "ADMIN 创建标注任务（正向对照）",
+          "method": "POST",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "admin_nosuper",
+          "expected_status": 201,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-anno-create-manager_a",
+          "title": "MANAGER 创建标注任务（正向对照）",
+          "method": "POST",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "manager_a",
+          "expected_status": 201,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-anno-create-handler_a1",
+          "title": "HANDLER 创建标注任务（正向对照）",
+          "method": "POST",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "handler_a1",
+          "expected_status": 201,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-anno-create-viewer_a",
+          "title": "VIEWER 创建标注任务",
+          "method": "POST",
+          "endpoint": "/api/annotations/tasks",
+          "endpoint_template": "/api/annotations/tasks",
+          "identity": "viewer_a",
+          "expected_status": 403,
+          "actual_status": null,
+          "status": "invalid",
+          "invalid_reason": "module_changed_after_service_start: annotations",
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "role_gate",
+          "evidence": {
+            "skipped": true,
+            "stale_modules": [
+              "annotations"
+            ]
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-login-superadmin",
+          "title": "真实登录获取 token",
+          "method": "POST",
+          "endpoint": "/api/auth/login",
+          "endpoint_template": "/api/auth/login",
+          "identity": "superadmin",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "endpoint": "/api/auth/login",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "473",
+            "token_received": true
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-me-positive",
+          "title": "本地 secret 签发的超管 token 通过 /me（secret 匹配正向对照）",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_secret_match",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "positive",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "191"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-no-header",
+          "title": "无 Authorization 头",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_no_header",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-bare-bearer",
+          "title": "Authorization: Bearer（无令牌、无尾空格）",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_bare",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "缺少认证令牌（Authorization: Bearer[REDACTED]<token>）",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "66"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-garbage",
+          "title": "垃圾 token",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_garbage",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "令牌解析失败: Not enough segments",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "52"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-wrong-key",
+          "title": "错误密钥签名 token",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_wrong_key",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "令牌解析失败: Signature verification failed",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "62"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-expired",
+          "title": "过期 token",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_expired",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "令牌已过期，请重新登录",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "46"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-alg-none",
+          "title": "alg=none 手工拼装 token",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_alg_none",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "令牌解析失败: The specified alg value is not allowed",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "71"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-nonexistent-sub",
+          "title": "不存在用户 sub",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_nonexistent_sub",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "用户不存在或已被禁用",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "43"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-disabled",
+          "title": "禁用账号正确签名 token",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_disabled",
+          "expected_status": 401,
+          "actual_status": 401,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 401,
+            "response_detail": "用户不存在或已被禁用",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "43"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-missing-sub",
+          "title": "缺失 sub claim（实测 500）",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_missing_sub",
+          "expected_status": 401,
+          "actual_status": 500,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "server_error_500",
+          "severity": "HIGH",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 500,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "text/plain; charset=utf-8",
+            "content_length": "21"
+          },
+          "remediation": "decode_access_token 对缺失/非数字 sub 抛 InvalidTokenError（401），补充畸形 token 单元测试，禁止把 500 当作受保护。"
+        },
+        {
+          "case_id": "C-jwt-sub-non-numeric",
+          "title": "sub 非数字（实测 500）",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_sub_non_numeric",
+          "expected_status": 401,
+          "actual_status": 500,
+          "status": "fail",
+          "invalid_reason": null,
+          "fail_reason": "server_error_500",
+          "severity": "HIGH",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 401,
+            "actual_status": 500,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "text/plain; charset=utf-8",
+            "content_length": "21"
+          },
+          "remediation": "decode_access_token 对缺失/非数字 sub 抛 InvalidTokenError（401），补充畸形 token 单元测试，禁止把 500 当作受保护。"
+        },
+        {
+          "case_id": "C-jwt-role-garbage",
+          "title": "role claim 垃圾值（DB role 为准，实测 200）",
+          "method": "GET",
+          "endpoint": "/api/auth/me",
+          "endpoint_template": "/api/auth/me",
+          "identity": "jwt_role_garbage",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/me",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "191"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-tampered-base-bases",
+          "title": "manager_a token 篡改 base_id=base_b 后读取 B 基地",
+          "method": "GET",
+          "endpoint": "/api/bases/111",
+          "endpoint_template": "/api/bases/{ids.base_b}",
+          "identity": "jwt_tampered_base",
+          "expected_status": 403,
+          "actual_status": 403,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/bases/111",
+            "expected_status": 403,
+            "actual_status": 403,
+            "response_detail": "无权查看其他基地",
+            "returned_total": null,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": null,
+            "content_type": "application/json",
+            "content_length": "37"
+          },
+          "remediation": ""
+        },
+        {
+          "case_id": "C-jwt-tampered-base-users",
+          "title": "manager_a token 篡改 base_id=base_b 后列用户（不得含 B 用户）",
+          "method": "GET",
+          "endpoint": "/api/auth/users",
+          "endpoint_template": "/api/auth/users",
+          "identity": "jwt_tampered_base",
+          "expected_status": 200,
+          "actual_status": 200,
+          "status": "pass",
+          "invalid_reason": null,
+          "fail_reason": null,
+          "severity": "NONE",
+          "category": "jwt_robust",
+          "evidence": {
+            "endpoint": "/api/auth/users",
+            "expected_status": 200,
+            "actual_status": 200,
+            "response_detail": null,
+            "returned_total": 10,
+            "seed_ids_present": [],
+            "foreign_real_rows_count": 2,
+            "content_type": "application/json",
+            "content_length": "2014"
+          },
+          "remediation": ""
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "case_id": "B-dog-get-manager_a",
+      "title": "跨基地读取犬只档案",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/dogs/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "167"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-dog-get-researcher_a",
+      "title": "跨基地读取犬只档案",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/dogs/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "167"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-dog-get-handler_a1",
+      "title": "跨基地读取犬只档案",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/dogs/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "167"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-dog-get-viewer_a",
+      "title": "跨基地读取犬只档案",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/dogs/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "167"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-dog-put-manager_a",
+      "title": "跨基地修改犬只档案",
+      "severity": "CRITICAL",
+      "category": "cross_base_write",
+      "evidence": {
+        "endpoint": "/api/dogs/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "167"
+      },
+      "remediation": "写路由必须叠加资源级归属校验（check_dog_access(require_write=True)），不能只依赖角色门；跨基地删除/修改返回 403。"
+    },
+    {
+      "case_id": "B-dog-put-researcher_a",
+      "title": "跨基地修改犬只档案",
+      "severity": "CRITICAL",
+      "category": "cross_base_write",
+      "evidence": {
+        "endpoint": "/api/dogs/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "167"
+      },
+      "remediation": "写路由必须叠加资源级归属校验（check_dog_access(require_write=True)），不能只依赖角色门；跨基地删除/修改返回 403。"
+    },
+    {
+      "case_id": "B-dog-put-handler_a1",
+      "title": "跨基地修改犬只档案",
+      "severity": "CRITICAL",
+      "category": "cross_base_write",
+      "evidence": {
+        "endpoint": "/api/dogs/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "167"
+      },
+      "remediation": "写路由必须叠加资源级归属校验（check_dog_access(require_write=True)），不能只依赖角色门；跨基地删除/修改返回 403。"
+    },
+    {
+      "case_id": "B-dog-delete-manager_a",
+      "title": "跨基地删除犬只档案",
+      "severity": "CRITICAL",
+      "category": "cross_base_write",
+      "evidence": {
+        "endpoint": "/api/dogs/194",
+        "expected_status": 403,
+        "actual_status": 204,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": null,
+        "content_length": null
+      },
+      "remediation": "写路由必须叠加资源级归属校验（check_dog_access(require_write=True)），不能只依赖角色门；跨基地删除/修改返回 403。"
+    },
+    {
+      "case_id": "B-dog-list-manager_a",
+      "title": "犬只列表跨基地泄漏",
+      "severity": "HIGH",
+      "category": "list_leak",
+      "evidence": {
+        "endpoint": "/api/dogs",
+        "expected_status": 200,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": 26,
+        "seed_ids_present": [
+          193
+        ],
+        "foreign_real_rows_count": 21,
+        "content_type": "application/json",
+        "content_length": "4904"
+      },
+      "remediation": "列表端点按 me.base_id / handler 归属过滤；ADMIN/超管才返回全量；MANAGER 只看本基地，HANDLER 只看自有或关联犬只。"
+    },
+    {
+      "case_id": "B-dog-list-viewer_a",
+      "title": "犬只列表跨基地泄漏",
+      "severity": "HIGH",
+      "category": "list_leak",
+      "evidence": {
+        "endpoint": "/api/dogs",
+        "expected_status": 200,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": 26,
+        "seed_ids_present": [
+          193
+        ],
+        "foreign_real_rows_count": 21,
+        "content_type": "application/json",
+        "content_length": "4904"
+      },
+      "remediation": "列表端点按 me.base_id / handler 归属过滤；ADMIN/超管才返回全量；MANAGER 只看本基地，HANDLER 只看自有或关联犬只。"
+    },
+    {
+      "case_id": "B-score-get-manager_a",
+      "title": "跨基地读取单条评分",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/scores/75",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "269"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-score-by-dog-manager_a",
+      "title": "跨基地读取犬只历史评分",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/scores/by-dog/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "271"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-score-get-researcher_a",
+      "title": "跨基地读取单条评分",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/scores/75",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "269"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-score-by-dog-researcher_a",
+      "title": "跨基地读取犬只历史评分",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/scores/by-dog/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "271"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-score-get-handler_a1",
+      "title": "跨基地读取单条评分",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/scores/75",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "269"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-score-by-dog-handler_a1",
+      "title": "跨基地读取犬只历史评分",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/scores/by-dog/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "271"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-score-get-viewer_a",
+      "title": "跨基地读取单条评分",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/scores/75",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "269"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-score-by-dog-viewer_a",
+      "title": "跨基地读取犬只历史评分",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/scores/by-dog/193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "271"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-score-compare-manager_a",
+      "title": "跨基地训练对比查询",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/scores/compare?dog_ids=193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "836"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-score-list-manager_a",
+      "title": "评分列表跨基地泄漏",
+      "severity": "HIGH",
+      "category": "list_leak",
+      "evidence": {
+        "endpoint": "/api/scores",
+        "expected_status": 200,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": 1,
+        "seed_ids_present": [
+          75
+        ],
+        "foreign_real_rows_count": 0,
+        "content_type": "application/json",
+        "content_length": "271"
+      },
+      "remediation": "列表端点按 me.base_id / handler 归属过滤；ADMIN/超管才返回全量；MANAGER 只看本基地，HANDLER 只看自有或关联犬只。"
+    },
+    {
+      "case_id": "B-score-compare-viewer_a",
+      "title": "跨基地训练对比查询",
+      "severity": "HIGH",
+      "category": "cross_base_read",
+      "evidence": {
+        "endpoint": "/api/scores/compare?dog_ids=193",
+        "expected_status": 403,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "application/json",
+        "content_length": "836"
+      },
+      "remediation": "在路由中调用 deps.check_dog_access / check_base_access（或按 me.base_id 过滤），对 404/403 语义统一，避免跨基地枚举。"
+    },
+    {
+      "case_id": "B-score-list-viewer_a",
+      "title": "评分列表跨基地泄漏",
+      "severity": "HIGH",
+      "category": "list_leak",
+      "evidence": {
+        "endpoint": "/api/scores",
+        "expected_status": 200,
+        "actual_status": 200,
+        "response_detail": null,
+        "returned_total": 1,
+        "seed_ids_present": [
+          75
+        ],
+        "foreign_real_rows_count": 0,
+        "content_type": "application/json",
+        "content_length": "271"
+      },
+      "remediation": "列表端点按 me.base_id / handler 归属过滤；ADMIN/超管才返回全量；MANAGER 只看本基地，HANDLER 只看自有或关联犬只。"
+    },
+    {
+      "case_id": "C-jwt-missing-sub",
+      "title": "缺失 sub claim（实测 500）",
+      "severity": "HIGH",
+      "category": "jwt_robust",
+      "evidence": {
+        "endpoint": "/api/auth/me",
+        "expected_status": 401,
+        "actual_status": 500,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "text/plain; charset=utf-8",
+        "content_length": "21"
+      },
+      "remediation": "decode_access_token 对缺失/非数字 sub 抛 InvalidTokenError（401），补充畸形 token 单元测试，禁止把 500 当作受保护。"
+    },
+    {
+      "case_id": "C-jwt-sub-non-numeric",
+      "title": "sub 非数字（实测 500）",
+      "severity": "HIGH",
+      "category": "jwt_robust",
+      "evidence": {
+        "endpoint": "/api/auth/me",
+        "expected_status": 401,
+        "actual_status": 500,
+        "response_detail": null,
+        "returned_total": null,
+        "seed_ids_present": [],
+        "foreign_real_rows_count": null,
+        "content_type": "text/plain; charset=utf-8",
+        "content_length": "21"
+      },
+      "remediation": "decode_access_token 对缺失/非数字 sub 抛 InvalidTokenError（401），补充畸形 token 单元测试，禁止把 500 当作受保护。"
+    },
+    {
+      "case_id": "OBS-health-redis-url",
+      "title": "health 回显 redis URL",
+      "severity": "INFO",
+      "category": "info",
+      "evidence": {
+        "component": "redis",
+        "detail": "redis reachable (redis://127.0.0.1:6379/0)"
+      },
+      "remediation": "按最小暴露原则收敛（health 不回显 redis URL；非开发环境关闭 openapi/docs）。"
+    },
+    {
+      "case_id": "OBS-openapi-public",
+      "title": "openapi.json 对匿名公开",
+      "severity": "INFO",
+      "category": "info",
+      "evidence": {
+        "path": "/openapi.json"
+      },
+      "remediation": "按最小暴露原则收敛（health 不回显 redis URL；非开发环境关闭 openapi/docs）。"
+    },
+    {
+      "case_id": "OBS-audit-log-missing",
+      "title": "P2-3 审计日志未实现",
+      "severity": "MEDIUM",
+      "category": "audit",
+      "evidence": {
+        "code_hits": 0,
+        "audit_tables": []
+      },
+      "remediation": "实现审计日志表 + 中间件记录写操作（actor/action/resource/时间/结果），覆盖 P2-3 的‘审计日志’验收半边。"
+    },
+    {
+      "case_id": "OBS-role-claim-ignored",
+      "title": "role claim 被忽略（DB role 为准）",
+      "severity": "INFO",
+      "category": "info",
+      "evidence": {
+        "actual_status": 200
+      },
+      "remediation": "不是漏洞；若希望 token claim 与 DB 强一致，可加一致性断言。"
+    }
+  ],
+  "observations": [
+    {
+      "case_id": "OBS-health-redis-url",
+      "title": "health 回显 redis URL",
+      "severity": "INFO",
+      "category": "info",
+      "evidence": {
+        "component": "redis",
+        "detail": "redis reachable (redis://127.0.0.1:6379/0)"
+      },
+      "remediation": "按最小暴露原则收敛（health 不回显 redis URL；非开发环境关闭 openapi/docs）。"
+    },
+    {
+      "case_id": "OBS-openapi-public",
+      "title": "openapi.json 对匿名公开",
+      "severity": "INFO",
+      "category": "info",
+      "evidence": {
+        "path": "/openapi.json"
+      },
+      "remediation": "按最小暴露原则收敛（health 不回显 redis URL；非开发环境关闭 openapi/docs）。"
+    },
+    {
+      "case_id": "OBS-audit-log-missing",
+      "title": "P2-3 审计日志未实现",
+      "severity": "MEDIUM",
+      "category": "audit",
+      "evidence": {
+        "code_hits": 0,
+        "audit_tables": []
+      },
+      "remediation": "实现审计日志表 + 中间件记录写操作（actor/action/resource/时间/结果），覆盖 P2-3 的‘审计日志’验收半边。"
+    },
+    {
+      "case_id": "OBS-role-claim-ignored",
+      "title": "role claim 被忽略（DB role 为准）",
+      "severity": "INFO",
+      "category": "info",
+      "evidence": {
+        "actual_status": 200
+      },
+      "remediation": "不是漏洞；若希望 token claim 与 DB 强一致，可加一致性断言。"
+    }
+  ],
+  "audit_static": {
+    "code_hits": 0,
+    "files_with_hits": [],
+    "audit_tables": [],
+    "implemented": false
+  },
+  "cleanup": {
+    "ok": true,
+    "residual_counts": {
+      "handlers": 0,
+      "bases": 0,
+      "dogs": 0,
+      "videos": 0,
+      "scores": 0,
+      "annotation_tasks": 0,
+      "annotations": 0
+    },
+    "pdf_removed": true
+  },
+  "redaction": {
+    "patterns_scanned": [
+      "jwt_like",
+      "bearer_scheme",
+      "seed_password",
+      "auth_secret_marker"
+    ],
+    "contains_no_credentials": true,
+    "hits": []
+  },
+  "summary": {
+    "suites": 3,
+    "cases": 154,
+    "case_status": {
+      "invalid": 43,
+      "pass": 80,
+      "fail": 24,
+      "skipped": 7
+    },
+    "findings_by_severity": {
+      "HIGH": 20,
+      "CRITICAL": 4,
+      "INFO": 3,
+      "MEDIUM": 1
+    },
+    "cleanup_ok": true,
+    "secret_matches_service": true
+  }
+}
