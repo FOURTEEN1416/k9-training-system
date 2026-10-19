@@ -42,6 +42,19 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '系统管理', icon: 'settings', roles: ['ADMIN', 'MANAGER'] },
   },
   {
+    // P1-2：标注审核（必须位于 catch-all 之前）
+    // 注意：MainLayout 菜单未包含本入口（布局不在本线白名单），当前仅 URL 直达。
+    // meta.roles 不被 router 守卫执行（守卫只查 token），服务端 403 才是安全边界。
+    path: '/annotations/review',
+    name: 'annotation-review',
+    component: () => import('@/views/AnnotationReviewView.vue'),
+    meta: {
+      title: '标注审核',
+      icon: 'checkmark-done',
+      roles: ['ADMIN', 'MANAGER', 'RESEARCHER', 'HANDLER', 'VIEWER'],
+    },
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/upload',
   },

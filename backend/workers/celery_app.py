@@ -16,7 +16,8 @@ celery_app = Celery(
     "k9_worker",
     broker=settings.celery_broker_url,
     backend=settings.celery_result_backend,
-    include=["backend.workers.tasks"],
+    # P1-2：数据飞轮微调任务
+    include=["backend.workers.tasks", "backend.workers.finetune_tasks"],
 )
 
 celery_app.conf.update(
