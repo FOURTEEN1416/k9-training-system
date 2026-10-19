@@ -38,7 +38,11 @@ from backend.app.models.dog import Dog
 from backend.app.models.handler import Handler
 from backend.app.models.keypoint import Keypoint
 from backend.app.models.video import Video, VideoStatus
-from backend.app.services.report import ReportInput, generate_report
+from backend.app.services.report import (
+    ReportInput,
+    decide_review,
+    generate_report,
+)
 from backend.ml.behavior import BehaviorRecognizer, DeployMode
 from backend.ml.behavior.mamba_inference import MambaInferer
 from backend.ml.behavior.mamba_bc_inference import MambaBCInferer
@@ -116,6 +120,28 @@ def _resolve_stgcn_bc_path() -> tuple[Optional[str], Optional[str]]:
         if p.exists():
             return (None, str(p))
     return (None, None)
+
+
+def _resolve_active_model_version() -> str:
+    """报告溯源用：当前在盘的模型版本标识（文件名级，P0-5）。
+
+    只报告存在的权重；全部缺失时标注 rule_engine，与 rule_only 模式语义一致。
+    """
+    parts = [f"pose={Path(_resolve_model_path()).name}"]
+    onnx_path, ckpt_path = _resolve_stgcn_bc_path()
+    if onnx_path:
+        parts.append(f"stgcn_bc={Path(onnx_path).name}")
+    elif ckpt_path:
+        parts.append(f"stgcn_bc={Path(ckpt_path).name}(ckpt)")
+    mamba_bc = _resolve_mamba_bc_path()
+    if mamba_bc:
+        parts.append(f"mamba_bc={Path(mamba_bc).name}")
+    mamba = _resolve_mamba_model_path()
+    if mamba:
+        parts.append(f"mamba={Path(mamba).name}")
+    if len(parts) == 1:
+        parts.append("behavior=rule_engine(未加载深度模型)")
+    return "; ".join(parts)
 
 
 # 部署模式（可通过 settings.behavior_deploy_mode 配置切换）
@@ -341,6 +367,10 @@ def ingest_video(self, video_id: int) -> dict:
                 behaviors=episodes,
                 video_id=video_id,
                 handler_name=handler.name if handler else None,
+                # P0-5 报告溯源三字段 + 人工复核决策
+                recognition_mode=settings.behavior_deploy_mode or "unknown",
+                model_version=_resolve_active_model_version(),
+                review_reasons=decide_review(settings.behavior_deploy_mode or "", episodes),
             )
 
             reports_dir = PROJECT_ROOT / "reports"
@@ -358,7 +388,9 @@ def ingest_video(self, video_id: int) -> dict:
             logger.info(
                 f"[worker] ingest_video done video_id={video_id} "
                 f"scene={scene} verdict={scoring_result.verdict} "
-                f"score={scoring_result.total_score:.1f} pdf={pdf_path.name}"
+                f"score={scoring_result.total_score:.1f} pdf={pdf_path.name} "
+                f"mode={settings.behavior_deploy_mode} "
+                f"review={len(report_input.review_reasons) > 0}"
             )
 
             return {

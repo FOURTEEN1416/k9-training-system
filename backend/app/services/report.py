@@ -52,6 +52,7 @@ from reportlab.platypus import (
     PageBreak,
 )
 
+from backend.app.core.config import settings
 from backend.ml.behavior.rule_engine import BehaviorEpisode
 from backend.ml.scoring import ScoringResult
 
@@ -94,6 +95,12 @@ class ReportInput:
     video_id: Optional[int] = None
     handler_name: Optional[str] = None
     notes: Optional[str] = None
+
+    # === P0-5 报告溯源（production-readiness-gap-plan.md P0-5） ===
+    # 三字段底线：识别模式 / 模型版本 / 置信度摘要；review_reasons 非空 → 报告头标注「建议人工复核」
+    recognition_mode: str = ""           # 部署模式（rule_only / shadow / vote / ...）
+    model_version: str = ""              # 模型版本标识（权重文件名级）
+    review_reasons: list[str] = field(default_factory=list)
 
 
 # ============================================================
@@ -174,6 +181,55 @@ _GENDER_CN = {"male": "公", "female": "母"}
 
 
 # ============================================================
+# P0-5 置信度摘要与人工复核决策（纯函数，可单测）
+# ============================================================
+
+# 复核阈值（gap-plan P0-5：低置信/规则引擎结果标注「需人工复核」）
+REVIEW_MEAN_CONF_THRESHOLD = 0.60   # episode 平均置信度低于此值 → 复核
+REVIEW_MIN_CONF_THRESHOLD = 0.30   # 任一 episode 置信度低于此值 → 复核
+
+
+def compute_confidence_summary(behaviors: list[BehaviorEpisode]) -> dict[str, float | int]:
+    """episode 置信度统计（空列表返回全零）。"""
+    if not behaviors:
+        return {"count": 0, "mean": 0.0, "min": 0.0, "max": 0.0, "low_ratio": 0.0}
+    confs = [float(b.confidence) for b in behaviors]
+    n = len(confs)
+    return {
+        "count": n,
+        "mean": round(sum(confs) / n, 3),
+        "min": round(min(confs), 3),
+        "max": round(max(confs), 3),
+        "low_ratio": round(sum(1 for c in confs if c < REVIEW_MEAN_CONF_THRESHOLD) / n, 3),
+    }
+
+
+def decide_review(
+    recognition_mode: str,
+    behaviors: list[BehaviorEpisode],
+) -> list[str]:
+    """返回人工复核原因列表（空 = 免复核）。
+
+    规则（P0-5 底线）:
+        1. rule_only 模式恒需复核 —— 规则引擎未过真实精度验收，评分仅为机器辅助记录
+        2. 平均置信度 < 0.60 → 整体可信度不足
+        3. 任一 episode 置信度 < 0.30 → 存在低置信片段
+    """
+    reasons: list[str] = []
+    if recognition_mode == "rule_only":
+        reasons.append("规则引擎模式（未加载深度识别模型，真实精度未验收）")
+    summary = compute_confidence_summary(behaviors)
+    if summary["count"] == 0:
+        reasons.append("未识别到任何行为 episode（视频可能超出当前识别能力范围）")
+        return reasons
+    if summary["mean"] < REVIEW_MEAN_CONF_THRESHOLD:
+        reasons.append(f"平均置信度 {summary['mean']:.2f} < {REVIEW_MEAN_CONF_THRESHOLD}")
+    if summary["min"] < REVIEW_MIN_CONF_THRESHOLD:
+        reasons.append(f"最低 episode 置信度 {summary['min']:.2f} < {REVIEW_MIN_CONF_THRESHOLD}")
+    return reasons
+
+
+# ============================================================
 # 报告生成
 # ============================================================
 
@@ -222,6 +278,25 @@ def generate_report(
         )
     )
 
+    # === P0-5 溯源三字段 + 人工复核横幅 ===
+    if report_input.recognition_mode or report_input.model_version:
+        trace_line = (
+            f"识别模式: {report_input.recognition_mode or '—'}  |  "
+            f"模型版本: {report_input.model_version or '—'}  |  "
+            f"系统版本: v{settings.app_version}"
+        )
+        story.append(Paragraph(trace_line, styles["subtitle"]))
+
+    if report_input.review_reasons:
+        story.append(
+            Paragraph(
+                "⚠ 自动识别·建议人工复核 —— "
+                + "；".join(report_input.review_reasons),
+                styles["verdict_borderline"],
+            )
+        )
+        story.append(Spacer(1, 3 * mm))
+
     # === 2. 犬只信息 ===
     story.append(Paragraph("犬只信息", styles["h2"]))
     dog_data = [
@@ -261,6 +336,17 @@ def generate_report(
     verdict_style = styles[f"verdict_{sr.verdict}"]
 
     story.append(Paragraph(f"总分: {sr.total_score:.1f} / 100", styles["normal"]))
+
+    # P0-5 置信度摘要（episode 统计）
+    conf = compute_confidence_summary(report_input.behaviors)
+    story.append(
+        Paragraph(
+            f"识别置信度: episodes={conf['count']}  平均={conf['mean']:.2f}  "
+            f"最低={conf['min']:.2f}  最高={conf['max']:.2f}  "
+            f"低置信占比={conf['low_ratio']:.0%}",
+            styles["normal"],
+        )
+    )
     story.append(Spacer(1, 3 * mm))
     story.append(Paragraph(f"判定: {verdict_cn}", verdict_style))
     story.append(Spacer(1, 5 * mm))
@@ -310,6 +396,41 @@ def generate_report(
         story.append(Paragraph("评分说明", styles["h2"]))
         for line in sr.explanation:
             story.append(Paragraph(f"• {line}", styles["normal"]))
+
+    # === 8. 评分溯源（P0-5 附录） ===
+    story.append(Paragraph("评分溯源", styles["h2"]))
+    story.append(
+        Paragraph(
+            f"评分链路: 行为 episodes（见「行为时间线」）→ 信号提取 → 评分卡 "
+            f"{sr.card_name} v{sr.card_version} 逐维度规则命中加权。规则定义见评分卡 YAML。",
+            styles["normal"],
+        )
+    )
+    story.append(Spacer(1, 2 * mm))
+    trace_header = ["维度", "权重", "得分", "标签", "命中规则", "规则来源"]
+    trace_rows = [trace_header]
+    for d in sr.dimension_details:
+        trace_rows.append(
+            [
+                d.dimension_name,
+                f"{d.weight:.0%}",
+                str(d.score),
+                d.label,
+                d.hit_rule_id or "默认",
+                f"{sr.card_name}@{sr.card_version}",
+            ]
+        )
+    trace_table = Table(trace_rows, colWidths=[2.8 * cm, 1.8 * cm, 1.8 * cm, 2.6 * cm, 3.5 * cm, 4 * cm])
+    trace_table.setStyle(_detail_table_style())
+    story.append(trace_table)
+    story.append(Spacer(1, 2 * mm))
+    story.append(
+        Paragraph(
+            "本报告为自动识别结果"
+            + ("，须经人工复核后方可作为考核依据。" if report_input.review_reasons else "。"),
+            styles["normal"],
+        )
+    )
 
     # 构建 PDF
     doc.build(story)
