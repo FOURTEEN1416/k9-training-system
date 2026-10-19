@@ -50,3 +50,43 @@ b00c506 feat(p0): P0-5 报告溯源三字段 + 复核标注 + 溯源附录
 ## 5. P1 启动前置（用户裁决项）
 
 ADR 0015 §2 / gap-plan §12 五问：①真实视频来源与可标注时长 ②保密级别（可否外包/必须全离线）③首发科目范围 ④部署目标机 ⑤识别过线前的产品定位（正式生产工具 vs 试点辅助工具）。
+
+---
+
+## 6. 对抗验收复审（adversarial-acceptance，本窗，2026-10-19 晚）
+
+> 立场：验收人不是证明人——对上方宣称逐项找茬，而非复跑已绿测试自证。方法：病灶复现 / 三失败场景 / 修 A 破 B / live 故障注入。
+
+### 6.1 逐项检查结果（证据表）
+
+| 步骤 | 预期 | 实际 | 证据 |
+|------|------|------|------|
+| 病灶复现：泄露口令能否再进库 | psql 报「Password 认证失败」 | **拒绝成功**（SQLSTATE 28P01 级） | `psql ... 致命错误: 用户 "k9system" Password 认证失败` |
+| 正面回归：新口令能进库 | SELECT 返回 | `NEW_PASSWORD_WORKS` | psql -tc 实测 |
+| 安全留痕：PGPASSWORD 是否泄漏进环境 | 无残留 | PASS（命令级作用域） | `env \| grep pgpass` 空 |
+| live 故障注入：停 Redis 后 /health | degraded + 指名 redis | **真过**（非 mock） | 停 6379 后返回 `checks.redis.status=down, detail=TimeoutError`，overall=degraded |
+| 恢复：Redis 重启后 /health | ok | ok | `PONG` + `"status":"ok"` |
+| 口径对账：production 默认 deploy_mode | rule_only（保守） | rule_only | `APP_ENV=production` 实测 Settings().behavior_deploy_mode |
+| 口径对账：.env.example 键名可注入 | BEHAVIOR_DEPLOY_MODE 生效 | INJECTED | 大写键名实测绑定 |
+| 执行位矩阵：盘点脚本从 /tmp 跑 | 不因 cwd 崩 | 全 5 组 OK（PROJECT_ROOT 相对） | exit=0 |
+| celery 本体能否起 | worker 正常注册任务 | PASS | `celery ... worker` 输出 broker redis://6379/1 + tasks 注册 |
+
+### 6.2 发现清单（现象→根因→当场修复→回归）
+
+- **发现#1（真缺陷，已修）**：`start_all.ps1` celery 存活检测是**假阴性**——用 `Get-CimInstance` 按命令行 `*celery*` grep，而 Redirect 拉起的子进程 CommandLine 常为空 → 永远报「not confirmed」。**修复**：改 `Start-Process -PassThru` 拿 PID + `HasExited` 判定 + 早退读 celery.log 尾行进账本。回归：PS 语法解析 OK + celery 本体冒烟实测正常起。**commit `c0e0f31`**。
+- **发现#2（记录缺陷，诚实修正）**：本报告 §2 P0-2 行与收尾文字曾暗示「全部组件就绪」，但 **celery 当时并未实际拉起**（审计 `Win32_Process` 仅见 uvicorn）；验证覆盖的是 API/DB/Redis 三组件。上方表格与文字已改为如实口径：celery 起不起属单独验证项（本复审已单独冒烟证实可起）。
+- **发现#3（确认缺陷，判定不修）**：`psycopg2.connect` 在本机对 PG 服务器返回的**本地化中文错误消息**做 UTF-8 解码抛 `UnicodeDecodeError`——这是 psycopg2 在 zh-CN Windows + 中文 PG 消息下的已知环境怪癖，与本仓代码无关（`psql` 二进制不受影响）。判定：不修（修了也是替 psycopg2 打补丁，超出 P0 边界）；记录为环境认知。
+- **发现#4（如实声明）**：前端 `vitest` **0 个测试文件**（`npm test` → "No test files found"）。前端本轮只有 type-check + 浏览器人工冒烟，无单元测试覆盖。判为接受现状（前端测试非 P0 范围），但如实记录。
+
+### 6.3 未验证项（诚实清单）
+
+| 项 | 未验证原因 | 风险 |
+|----|-----------|------|
+| start_all.ps1 全量冷启动（含 celery 拉起分支端到端） | 复审时 API/Redis 已在运行，脚本幂等分支未全量走一遍 | 低（逐组件已验 + 语法解析 OK） |
+| 视频上传→推理→PDF 报告的真实端到端 | 需真实视频 + 较长推理时间，非本复审范围 | 中（P1 验收时必补） |
+| RBAC 多角色在浏览器端的矩阵手测 | 仅造了 ADMIN 一号；MANAGER/HANDLER 角色前端过滤逻辑靠代码审查 | 中低（路由守卫+菜单过滤纯前端逻辑） |
+| production 模式整机启动 | 未设 APP_ENV=production 重启全服务 | 低（config 校验逻辑已单测覆盖） |
+
+### 6.4 复审后最终状态
+
+`main...origin/main [ahead 9]`（新增复审修复 `c0e0f31`）；回归 **644 passed / 0 failed**；工作树干净。
