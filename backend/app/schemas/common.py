@@ -29,6 +29,7 @@ class HealthResponse(BaseModel):
     status: str
     version: str
     environment: str
+    deploy_mode: str = ""  # 当前行为识别部署模式（P0-6 前端页头展示）
     checks: dict[str, ComponentHealth] = Field(default_factory=dict)
 
 

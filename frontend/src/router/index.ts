@@ -2,6 +2,12 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
   {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/LoginView.vue'),
+    meta: { public: true, title: '登录' },
+  },
+  {
     path: '/',
     redirect: '/upload',
   },
@@ -27,13 +33,13 @@ const routes: RouteRecordRaw[] = [
     path: '/compare',
     name: 'compare',
     component: () => import('@/views/CompareView.vue'),
-    meta: { title: '训练对比', icon: 'stats-chart' },
+    meta: { title: '训练对比', icon: 'stats-chart', roles: ['ADMIN', 'MANAGER', 'RESEARCHER'] },
   },
   {
     path: '/admin',
     name: 'admin',
     component: () => import('@/views/AdminView.vue'),
-    meta: { title: '系统管理', icon: 'settings' },
+    meta: { title: '系统管理', icon: 'settings', roles: ['ADMIN', 'MANAGER'] },
   },
   {
     path: '/:pathMatch(.*)*',
@@ -46,11 +52,19 @@ const router = createRouter({
   routes,
 })
 
+// P0-6 登录守卫：非 public 路由必须有会话 token
+router.beforeEach((to) => {
+  if (to.meta.public) return true
+  const token = sessionStorage.getItem('k9_access_token')
+  if (!token) {
+    return { path: '/login', query: { redirect: to.fullPath } }
+  }
+  return true
+})
+
 router.afterEach((to) => {
   const title = (to.meta?.title as string) || ''
-  document.title = title
-    ? `${title} - 工作犬训练机器视觉识别系统`
-    : '工作犬训练机器视觉识别系统'
+  document.title = title ? `${title} · K9 训练识别系统` : 'K9 训练识别系统'
 })
 
 export default router

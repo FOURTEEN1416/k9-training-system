@@ -11,6 +11,8 @@ import {
   NText,
   NTag,
   NButton,
+  NDropdown,
+  NSpace,
   type MenuOption,
 } from 'naive-ui'
 import {
@@ -20,25 +22,36 @@ import {
   SettingsOutline,
   RefreshOutline,
   StatsChartOutline,
+  PersonCircleOutline,
+  LogOutOutline,
 } from '@vicons/ionicons5'
 import { useAppStore } from '@/stores/app'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const route = useRoute()
 const appStore = useAppStore()
+const authStore = useAuthStore()
 const collapsed = ref(false)
 
 function renderIcon(icon: typeof CloudUploadOutline) {
   return () => h(NIcon, null, { default: () => h(icon) })
 }
 
-const menuOptions: MenuOption[] = [
+// P0-6：全量菜单 + 角色可见性过滤（meta.roles 缺省 = 全员可见）
+const allMenuOptions: MenuOption[] = [
   { label: '视频上传', key: '/upload', icon: renderIcon(CloudUploadOutline) },
   { label: '评分报告', key: '/report', icon: renderIcon(DocumentTextOutline) },
   { label: '历史记录', key: '/history', icon: renderIcon(TimeOutline) },
-  { label: '训练对比', key: '/compare', icon: renderIcon(StatsChartOutline) },
-  { label: '系统管理', key: '/admin', icon: renderIcon(SettingsOutline) },
+  { label: '训练对比', key: '/compare', icon: renderIcon(StatsChartOutline), roles: ['ADMIN', 'MANAGER', 'RESEARCHER'] },
+  { label: '系统管理', key: '/admin', icon: renderIcon(SettingsOutline), roles: ['ADMIN', 'MANAGER'] },
 ]
+
+const menuOptions = computed<MenuOption[]>(() =>
+  allMenuOptions.filter(
+    (m) => !(m as { roles?: string[] }).roles || (m as { roles?: string[] }).roles!.includes(authStore.role),
+  ),
+)
 
 const activeKey = computed(() => {
   const path = route.path
@@ -58,7 +71,34 @@ async function refreshHealth() {
   await appStore.fetchHealth()
 }
 
-onMounted(() => {
+// 用户菜单
+const userOptions = [
+  { label: '退出登录', key: 'logout', icon: renderIcon(LogOutOutline) },
+]
+
+function handleUserSelect(key: string) {
+  if (key === 'logout') {
+    authStore.logout()
+    router.push('/login')
+  }
+}
+
+// 页头：真实版本 + 识别模式（P0-6 去除「Phase 0 · 骨架」误导文案）
+const headerMeta = computed(() => {
+  const v = appStore.health
+  if (!v) return ''
+  return `v${v.version} · ${v.environment}${v.deploy_mode ? ` · 识别模式: ${v.deploy_mode}` : ''}`
+})
+
+onMounted(async () => {
+  // 刷新后 token 仍在 → 恢复用户信息；401 由 http 拦截器统一处理
+  if (authStore.isLoggedIn && !authStore.user) {
+    try {
+      await authStore.fetchMe()
+    } catch {
+      // 会话失效：拦截器已跳登录
+    }
+  }
   refreshHealth()
 })
 </script>
@@ -76,7 +116,14 @@ onMounted(() => {
         </template>
       </NButton>
       <div style="flex: 1"></div>
-      <NText depth="3" style="font-size: 12px;">Phase 0 · 骨架</NText>
+      <NText depth="3" style="font-size: 12px;">{{ headerMeta }}</NText>
+      <NDropdown :options="userOptions" @select="handleUserSelect">
+        <NSpace align="center" style="cursor: pointer;">
+          <NIcon :component="PersonCircleOutline" size="20" />
+          <NText>{{ authStore.userName || '未登录' }}</NText>
+          <NTag v-if="authStore.role" size="tiny" type="info" round>{{ authStore.role }}</NTag>
+        </NSpace>
+      </NDropdown>
     </NLayoutHeader>
     <NLayout has-sider style="height: calc(100vh - 56px)">
       <NLayoutSider

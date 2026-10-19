@@ -8,6 +8,28 @@ export interface HealthResponse {
   status: string
   version: string
   environment: string
+  deploy_mode?: string
+}
+
+// === P0-6 鉴权 ===
+
+export interface HandlerInfo {
+  id: number
+  name: string
+  email?: string | null
+  phone?: string | null
+  role: string // ADMIN / MANAGER / RESEARCHER / HANDLER / VIEWER
+  is_active: boolean
+  base_id?: number | null
+  is_superuser: boolean
+  created_at: string
+}
+
+export interface LoginResponse {
+  access_token: string
+  token_type: string
+  expires_in: number
+  handler: HandlerInfo
 }
 
 export interface Dog {
@@ -146,6 +168,21 @@ export interface ScoreCompareResponse {
 export const api = {
   // === 健康 ===
   health: () => request<HealthResponse>({ url: '/health' }),
+
+  // === P0-6 鉴权 ===
+  login: (email: string, password: string) =>
+    request<LoginResponse>({
+      url: '/api/auth/login',
+      method: 'POST',
+      data: { email, password },
+    }),
+  me: () => request<HandlerInfo>({ url: '/api/auth/me' }),
+  changePassword: (oldPassword: string, newPassword: string) =>
+    request<void>({
+      url: '/api/auth/change-password',
+      method: 'POST',
+      data: { old_password: oldPassword, new_password: newPassword },
+    }),
 
   // === 犬只 ===
   listDogs: () => request<Dog[]>({ url: '/api/dogs' }),

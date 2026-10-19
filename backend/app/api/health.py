@@ -71,6 +71,7 @@ async def health_check() -> HealthResponse:
         status=overall,
         version=settings.app_version,
         environment=settings.app_env,
+        deploy_mode=settings.behavior_deploy_mode or "",
         checks=checks,
     )
 
