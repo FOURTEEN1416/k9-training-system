@@ -197,12 +197,27 @@ cd ..
 
 ## 4. 服务启动
 
-### 4.1 启动顺序
+### 4.0 一键启动（P0-2，推荐）
 
-按以下顺序启动服务（建议每个开一个独立终端窗口）：
+```powershell
+pwsh scripts/start_all.ps1            # 全量（含前端）
+pwsh scripts/start_all.ps1 -SkipFrontend   # 仅后端联调
+```
+
+脚本按序执行：预检（venv/.env/CHANGE_ME 占位扫描）→ Redis（未运行自动拉起）→
+PostgreSQL 探活（端口+认证双检）→ Alembic 迁移 → Celery → FastAPI → 前端，
+最后轮询聚合 `/health` 输出组件状态表（database / redis / models）。
+失败时打印缺失项（端口/密钥/权重）与日志路径（`logs/` 目录），退出码非零。
+
+> 注意：脚本只做**拉起与诊断**，不注册 Windows 服务；生产常驻仍建议按 §4.2-4.6
+> 注册服务或使用任务计划。
+
+### 4.1 手动启动顺序
+
+按以下顺序启动服务（建议每个开一个独立终端窗口，一键脚本即自动化此流程）：
 
 ```
-PostgreSQL → Redis → Celery Worker → FastAPI → Frontend
+PostgreSQL → Redis → Alembic → Celery Worker → FastAPI → Frontend
 ```
 
 ### 4.2 启动 PostgreSQL
@@ -303,12 +318,21 @@ VITE_BACKEND_PORT=8001
 ### 5.1 健康检查
 
 ```powershell
-# 后端
-curl http://127.0.0.1:8001/health
-
-# Celery（通过 API 间接验证）
-curl http://127.0.0.1:8001/docs  # 找到 /api/health 相关接口
+# 聚合健康（P0-2）：status=ok 仅当 database/redis/models 全部 ok，否则 degraded
+curl http://127.0.0.1:8000/health
 ```
+
+预期输出（全绿）：
+
+```json
+{"status":"ok","version":"0.1.0","environment":"development",
+ "checks":{"database":{"status":"ok","detail":"database reachable"},
+           "redis":{"status":"ok","detail":"redis reachable (...)"},
+           "models":{"status":"ok","detail":"all model groups present"}}}
+```
+
+故障诊断：任一组件异常时 `status` 变 `degraded`，对应 `checks.<组件>.detail`
+指名故障（如停掉 Redis 后 detail 显示连接拒绝）。HTTP 恒 200，区分 liveness/readiness。
 
 ### 5.2 端到端冒烟测试
 

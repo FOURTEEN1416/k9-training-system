@@ -1,9 +1,9 @@
 """Pydantic schemas（Phase 0 仅占位，Phase 1 完善验证规则）。"""
 
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ORMModel(BaseModel):
@@ -12,12 +12,24 @@ class ORMModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ComponentHealth(BaseModel):
+    """单个组件健康状态（P0-2 /health 聚合）。"""
+
+    status: Literal["ok", "degraded", "down"]
+    detail: str = ""
+
+
 class HealthResponse(BaseModel):
-    """健康检查响应。"""
+    """健康检查响应。
+
+    P0-2 扩展：checks 聚合 DB / Redis / 模型路径状态；
+    status=ok 仅当全部组件 ok，否则 degraded（HTTP 仍 200，语义见 checks）。
+    """
 
     status: str
     version: str
     environment: str
+    checks: dict[str, ComponentHealth] = Field(default_factory=dict)
 
 
 class HandlerBase(ORMModel):
