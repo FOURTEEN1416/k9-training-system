@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   NCard, NSpace, NText, NUpload, NButton, NIcon, NSelect,
@@ -19,8 +19,99 @@ const dogs = ref<Dog[]>([])
 const selectedDogId = ref<number | null>(null)
 const uploading = ref(false)
 const currentVideoId = ref<number | null>(null)
-const currentStatus = ref<VideoStatusRead | null>(null)
+const currentStatus = ref<OpsVideoStatus | null>(null)
 let pollTimer: ReturnType<typeof setInterval> | null = null
+
+// P1-6 服务端新增字段（api/index.ts 不在本线白名单，本地交叉类型扩展）
+type OpsVideoStatus = VideoStatusRead & {
+  uploaded_at?: string | null
+  processing_stage?: string | null
+  processing_percent?: number | null
+  processing_started_at?: string | null
+  processing_duration_ms?: number | null
+  processing_elapsed_ms?: number | null
+  error_code?: string | null
+  error_hint?: string | null
+  processing_stale?: boolean
+  retry_scheduled?: boolean
+}
+
+// 阶段中文映射 + 旧数据 percent=null 时的回退下限（与服务端阶段表一致）
+const STAGE_LABELS: Record<string, string> = {
+  preparing: '准备中',
+  pose_inference: '姿态推理',
+  keypoints: '关键点写入',
+  object_detection: '物体检测',
+  behavior_inference: '行为识别',
+  scoring: '评分计算',
+  report: '生成报告',
+  persist: '结果写入',
+  completed: '已完成',
+  retrying: '等待重试',
+}
+
+const STAGE_FALLBACK_PERCENT: Record<string, number> = {
+  preparing: 0,
+  pose_inference: 5,
+  keypoints: 90,
+  object_detection: 92,
+  behavior_inference: 94,
+  scoring: 96,
+  report: 98,
+  persist: 99,
+  completed: 100,
+  retrying: 1,
+}
+
+const stageLabel = computed(() => {
+  const stage = currentStatus.value?.processing_stage
+  if (!stage) return '处理中'
+  return STAGE_LABELS[stage] || stage
+})
+
+const clampedPercent = computed(() => {
+  const value = currentStatus.value?.processing_percent
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Math.min(100, Math.max(0, Math.round(value)))
+  }
+  const stage = currentStatus.value?.processing_stage
+  return stage ? (STAGE_FALLBACK_PERCENT[stage] ?? 0) : 0
+})
+
+// 已运行时长（每秒刷新，卸载时清理）
+const nowMs = ref(Date.now())
+let clockTimer: ReturnType<typeof setInterval> | null = null
+
+const elapsedText = computed(() => {
+  const status = currentStatus.value
+  if (status?.status !== 'processing') return ''
+  if (typeof status.processing_elapsed_ms === 'number' && status.processing_elapsed_ms >= 0) {
+    return formatDuration(status.processing_elapsed_ms)
+  }
+  if (!status.processing_started_at) return ''
+  const started = new Date(status.processing_started_at).getTime()
+  if (!Number.isFinite(started)) return ''
+  return formatDuration(Math.max(0, nowMs.value - started))
+})
+
+function formatDuration(ms: number): string {
+  const totalSec = Math.floor(ms / 1000)
+  const min = Math.floor(totalSec / 60)
+  const sec = totalSec % 60
+  return min > 0 ? `${min} 分 ${sec} 秒` : `${sec} 秒`
+}
+
+const retryCount = ref(0)
+watch(
+  () => currentStatus.value?.retry_scheduled === true,
+  (isRetrying, wasRetrying) => {
+    if (isRetrying && !wasRetrying) retryCount.value += 1
+  },
+)
+
+const retryText = computed(() =>
+  retryCount.value > 0 ? `第 ${retryCount.value} 次重试中` : '等待重试',
+)
 
 // === 场景选项 ===
 const sceneOptions: SelectOption[] = [
@@ -52,6 +143,7 @@ async function handleUpload() {
 
   uploading.value = true
   currentStatus.value = null
+  retryCount.value = 0
   try {
     const video = await api.uploadVideo(
       selectedFile.value,
@@ -74,14 +166,18 @@ function startPolling(videoId: number) {
   pollTimer = setInterval(async () => {
     try {
       const status = await api.getVideoStatus(videoId)
-      currentStatus.value = status
+      currentStatus.value = status as OpsVideoStatus
       if (status.status === 'completed') {
         stopPolling()
         message.success('推理完成，可查看报告')
       } else if (status.status === 'failed') {
         stopPolling()
-        message.error(`推理失败: ${status.error_message || '未知错误'}`)
+        const detail = (status as OpsVideoStatus).error_hint
+          || status.error_message
+          || '未知错误'
+        message.error(`推理失败: ${detail}`)
       }
+      // processing（含 retrying）继续轮询，不在首次失败时停止
     } catch {
       // 轮询失败忽略，下次重试
     }
@@ -137,10 +233,14 @@ function resetUpload() {
   fileList.value = []
   currentVideoId.value = null
   currentStatus.value = null
+  retryCount.value = 0
   stopPolling()
 }
 
 onMounted(async () => {
+  clockTimer = setInterval(() => {
+    nowMs.value = Date.now()
+  }, 1000)
   try {
     dogs.value = await api.listDogs()
   } catch {
@@ -150,6 +250,10 @@ onMounted(async () => {
 
 onUnmounted(() => {
   stopPolling()
+  if (clockTimer) {
+    clearInterval(clockTimer)
+    clockTimer = null
+  }
 })
 </script>
 
@@ -247,22 +351,49 @@ onUnmounted(() => {
           </NTag>
         </NSpace>
 
-        <!-- 推理进度 -->
-        <NProgress
-          v-if="isProcessing"
-          type="line"
-          status="info"
-          :indeterminate="true"
-          :show-indicator="false"
-        />
+        <!-- 推理进度（P1-6：阶段 + 百分比 + 已运行时长） -->
+        <div v-if="isProcessing">
+          <NSpace align="center" :size="8" style="margin-bottom: 6px;">
+            <NText strong>{{ stageLabel }}</NText>
+            <NTag v-if="currentStatus.retry_scheduled" type="warning" size="small" round>
+              {{ retryText }}
+            </NTag>
+            <NText depth="3" style="font-size: 12px;">
+              {{ clampedPercent }}%
+            </NText>
+            <NText v-if="elapsedText" depth="3" style="font-size: 12px;">
+              已运行 {{ elapsedText }}
+            </NText>
+          </NSpace>
+          <NProgress
+            type="line"
+            status="info"
+            :processing="true"
+            :percentage="clampedPercent"
+          />
+        </div>
+
+        <!-- 疑似卡死警告 -->
+        <NAlert
+          v-if="currentStatus.processing_stale"
+          type="warning"
+          title="处理可能已卡死"
+        >
+          该任务已超过 2 小时未完成，可能已卡死，请联系管理员检查 Celery worker。
+        </NAlert>
 
         <!-- 失败信息 -->
         <NAlert
           v-if="currentStatus.status === 'failed'"
           type="error"
-          :title="`推理失败: ${currentStatus.error_message || '未知错误'}`"
+          :title="`推理失败${currentStatus.error_code ? ' [' + currentStatus.error_code + ']' : ''}`"
         >
-          请检查视频文件是否包含清晰的工作犬画面，或联系管理员查看日志。
+          <NSpace vertical :size="4">
+            <NText>{{ currentStatus.error_message || '未知错误' }}</NText>
+            <NText v-if="currentStatus.error_hint" depth="2" style="font-size: 12px;">
+              建议：{{ currentStatus.error_hint }}
+            </NText>
+          </NSpace>
         </NAlert>
 
         <!-- 完成操作 -->

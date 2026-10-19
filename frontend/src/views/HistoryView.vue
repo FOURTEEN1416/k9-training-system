@@ -3,19 +3,53 @@ import { h, onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   NCard, NSpace, NText, NDataTable, NEmpty, NTag, NButton, NIcon, NSelect,
-  NSpin, useMessage,
+  NSpin, NTooltip, useMessage,
   type DataTableColumns, type SelectOption,
 } from 'naive-ui'
 import { DocumentTextOutline, DownloadOutline, RefreshOutline } from '@vicons/ionicons5'
 import { api, type Video, type Scene, type Dog } from '@/api'
+import { request } from '@/api/http'
+
+// P1-6 服务端新增字段（api/index.ts 不在本线白名单，本地交叉类型扩展）
+type OpsVideo = Video & {
+  processing_stage?: string | null
+  processing_percent?: number | null
+  processing_started_at?: string | null
+  processing_duration_ms?: number | null
+  error_code?: string | null
+  error_hint?: string | null
+  processing_stale?: boolean
+  retry_scheduled?: boolean
+}
+
+interface ProcessingStats {
+  window_days: number
+  since: string
+  sample_size: number
+  p50_duration_ms: number | null
+  p95_duration_ms: number | null
+  max_duration_ms: number | null
+  e2e_sample_size: number
+  e2e_p50_ms: number | null
+  e2e_p95_ms: number | null
+  e2e_max_ms: number | null
+  completed: number
+  failed: number
+  failure_rate: number | null
+  stale_processing: number
+  reliable: boolean
+  method: string
+}
 
 const message = useMessage()
 const router = useRouter()
 
 // === 数据 ===
-const videos = ref<Video[]>([])
+const videos = ref<OpsVideo[]>([])
 const dogs = ref<Dog[]>([])
 const loading = ref(false)
+const processingStats = ref<ProcessingStats | null>(null)
+const statsError = ref<string | null>(null)
 
 // === 筛选 ===
 const filterScene = ref<Scene | null>(null)
@@ -64,11 +98,38 @@ const sceneText: Record<string, string> = {
   puppy_selection: '幼犬选育',
 }
 
+const stageText: Record<string, string> = {
+  preparing: '准备中',
+  pose_inference: '姿态推理',
+  keypoints: '关键点写入',
+  object_detection: '物体检测',
+  behavior_inference: '行为识别',
+  scoring: '评分计算',
+  report: '生成报告',
+  persist: '结果写入',
+  completed: '已完成',
+  retrying: '等待重试',
+}
+
 // === 格式化 ===
 function formatTime(iso: string): string {
   if (!iso) return '—'
   const d = new Date(iso)
   return d.toLocaleString('zh-CN', { hour12: false })
+}
+
+function formatDurationMs(ms: number | null | undefined): string {
+  if (ms == null || !Number.isFinite(ms)) return '—'
+  const totalSec = Math.round(ms / 1000)
+  if (totalSec < 60) return `${totalSec} 秒`
+  const min = Math.floor(totalSec / 60)
+  const sec = totalSec % 60
+  return `${min} 分 ${sec} 秒`
+}
+
+function formatPercent(value: number | null | undefined): string {
+  if (value == null || !Number.isFinite(value)) return '—'
+  return `${Math.round(value)}%`
 }
 
 function formatDogName(dogId: number | null | undefined): string {
@@ -78,7 +139,7 @@ function formatDogName(dogId: number | null | undefined): string {
 }
 
 // === 表格列 ===
-const columns: DataTableColumns<Video> = [
+const columns: DataTableColumns<OpsVideo> = [
   { title: 'ID', key: 'id', width: 70 },
   { title: '场景', key: 'scene', width: 110, render: row => sceneText[row.scene] || row.scene },
   { title: '文件名', key: 'original_filename', ellipsis: { tooltip: true } },
@@ -91,10 +152,43 @@ const columns: DataTableColumns<Video> = [
   {
     title: '状态',
     key: 'status',
-    width: 100,
-    render: row =>
-      h(NTag, { type: statusTagType[row.status] || 'default', size: 'small', round: true },
-        () => statusText[row.status] || row.status),
+    width: 130,
+    render: row => {
+      const tag = h(
+        NTag,
+        {
+          type: row.processing_stale ? 'error' : (statusTagType[row.status] || 'default'),
+          size: 'small',
+          round: true,
+        },
+        () => (row.processing_stale ? '疑似卡死' : (statusText[row.status] || row.status)),
+      )
+      if (row.status === 'failed' && row.error_message) {
+        return h(NTooltip, null, {
+          trigger: () => tag,
+          default: () => row.error_hint
+            ? `${row.error_message}\n建议: ${row.error_hint}`
+            : row.error_message,
+        })
+      }
+      return tag
+    },
+  },
+  {
+    title: '进度',
+    key: 'processing_percent',
+    width: 120,
+    render: row => {
+      if (row.status !== 'processing') return '—'
+      const label = row.processing_stage ? (stageText[row.processing_stage] || row.processing_stage) : '处理中'
+      return `${label} ${formatPercent(row.processing_percent)}`
+    },
+  },
+  {
+    title: '耗时',
+    key: 'processing_duration_ms',
+    width: 110,
+    render: row => formatDurationMs(row.processing_duration_ms),
   },
   { title: '上传时间', key: 'uploaded_at', width: 170, render: row => formatTime(row.uploaded_at) },
   {
@@ -138,6 +232,20 @@ async function loadVideos() {
   }
 }
 
+// P1-6 统计独立请求：403/500 只降级统计卡，不阻塞视频列表
+async function loadProcessingStats() {
+  statsError.value = null
+  try {
+    processingStats.value = await request<ProcessingStats>({
+      url: '/api/videos/ops/stats',
+      params: { days: 7 },
+    })
+  } catch (e) {
+    processingStats.value = null
+    statsError.value = (e as Error).message || '统计不可用'
+  }
+}
+
 async function loadDogs() {
   try {
     dogs.value = await api.listDogs()
@@ -168,7 +276,13 @@ const stats = computed(() => {
 onMounted(() => {
   loadDogs()
   loadVideos()
+  loadProcessingStats()
 })
+
+function refreshAll() {
+  loadVideos()
+  loadProcessingStats()
+}
 </script>
 
 <template>
@@ -192,8 +306,36 @@ onMounted(() => {
           <NText depth="3" style="font-size: 12px;">失败</NText>
           <NText strong style="font-size: 20px; color: #d03050;">{{ stats.failed }}</NText>
         </NSpace>
+        <NSpace v-if="processingStats" align="center" :size="8">
+          <NText depth="3" style="font-size: 12px;">处理 P95</NText>
+          <NText strong style="font-size: 20px;">
+            {{ formatDurationMs(processingStats.p95_duration_ms) }}
+          </NText>
+        </NSpace>
+        <NSpace v-if="processingStats" align="center" :size="8">
+          <NText depth="3" style="font-size: 12px;">端到端 P95</NText>
+          <NText strong style="font-size: 20px;">
+            {{ formatDurationMs(processingStats.e2e_p95_ms) }}
+          </NText>
+        </NSpace>
+        <NSpace v-if="processingStats" align="center" :size="8">
+          <NText depth="3" style="font-size: 12px;">近 7 天样本</NText>
+          <NText strong>{{ processingStats.sample_size }}</NText>
+          <NText depth="3" style="font-size: 12px;">
+            失败率 {{ processingStats.failure_rate == null ? '—' : `${Math.round(processingStats.failure_rate * 100)}%` }}
+          </NText>
+        </NSpace>
+        <NTag v-if="processingStats && !processingStats.reliable" type="warning" size="small">
+          样本不足
+        </NTag>
+        <NTag v-if="processingStats && processingStats.stale_processing > 0" type="error" size="small">
+          卡死 {{ processingStats.stale_processing }}
+        </NTag>
+        <NText v-if="statsError" depth="3" style="font-size: 12px;">
+          统计不可用
+        </NText>
         <div style="flex: 1"></div>
-        <NButton size="small" quaternary @click="loadVideos">
+        <NButton size="small" quaternary @click="refreshAll">
           <template #icon>
             <NIcon :component="RefreshOutline" />
           </template>
@@ -238,7 +380,9 @@ onMounted(() => {
           :data="filteredVideos"
           :bordered="false"
           :pagination="{ pageSize: 20 }"
-          :row-key="(row: Video) => row.id"
+          :row-key="(row: OpsVideo) => row.id"
+          :row-props="(row: OpsVideo) =>
+            row.processing_stale ? { style: 'background-color: #fff1f0;' } : {}"
         >
           <template #empty>
             <NEmpty description="暂无视频记录，请先上传">

@@ -13,10 +13,11 @@ Phase: 1.4d
 """
 from __future__ import annotations
 
+import math
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Sequence
 
 from fastapi import (
     APIRouter,
@@ -24,6 +25,7 @@ from fastapi import (
     File,
     Form,
     HTTPException,
+    Query,
     UploadFile,
     status,
 )
@@ -36,8 +38,17 @@ from backend.app.core.database import get_db
 from backend.app.core.deps import get_current_handler, require_roles
 from backend.app.models.handler import Handler, UserRole
 from backend.app.models.video import Video, VideoStatus, VALID_SCENES
-from backend.app.schemas.common import VideoRead, VideoStatusRead
-from backend.workers.tasks import ingest_video
+from backend.app.schemas.common import (
+    ERROR_CODE_HINTS,
+    PROCESSING_STALE_AFTER_SEC,
+    ProcessingStatsRead,
+    VideoErrorCode,
+    VideoRead,
+    VideoStatusRead,
+    _ensure_aware,
+    _is_processing_stale,
+)
+from backend.workers.tasks import _redact, ingest_video
 
 router = APIRouter(
     prefix="/videos",
@@ -80,6 +91,113 @@ async def list_videos(
         stmt = stmt.where(Video.scene == scene)
     result = await db.execute(stmt)
     return list(result.scalars().all())
+
+
+@router.get("/ops/stats", response_model=ProcessingStatsRead)
+async def get_processing_stats(
+    db: DbSession,
+    _ops_admin: Annotated[Handler, Depends(require_roles(UserRole.ADMIN, UserRole.MANAGER))],
+    days: int = Query(default=7, ge=1, le=90),
+) -> ProcessingStatsRead:
+    """处理时延与可靠性统计（P1-6，仅 ADMIN/MANAGER）.
+
+    统计口径（响应 method 字段同步说明）:
+        - processing: processing_started_at → processed_at（纯处理耗时）
+        - e2e:        uploaded_at → processed_at（端到端，含排队）
+    样本 < 20 时 reliable=false，前端展示“样本不足”。
+    """
+    since = datetime.now(timezone.utc) - timedelta(days=days)
+
+    # 1. 窗口内完成的样本（按 processed_at >= since）
+    result = await db.execute(
+        select(Video).where(Video.processed_at.isnot(None), Video.processed_at >= since)
+    )
+    window_videos = list(result.scalars().all())
+
+    # 2. stale processing 计数（全表 processing；不依赖 processed_at 索引）
+    processing_result = await db.execute(
+        select(Video).where(Video.status == VideoStatus.PROCESSING)
+    )
+    processing_videos = list(processing_result.scalars().all())
+
+    return _summarize_processing_stats(
+        window_videos=window_videos,
+        processing_videos=processing_videos,
+        since=since,
+        days=days,
+    )
+
+
+def _percentile_nearest_rank(values: Sequence[float], p: float) -> Optional[int]:
+    """nearest-rank 百分位（无插值）；空序列返回 None。"""
+    cleaned = sorted(float(v) for v in values if v is not None)
+    if not cleaned:
+        return None
+    rank = max(1, math.ceil(p * len(cleaned)))
+    return int(round(cleaned[rank - 1]))
+
+
+def _summarize_processing_stats(
+    *,
+    window_videos: Sequence[Video],
+    processing_videos: Sequence[Video],
+    since: datetime,
+    days: int,
+    now: Optional[datetime] = None,
+) -> ProcessingStatsRead:
+    """纯函数：把窗口样本汇总为处理时延统计（双口径并排，不混用）。"""
+    completed_videos = [v for v in window_videos if v.status == VideoStatus.COMPLETED]
+    failed_videos = [v for v in window_videos if v.status == VideoStatus.FAILED]
+
+    processing_durations = [
+        v.processing_duration_ms
+        for v in completed_videos
+        if v.processing_duration_ms is not None and v.processing_duration_ms >= 0
+    ]
+
+    e2e_durations: list[float] = []
+    for v in completed_videos:
+        if v.uploaded_at is None or v.processed_at is None:
+            continue
+        uploaded = _ensure_aware(v.uploaded_at)
+        processed = _ensure_aware(v.processed_at)
+        e2e_ms = (processed - uploaded).total_seconds() * 1000
+        if e2e_ms >= 0:
+            e2e_durations.append(e2e_ms)
+
+    completed_count = len(completed_videos)
+    failed_count = len(failed_videos)
+    denominator = completed_count + failed_count
+    failure_rate = (failed_count / denominator) if denominator else None
+
+    stale_count = sum(
+        1
+        for v in processing_videos
+        if _is_processing_stale("processing", v.processing_started_at, v.uploaded_at, now)
+    )
+
+    return ProcessingStatsRead(
+        window_days=days,
+        since=since,
+        method=(
+            "nearest-rank percentile; processing=processing_started_at→processed_at; "
+            "e2e=uploaded_at→processed_at (含排队); "
+            f"stale=processing 且已运行>{PROCESSING_STALE_AFTER_SEC}s 或无 started_at 且上传已久"
+        ),
+        sample_size=len(processing_durations),
+        p50_duration_ms=_percentile_nearest_rank(processing_durations, 0.50),
+        p95_duration_ms=_percentile_nearest_rank(processing_durations, 0.95),
+        max_duration_ms=int(max(processing_durations)) if processing_durations else None,
+        e2e_sample_size=len(e2e_durations),
+        e2e_p50_ms=_percentile_nearest_rank(e2e_durations, 0.50),
+        e2e_p95_ms=_percentile_nearest_rank(e2e_durations, 0.95),
+        e2e_max_ms=int(max(e2e_durations)) if e2e_durations else None,
+        completed=completed_count,
+        failed=failed_count,
+        failure_rate=failure_rate,
+        stale_processing=stale_count,
+        reliable=len(processing_durations) >= 20,
+    )
 
 
 @router.get("/{video_id}", response_model=VideoRead)
@@ -215,7 +333,11 @@ async def upload_video(
     except Exception as e:
         # Celery broker 不可用时，标记为 failed 而非让上传接口 500
         video.status = VideoStatus.FAILED
-        video.error_message = f"Celery 任务派发失败: {e}"
+        video.error_message = (
+            f"[{VideoErrorCode.TASK_DISPATCH_FAILED.value}] "
+            f"{ERROR_CODE_HINTS[VideoErrorCode.TASK_DISPATCH_FAILED]} "
+            f"详情: {_redact(e)}"
+        )
         video.processed_at = datetime.now(timezone.utc)
         await db.flush()
         await db.refresh(video)

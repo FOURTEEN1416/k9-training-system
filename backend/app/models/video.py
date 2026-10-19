@@ -102,6 +102,20 @@ class Video(TimestampMixin, Base):
     )
     processed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
+    # P1-6 处理过程可观测性（迁移 d4e5f6a7b8c9；全部 nullable，历史行为 NULL）
+    processing_stage: Mapped[Optional[str]] = mapped_column(
+        String(32), nullable=True, comment="当前处理阶段: preparing/pose_inference/.../completed/retrying"
+    )
+    processing_percent: Mapped[Optional[float]] = mapped_column(
+        nullable=True, comment="阶段级进度百分比 0-100（null=未知/历史数据）"
+    )
+    processing_started_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True, comment="本次处理开始时间（用于已运行时长/stale 判定）"
+    )
+    processing_duration_ms: Mapped[Optional[int]] = mapped_column(
+        Integer, nullable=True, comment="处理耗时（毫秒，started_at→processed_at）"
+    )
+
     # 关系
     session: Mapped[Optional["TrainingSession"]] = relationship("TrainingSession", back_populates="videos")
     dog: Mapped[Optional["Dog"]] = relationship("Dog", back_populates="videos")

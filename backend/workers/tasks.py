@@ -23,11 +23,14 @@ Phase: 1.4d
 """
 from __future__ import annotations
 
+import json
 import logging
+import re
+import time
 import traceback
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 import numpy as np
 
@@ -38,6 +41,7 @@ from backend.app.models.dog import Dog
 from backend.app.models.handler import Handler
 from backend.app.models.keypoint import Keypoint
 from backend.app.models.video import Video, VideoStatus
+from backend.app.schemas.common import ERROR_CODE_HINTS, VideoErrorCode
 from backend.app.services.report import (
     ReportInput,
     decide_review,
@@ -58,6 +62,256 @@ from backend.ml.scoring import ScoringContext, ScoringEngine
 from backend.workers.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
+
+# ============================================================
+# P1-6 处理过程可观测性（阶段进度 + 结构化 INFO 日志 + 可判定错误码）
+# ============================================================
+
+# 阶段常量（与前端 UploadView 中文映射保持一致）
+STAGE_PREPARING = "preparing"
+STAGE_POSE_INFERENCE = "pose_inference"
+STAGE_KEYPOINTS = "keypoints"
+STAGE_OBJECT_DETECTION = "object_detection"
+STAGE_BEHAVIOR_INFERENCE = "behavior_inference"
+STAGE_SCORING = "scoring"
+STAGE_REPORT = "report"
+STAGE_PERSIST = "persist"
+STAGE_COMPLETED = "completed"
+STAGE_RETRYING = "retrying"
+
+# 阶段起始百分比（pose 占大头：实测 pose ≈96% 总耗时）
+STAGE_START_PERCENT: dict[str, float] = {
+    STAGE_PREPARING: 0.0,
+    STAGE_POSE_INFERENCE: 5.0,
+    STAGE_KEYPOINTS: 90.0,
+    STAGE_OBJECT_DETECTION: 92.0,
+    STAGE_BEHAVIOR_INFERENCE: 94.0,
+    STAGE_SCORING: 96.0,
+    STAGE_REPORT: 98.0,
+    STAGE_PERSIST: 99.0,
+    STAGE_COMPLETED: 100.0,
+}
+
+# 独立运维日志通道：显式 INFO + 不向上传播（避免被 root WARNING 丢弃/重复输出）
+OPS_LOGGER_NAME = "k9.ops.video_ingest"
+ops_logger = logging.getLogger(OPS_LOGGER_NAME)
+for _existing in list(ops_logger.handlers):
+    if getattr(_existing, "_k9_ops_handler", False):
+        ops_logger.removeHandler(_existing)
+_ops_handler = logging.StreamHandler()
+_ops_handler.setLevel(logging.INFO)
+_ops_handler.setFormatter(
+    logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
+)
+_ops_handler._k9_ops_handler = True  # type: ignore[attr-defined]
+ops_logger.addHandler(_ops_handler)
+ops_logger.setLevel(logging.INFO)
+ops_logger.propagate = False
+
+# 结构化日志字段截断长度
+_DETAIL_MAX_LEN = 500
+_ERROR_DETAIL_MAX_LEN = 1000
+
+_DSN_PASSWORD_RE = re.compile(r"(://)[^/@\s:]+:[^@/\s]+@")
+_WINDOWS_PATH_RE = re.compile(r"[A-Za-z]:\\[^\s\"']+")
+
+
+def _redact(text: object) -> str:
+    """脱敏：DSN 密码、Windows 绝对路径。"""
+    if text is None:
+        return ""
+    value = str(text)
+    value = _DSN_PASSWORD_RE.sub(r"\1***@", value)
+    value = _WINDOWS_PATH_RE.sub("<path>", value)
+    return value
+
+
+def _event_payload(event: str, **fields) -> str:
+    """构造单行 JSON 结构化日志（可被日志系统直接解析）."""
+    payload: dict[str, object] = {"event": event}
+    for key, value in fields.items():
+        if isinstance(value, (datetime,)):
+            value = value.isoformat()
+        elif isinstance(value, (VideoErrorCode,)):
+            value = value.value
+        payload[key] = value
+    if "detail" in payload:
+        payload["detail"] = _redact(payload["detail"])[:_DETAIL_MAX_LEN]
+    return json.dumps(payload, ensure_ascii=False, default=str)
+
+
+def _elapsed_ms(
+    started_at: Optional[datetime],
+    end: Optional[datetime] = None,
+) -> Optional[int]:
+    """None-safe 毫秒差；naive 时间按 UTC 处理，时钟回拨 clamp 到 0。"""
+    if started_at is None:
+        return None
+    if started_at.tzinfo is None:
+        started_at = started_at.replace(tzinfo=timezone.utc)
+    finished = end or datetime.now(timezone.utc)
+    if finished.tzinfo is None:
+        finished = finished.replace(tzinfo=timezone.utc)
+    return max(0, int((finished - started_at).total_seconds() * 1000))
+
+
+def _format_error_message(code: VideoErrorCode, exc: BaseException) -> str:
+    """`[CODE] 中文可读说明`；原始异常摘要脱敏并截断，堆栈只进日志。"""
+    hint = ERROR_CODE_HINTS.get(code, "处理失败")
+    detail = _redact(str(exc)).strip()
+    if detail:
+        detail = detail[:_ERROR_DETAIL_MAX_LEN]
+        return f"[{code.value}] {hint} 详情: {detail}"
+    return f"[{code.value}] {hint}"
+
+
+def _classify_error(
+    exc: BaseException,
+    stage: str,
+    message: Optional[str] = None,
+) -> VideoErrorCode:
+    """把异常映射为可判定错误码。
+
+    同阶段可能混杂多类异常（pose 阶段：视频缺失/模型缺失/视频打不开/OOM），
+    因此类型 + 消息规则双重判定（上游文案变更需同步测试）。
+    """
+    msg = f"{message or ''} {exc}"
+    low = msg.lower()
+
+    if isinstance(exc, FileNotFoundError):
+        if "模型文件" in msg or "model" in low:
+            return VideoErrorCode.MODEL_UNAVAILABLE
+        return VideoErrorCode.FILE_MISSING
+
+    if isinstance(exc, RuntimeError) and "not found" in low and "video" in low:
+        return VideoErrorCode.VIDEO_NOT_FOUND
+
+    # CUDA/ONNX Runtime/OOM 类 → 模型侧不可用（优先于通用推理失败）
+    if any(
+        token in low
+        for token in (
+            "out of memory",
+            "cuda",
+            "cudnn",
+            "cublas",
+            "onnxruntime",
+            "no available memory",
+        )
+    ):
+        return VideoErrorCode.MODEL_UNAVAILABLE
+
+    if "无法打开视频" in msg or "cannot open video" in low or "could not open video" in low:
+        return VideoErrorCode.VIDEO_UNREADABLE
+
+    if isinstance(exc, ValueError) and ("scene" in low or "未知" in msg):
+        return VideoErrorCode.UNSUPPORTED_SCENE
+
+    try:
+        from sqlalchemy.exc import SQLAlchemyError
+
+        if isinstance(exc, SQLAlchemyError):
+            return VideoErrorCode.DB_WRITE_FAILED
+    except Exception:  # pragma: no cover - sqlalchemy 必然存在
+        pass
+
+    if stage == STAGE_SCORING:
+        return VideoErrorCode.SCORING_FAILED
+    if stage == STAGE_REPORT:
+        return VideoErrorCode.REPORT_FAILED
+    if stage == STAGE_PERSIST:
+        return VideoErrorCode.DB_WRITE_FAILED
+    if stage in (STAGE_POSE_INFERENCE, STAGE_KEYPOINTS, STAGE_BEHAVIOR_INFERENCE,
+                 STAGE_OBJECT_DETECTION):
+        return VideoErrorCode.INFERENCE_FAILED
+    return VideoErrorCode.INTERNAL_ERROR
+
+
+def _set_progress(
+    db,
+    video: Video,
+    stage: str,
+    percent: Optional[float],
+    *,
+    force: bool = False,
+) -> None:
+    """写阶段进度（单调不减；写库失败仅告警，不打断主流程）。"""
+    try:
+        previous = None if force else video.processing_percent
+        value = STAGE_START_PERCENT.get(stage) if percent is None else percent
+        if value is None:
+            value = previous
+        if previous is not None and value is not None and not force:
+            value = max(float(previous), float(value))
+        if value is not None:
+            value = min(100.0, max(0.0, float(value)))
+        video.processing_stage = stage
+        video.processing_percent = value
+        db.commit()
+    except Exception as exc:
+        try:
+            db.rollback()
+        except Exception:
+            pass
+        ops_logger.warning(
+            _event_payload(
+                "progress_update_failed",
+                video_id=getattr(video, "id", None),
+                stage=stage,
+                detail=f"{type(exc).__name__}: {exc}",
+            )
+        )
+
+
+def _empty_keypoints_ratio(frames) -> Optional[float]:
+    """空帧/全零关键点比例（仅告警，不改变评分行为）。"""
+    try:
+        if not frames:
+            return 1.0
+        zero = sum(
+            1
+            for f in frames
+            if getattr(f, "keypoints", None) is not None
+            and not np.any(np.asarray(f.keypoints))
+        )
+        return zero / len(frames)
+    except Exception:
+        return None
+
+
+def _record_failure(
+    video_id: int,
+    started_at: Optional[datetime],
+    code: VideoErrorCode,
+    exc: BaseException,
+    *,
+    retrying: bool,
+) -> None:
+    """失败落库（None-safe；写库失败绝不覆盖原异常）."""
+    try:
+        with SyncSessionLocal() as db2:
+            v = db2.get(Video, video_id)
+            if v is None:
+                return
+            v.error_message = _format_error_message(code, exc)
+            if retrying:
+                # 非最后一次尝试：保持 PROCESSING，前端继续轮询
+                v.status = VideoStatus.PROCESSING
+                v.processing_stage = STAGE_RETRYING
+            else:
+                now = datetime.now(timezone.utc)
+                v.status = VideoStatus.FAILED
+                v.processed_at = now
+                v.processing_duration_ms = _elapsed_ms(started_at, now)
+            db2.commit()
+    except Exception as write_exc:
+        ops_logger.error(
+            _event_payload(
+                "failure_write_failed",
+                video_id=video_id,
+                detail=f"{type(write_exc).__name__}: {write_exc}",
+            )
+        )
+
 
 # 评分卡 YAML 路径
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -280,18 +534,57 @@ def ingest_video(self, video_id: int) -> dict:
     """
     logger.info(f"[worker] ingest_video start video_id={video_id}")
 
+    started_at = datetime.now(timezone.utc)
+    current_stage = STAGE_PREPARING
+
     with SyncSessionLocal() as db:
+        stage_state: dict[str, object] = {"name": None, "t0": 0.0}
+
+        def _stage_exit() -> None:
+            name = stage_state.get("name")
+            if not name:
+                return
+            elapsed_ms = int((time.perf_counter() - float(stage_state["t0"])) * 1000)
+            ops_logger.info(
+                _event_payload(
+                    "stage_exit", video_id=video_id, stage=name, elapsed_ms=elapsed_ms
+                )
+            )
+            stage_state["name"] = None
+
+        def _stage_enter(stage: str) -> None:
+            nonlocal current_stage
+            _stage_exit()
+            current_stage = stage
+            stage_state["name"] = stage
+            stage_state["t0"] = time.perf_counter()
+            ops_logger.info(_event_payload("stage_enter", video_id=video_id, stage=stage))
+            _set_progress(db, video, stage, None)
+
         try:
             video = db.get(Video, video_id)
             if video is None:
                 raise RuntimeError(f"Video {video_id} not found")
 
-            # 标记 PROCESSING
+            # 标记 PROCESSING，并重置本次尝试的进度状态
             video.status = VideoStatus.PROCESSING
             video.error_message = None
+            video.processing_started_at = started_at
+            video.processing_duration_ms = None
+            video.processing_stage = STAGE_PREPARING
+            video.processing_percent = 0.0
             db.commit()
 
+            ops_logger.info(
+                _event_payload(
+                    "ingest_start", video_id=video_id, scene=video.scene,
+                    attempt=getattr(self.request, "retries", 0) + 1,
+                )
+            )
+            _stage_enter(STAGE_PREPARING)
+
             # === 1. YOLO26-pose 推理 ===
+            _stage_enter(STAGE_POSE_INFERENCE)
             video_full_path = settings.data_dir / video.storage_path
             if not video_full_path.exists():
                 raise FileNotFoundError(f"视频文件不存在: {video_full_path}")
@@ -309,10 +602,26 @@ def ingest_video(self, video_id: int) -> dict:
             video.width = meta.get("width")
             video.height = meta.get("height")
             db.commit()
+            _stage_exit()
+
+            # 空帧/全零关键点仅告警，不改变评分行为（P1-6 不做产品语义变更）
+            empty_ratio = _empty_keypoints_ratio(result.frames)
+            if empty_ratio is not None and (empty_ratio >= 1.0 or not result.frames):
+                ops_logger.warning(
+                    _event_payload(
+                        "empty_frames",
+                        video_id=video_id,
+                        empty_ratio=empty_ratio,
+                        frame_count=len(result.frames),
+                        detail="未检测到关键点，继续按现有评分逻辑处理",
+                    )
+                )
 
             # === 2. 写入 keypoints 表 ===
+            _stage_enter(STAGE_KEYPOINTS)
             _save_keypoints(db, video_id, result.frames)
             db.commit()
+            _stage_exit()
 
             kpts_seq = result.keypoints_sequence  # (T, 24, 3)
 
@@ -320,34 +629,43 @@ def ingest_video(self, video_id: int) -> dict:
             scene = video.scene
             if scene == "obedience_trial":
                 episodes, signals, scoring_result = _run_obedience_pipeline(
-                    kpts_seq, meta.get("fps", 30.0)
+                    kpts_seq, meta.get("fps", 30.0), progress=_stage_enter
                 )
             elif scene == "puppy_selection":
                 # Phase 1.5/1.6: 物体检测 → 选育信号提取
+                _stage_enter(STAGE_OBJECT_DETECTION)
                 detection_result = _run_object_detection(video_full_path)
+                _stage_exit()
                 episodes, signals, scoring_result = _run_puppy_pipeline(
                     kpts_seq, detection_result,
                     meta.get("fps", 30.0), meta.get("duration_sec", 0.0),
+                    progress=_stage_enter,
                 )
             elif scene == "uspca_patrol":
                 # Phase 2.3/2.6: USPCA 巡逻犬 16 行为 + 5 维评分
                 episodes, signals, scoring_result = _run_uspca_pipeline(
-                    kpts_seq, meta.get("fps", 30.0), meta.get("duration_sec", 0.0)
+                    kpts_seq, meta.get("fps", 30.0), meta.get("duration_sec", 0.0),
+                    progress=_stage_enter,
                 )
             elif scene == "fci_igp":
                 # Phase 3.1e/3.4: FCI-IGP 国际工作犬 22 行为 + 7 维评分
                 episodes, signals, scoring_result = _run_fci_igp_pipeline(
-                    kpts_seq, meta.get("fps", 30.0), meta.get("duration_sec", 0.0)
+                    kpts_seq, meta.get("fps", 30.0), meta.get("duration_sec", 0.0),
+                    progress=_stage_enter,
                 )
             else:
                 raise ValueError(f"未知 scene: {scene}")
+            _stage_exit()
 
             # === 4. 写入 behaviors 表 ===
+            _stage_enter(STAGE_PERSIST)
             if episodes:
                 _save_behaviors(db, video_id, episodes, meta.get("fps", 30.0))
                 db.commit()
+            _stage_exit()
 
             # === 5. 生成 PDF 报告 ===
+            _stage_enter(STAGE_REPORT)
             dog = db.get(Dog, video.dog_id) if video.dog_id else None
             handler = db.get(Handler, video.handler_id) if video.handler_id else None
 
@@ -377,20 +695,37 @@ def ingest_video(self, video_id: int) -> dict:
             reports_dir.mkdir(parents=True, exist_ok=True)
             pdf_path = reports_dir / f"{video_id}.pdf"
             generate_report(report_input, output_path=pdf_path)
+            _stage_exit()
 
             # report_path 存相对 reports_dir 的路径
+            _stage_enter(STAGE_PERSIST)
+            processed_at = datetime.now(timezone.utc)
             video.report_path = f"{video_id}.pdf"
             video.status = VideoStatus.COMPLETED
             video.error_message = None
-            video.processed_at = datetime.now(timezone.utc)
+            video.processed_at = processed_at
+            video.processing_duration_ms = _elapsed_ms(started_at, processed_at)
+            video.processing_stage = STAGE_COMPLETED
+            video.processing_percent = 100.0
             db.commit()
+            _stage_exit()
 
+            duration_ms = video.processing_duration_ms
             logger.info(
                 f"[worker] ingest_video done video_id={video_id} "
                 f"scene={scene} verdict={scoring_result.verdict} "
                 f"score={scoring_result.total_score:.1f} pdf={pdf_path.name} "
                 f"mode={settings.behavior_deploy_mode} "
-                f"review={len(report_input.review_reasons) > 0}"
+                f"review={len(report_input.review_reasons) > 0} "
+                f"duration_ms={duration_ms}"
+            )
+            ops_logger.info(
+                _event_payload(
+                    "ingest_completed", video_id=video_id, scene=scene,
+                    verdict=scoring_result.verdict,
+                    score=round(float(scoring_result.total_score), 2),
+                    duration_ms=duration_ms,
+                )
             )
 
             return {
@@ -403,19 +738,33 @@ def ingest_video(self, video_id: int) -> dict:
             }
 
         except Exception as e:
+            _stage_exit()
             db.rollback()
-            # 重新开 session 标记 FAILED
-            with SyncSessionLocal() as db2:
-                v = db2.get(Video, video_id)
-                if v is not None:
-                    v.status = VideoStatus.FAILED
-                    v.error_message = f"{type(e).__name__}: {e}"
-                    v.processed_at = datetime.now(timezone.utc)
-                    db2.commit()
+            retrying = self.request.retries < self.max_retries
+            code = _classify_error(e, current_stage)
+            # 失败落库 None-safe：写库失败不掩盖原异常
+            _record_failure(video_id, started_at, code, e, retrying=retrying)
             tb = traceback.format_exc()
             logger.error(f"[worker] ingest_video FAILED video_id={video_id}\n{tb}")
-            # 不再重试，让前端看到 FAILED 状态
-            raise self.retry(exc=e, countdown=10) if self.request.retries < self.max_retries else None
+            if retrying:
+                ops_logger.warning(
+                    _event_payload(
+                        "retry_scheduled", video_id=video_id, stage=current_stage,
+                        error_code=code.value, attempt=self.request.retries + 1,
+                        detail=f"{type(e).__name__}: {e}",
+                    )
+                )
+            else:
+                ops_logger.error(
+                    _event_payload(
+                        "ingest_failed", video_id=video_id, stage=current_stage,
+                        error_code=code.value, detail=f"{type(e).__name__}: {e}",
+                    )
+                )
+            # 非最后一次保持 PROCESSING + retrying；最后一次才 FAILED
+            if retrying:
+                raise self.retry(exc=e, countdown=10)
+            return None
 
 
 # ============================================================
@@ -450,7 +799,11 @@ def _save_keypoints(db, video_id: int, frames) -> None:
 # ============================================================
 
 
-def _run_obedience_pipeline(kpts_seq: np.ndarray, fps: float):
+def _run_obedience_pipeline(
+    kpts_seq: np.ndarray,
+    fps: float,
+    progress: Optional[Callable[[str], None]] = None,
+):
     """科目测评: behavior_recognizer → behaviors → signals → 评分.
 
     Phase 3.1e: 双轨部署（ST-GCN+BC 影子 + 规则引擎返回）
@@ -459,6 +812,8 @@ def _run_obedience_pipeline(kpts_seq: np.ndarray, fps: float):
         (episodes, signals, ScoringResult)
     """
     # 1. 行为识别（双轨路由：shadow/vote/primary_stgcn/rule_only）
+    if progress:
+        progress(STAGE_BEHAVIOR_INFERENCE)
     recognizer = _behavior_recognizer_singleton()
     episodes = recognizer.recognize(kpts_seq, fps=fps)
 
@@ -466,6 +821,8 @@ def _run_obedience_pipeline(kpts_seq: np.ndarray, fps: float):
     signals = _signals_from_obedience_episodes(episodes, fps)
 
     # 3. 评分
+    if progress:
+        progress(STAGE_SCORING)
     scoring_engine = ScoringEngine.get(OBEDIENCE_YAML)
     ctx = ScoringContext(signals=signals, scene="obedience_trial")
     result = scoring_engine.evaluate(ctx)
@@ -525,6 +882,7 @@ def _run_uspca_pipeline(
     kpts_seq: np.ndarray,
     fps: float,
     duration_sec: float,
+    progress: Optional[Callable[[str], None]] = None,
 ):
     """USPCA 巡逻犬认证: 16 行为识别 → signals → 5 维评分.
 
@@ -534,6 +892,8 @@ def _run_uspca_pipeline(
         (episodes, signals, ScoringResult)
     """
     # 1. 行为识别（双轨路由）
+    if progress:
+        progress(STAGE_BEHAVIOR_INFERENCE)
     recognizer = _behavior_recognizer_singleton()
     episodes = recognizer.recognize(kpts_seq, fps=fps)
 
@@ -541,6 +901,8 @@ def _run_uspca_pipeline(
     signals = _signals_from_uspca_episodes(episodes, fps, duration_sec)
 
     # 3. USPCA 5 维评分
+    if progress:
+        progress(STAGE_SCORING)
     scoring_engine = ScoringEngine.get(USPCA_YAML)
     ctx = ScoringContext(signals=signals, scene="uspca_patrol")
     result = scoring_engine.evaluate(ctx)
@@ -621,6 +983,7 @@ def _run_fci_igp_pipeline(
     kpts_seq: np.ndarray,
     fps: float,
     duration_sec: float,
+    progress: Optional[Callable[[str], None]] = None,
 ):
     """FCI-IGP 国际工作犬认证: 22 行为识别 → signals → 7 维评分.
 
@@ -631,6 +994,8 @@ def _run_fci_igp_pipeline(
         (episodes, signals, ScoringResult)
     """
     # 1. 行为识别（双轨路由：FCI-IGP 场景优先 ST-GCN+BC 覆盖 22 类）
+    if progress:
+        progress(STAGE_BEHAVIOR_INFERENCE)
     recognizer = _behavior_recognizer_singleton()
     episodes = recognizer.recognize(kpts_seq, fps=fps)
 
@@ -638,6 +1003,8 @@ def _run_fci_igp_pipeline(
     signals = _signals_from_fci_igp_episodes(episodes, fps, duration_sec)
 
     # 3. FCI-IGP 7 维评分
+    if progress:
+        progress(STAGE_SCORING)
     scoring_engine = ScoringEngine.get(FCI_IGP_YAML)
     ctx = ScoringContext(signals=signals, scene="fci_igp")
     result = scoring_engine.evaluate(ctx)
@@ -689,6 +1056,7 @@ def _run_puppy_pipeline(
     detection_result: Optional[VideoDetectionResult],
     fps: float,
     duration_sec: float,
+    progress: Optional[Callable[[str], None]] = None,
 ):
     """幼犬选育: 物体检测 + pose → 9 信号 → 评分.
 
@@ -703,6 +1071,8 @@ def _run_puppy_pipeline(
         - signals: 9 信号字典
         - scoring_result: ScoringResult
     """
+    if progress:
+        progress(STAGE_BEHAVIOR_INFERENCE)
     signals = extract_puppy_signals(
         kpts_seq=kpts_seq,
         detections=detection_result,
@@ -710,6 +1080,8 @@ def _run_puppy_pipeline(
         duration_sec=duration_sec,
     )
 
+    if progress:
+        progress(STAGE_SCORING)
     scoring_engine = ScoringEngine.get(PUPPY_YAML)
     ctx = ScoringContext(signals=signals, scene="puppy_selection")
     result = scoring_engine.evaluate(ctx)
