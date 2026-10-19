@@ -181,18 +181,19 @@ if ($alembicCode -ne 0) {
 if (-not $SkipCelery) {
     Write-Step '4. Celery Worker（pool=solo，Windows）'
     $celeryLog = Join-Path $LogDir 'celery.log'
-    Start-Process -FilePath $VenvPython `
+    # 捕获 PID 做存活判断（对抗验收发现：原实现按命令行 grep，清屏环境下查不到 = 假阴性）
+    $celeryProc = Start-Process -FilePath $VenvPython -PassThru `
         -ArgumentList '-m', 'celery', '-A', 'backend.workers.celery_app', 'worker', '--loglevel=info', '--pool=solo' `
         -WorkingDirectory $Root -WindowStyle Hidden -RedirectStandardOutput $celeryLog -RedirectStandardError $celeryLog
-    Start-Sleep -Seconds 3
-    $celeryAlive = Get-CimInstance Win32_Process -Filter "Name='python.exe'" |
-        Where-Object { $_.CommandLine -like '*celery*' }
+    Start-Sleep -Seconds 4
+    $celeryAlive = $celeryProc -and -not $celeryProc.HasExited
     if ($celeryAlive) {
-        Write-Ok "Celery 已启动（日志: $celeryLog）"
-        Save-Ledger 'celery' $true 'started'
+        Write-Ok "Celery 已启动（PID=$($celeryProc.Id)，日志: $celeryLog）"
+        Save-Ledger 'celery' $true "started pid=$($celeryProc.Id)"
     } else {
-        Write-Warn "Celery 进程未确认存活（3s 内）—— 见 $celeryLog"
-        Save-Ledger 'celery' $false 'process not confirmed'
+        $tail = (Get-Content $celeryLog -Tail 3 -ErrorAction SilentlyContinue) -join ' | '
+        Write-Warn "Celery 进程启动后 4s 内退出 —— 见 $celeryLog；尾行: $tail"
+        Save-Ledger 'celery' $false "exited early: $tail"
     }
 } else {
     Write-Warn '按参数跳过 Celery'
