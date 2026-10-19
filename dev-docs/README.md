@@ -17,6 +17,7 @@
 | `architecture.md` | 项目架构（拓扑、owner map、模块边界） | ✅ v1.1（2026-08-01 同步 Phase 2/3 实际结构） |
 | `runtime.md` | 运行时基线（包管理器、版本、启动命令） | ✅ Phase 0 已建立（v1.6，631 单元测试新鲜验证 + onnxruntime 修复 + FastAPI 204 兼容性修复 + 3.7 训练历史对比端到端 41/41 通过） |
 | `stage-plan.md` | 大阶段计划（Phase 0-4 + P0） | ✅（当前 Truth） |
+| `production-readiness-gap-plan.md` | **生产可用性差距整改方案**（P0/P1/P2 + K9-Bench-v0；2026-09-19 用户目标：生产可用） | ✅ v1.0（当前产品线执行路线图） |
 
 ### 阶段 truth
 | 文档 | 用途 | 状态 |

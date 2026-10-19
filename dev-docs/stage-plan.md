@@ -15,6 +15,7 @@
 | P0 数据解阻 | ➡️ 已移交 psd-framework | 3-4 周 | SMQ+AimCLR+TCL+姚青 JIA 迁移 → 方法论管线 + ≥85% + 论文初稿（2026-08-23 起在新仓库推进，ADR 0013） |
 | 论文投稿 | ⏳ 待 P0 | P0+4-6 周 | Pattern Recognition / IJCV 投稿 + 开源代码 |
 | Phase 4 前沿与产品扩展 | **🔄 并行实施中** | 与 P0 并行/后置 | LLM 解释器 / Transformer-Mamba / RL 按需 / 后续产品化 |
+| **生产可用整改** | 📋 **计划已立** | 见 gap-plan | 用户目标 2026-09-19：**生产可用（含真实识别精度）**；路线图 `production-readiness-gap-plan.md`（P0 底座 → P1 数据飞轮过线 → P2 发布） |
 
 ## 2. 完整项目方向（2026-08-19 规划）
 
