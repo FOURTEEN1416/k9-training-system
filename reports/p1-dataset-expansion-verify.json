@@ -1,0 +1,307 @@
+{
+ "datasets_root": "D:\\Desktop\\PR论文\\datasets",
+ "mammalnet": {
+  "files": 752,
+  "videos": 752,
+  "bytes": 1542535302,
+  "duration_s_total": 24146.9,
+  "duration_s_mean": 32.11,
+  "resolutions": [
+   "1270x720",
+   "1280x406",
+   "1280x720",
+   "160x112",
+   "160x120",
+   "176x132",
+   "176x144",
+   "192x144",
+   "192x352",
+   "198x360",
+   "200x360",
+   "202x360",
+   "204x360",
+   "206x360",
+   "224x400",
+   "240x176",
+   "240x320",
+   "240x360",
+   "270x360",
+   "270x480",
+   "288x360",
+   "320x240",
+   "324x360",
+   "350x720",
+   "352x264",
+   "352x288",
+   "352x640",
+   "360x360",
+   "382x720",
+   "384x288",
+   "398x224",
+   "400x224",
+   "400x720",
+   "404x720",
+   "406x720",
+   "408x720",
+   "422x360",
+   "432x720",
+   "474x360",
+   "480x240",
+   "480x270",
+   "480x320",
+   "480x360",
+   "480x720",
+   "534x360",
+   "540x360",
+   "544x360",
+   "568x320",
+   "576x720",
+   "578x720",
+   "600x360",
+   "604x720",
+   "626x360",
+   "636x360",
+   "640x352",
+   "640x356",
+   "640x360",
+   "720x720"
+  ],
+  "glb_count": 0,
+  "by_split": {
+   "test": {
+    "files": 149,
+    "clips": 143,
+    "bytes": 327308229,
+    "duration_s": 4974.9
+   },
+   "train": {
+    "files": 548,
+    "clips": 512,
+    "bytes": 1087924451,
+    "duration_s": 17356.2
+   },
+   "val": {
+    "files": 55,
+    "clips": 54,
+    "bytes": 127302622,
+    "duration_s": 1815.8
+   }
+  },
+  "by_breed": {
+   "bulldog": 253,
+   "eskimo dog": 11,
+   "foxhound": 3,
+   "hound": 66,
+   "husky dog": 31,
+   "malamute": 120,
+   "shepherd dog": 27,
+   "terrier": 241
+  },
+  "clips": 709,
+  "clip_duration_s_total": 24146.9
+ },
+ "dogmo": {
+  "files": 49,
+  "videos": 47,
+  "bytes": 227078945,
+  "duration_s_total": 427.1,
+  "duration_s_mean": 9.09,
+  "resolutions": [
+   "1920x1080",
+   "3840x1088",
+   "4800x1088",
+   "640x360"
+  ],
+  "glb_count": 2
+ },
+ "checks": [
+  {
+   "name": "mammalnet/root",
+   "ok": true,
+   "hard": true,
+   "detail": "D:\\Desktop\\PR论文\\datasets\\mammalnet_canine"
+  },
+  {
+   "name": "mammalnet/manifest",
+   "ok": true,
+   "hard": true,
+   "detail": "D:\\Desktop\\PR论文\\datasets\\mammalnet_canine\\manifest.json"
+  },
+  {
+   "name": "mammalnet/manifest_count",
+   "ok": true,
+   "hard": true,
+   "detail": "752 entries"
+  },
+  {
+   "name": "mammalnet/files_present",
+   "ok": true,
+   "hard": true,
+   "detail": "missing=0 []"
+  },
+  {
+   "name": "mammalnet/size_match",
+   "ok": true,
+   "hard": true,
+   "detail": "mismatch=0 []"
+  },
+  {
+   "name": "mammalnet/sha256",
+   "ok": true,
+   "hard": true,
+   "detail": "bad=0 []"
+  },
+  {
+   "name": "mammalnet/budget",
+   "ok": true,
+   "hard": true,
+   "detail": "1.543 GB <= 2.000 GB"
+  },
+  {
+   "name": "mammalnet/decodable",
+   "ok": true,
+   "hard": true,
+   "detail": "videos=752 undecodable=0 []"
+  },
+  {
+   "name": "mammalnet/duration",
+   "ok": true,
+   "hard": true,
+   "detail": "total=24146.9s"
+  },
+  {
+   "name": "mammalnet/annotations_json",
+   "ok": true,
+   "hard": true,
+   "detail": "D:\\Desktop\\PR论文\\datasets\\mammalnet_canine\\annotations\\detection_annotations.json"
+  },
+  {
+   "name": "mammalnet/annotation_count",
+   "ok": true,
+   "hard": true,
+   "detail": "18346 videos (expect 18346)"
+  },
+  {
+   "name": "mammalnet/domestic_filter",
+   "ok": true,
+   "hard": true,
+   "detail": "1129 domestic clips (expect 1129)"
+  },
+  {
+   "name": "mammalnet/taxonomy",
+   "ok": true,
+   "hard": true,
+   "detail": "D:\\Desktop\\PR论文\\datasets\\mammalnet_canine\\annotations\\taxonomy.txt"
+  },
+  {
+   "name": "mammalnet/canidae_rows",
+   "ok": true,
+   "hard": true,
+   "detail": "8 canidae rows"
+  },
+  {
+   "name": "mammalnet/breed_coverage",
+   "ok": true,
+   "hard": true,
+   "detail": "['bulldog', 'eskimo dog', 'foxhound', 'hound', 'husky dog', 'malamute', 'shepherd dog', 'terrier']"
+  },
+  {
+   "name": "mammalnet/split_coverage",
+   "ok": true,
+   "hard": true,
+   "detail": "['test', 'train', 'val']"
+  },
+  {
+   "name": "mammalnet/genus_canis",
+   "ok": true,
+   "hard": true,
+   "detail": "non-canis=0"
+  },
+  {
+   "name": "mammalnet/no_wild",
+   "ok": true,
+   "hard": true,
+   "detail": "wild=0"
+  },
+  {
+   "name": "mammalnet/clip_probe",
+   "ok": true,
+   "hard": true,
+   "detail": "missing clip metadata=0"
+  },
+  {
+   "name": "dogmo/root",
+   "ok": true,
+   "hard": true,
+   "detail": "D:\\Desktop\\PR论文\\datasets\\dogmo_preview"
+  },
+  {
+   "name": "dogmo/manifest",
+   "ok": true,
+   "hard": true,
+   "detail": "D:\\Desktop\\PR论文\\datasets\\dogmo_preview\\manifest.json"
+  },
+  {
+   "name": "dogmo/manifest_count",
+   "ok": true,
+   "hard": true,
+   "detail": "49 entries"
+  },
+  {
+   "name": "dogmo/files_present",
+   "ok": true,
+   "hard": true,
+   "detail": "missing=0 []"
+  },
+  {
+   "name": "dogmo/size_match",
+   "ok": true,
+   "hard": true,
+   "detail": "mismatch=0 []"
+  },
+  {
+   "name": "dogmo/sha256",
+   "ok": true,
+   "hard": true,
+   "detail": "bad=0 []"
+  },
+  {
+   "name": "dogmo/budget",
+   "ok": true,
+   "hard": true,
+   "detail": "0.227 GB <= 2.000 GB"
+  },
+  {
+   "name": "dogmo/glb_magic",
+   "ok": true,
+   "hard": true,
+   "detail": "glbs=2 bad=[]"
+  },
+  {
+   "name": "dogmo/decodable",
+   "ok": true,
+   "hard": true,
+   "detail": "videos=47 undecodable=0 []"
+  },
+  {
+   "name": "dogmo/duration",
+   "ok": true,
+   "hard": true,
+   "detail": "total=427.1s"
+  },
+  {
+   "name": "dogmo/preview_kinds",
+   "ok": true,
+   "hard": true,
+   "detail": "{'glb': 2, 'dataset': 20, 'dataset_pre': 20, 'results': 7}"
+  },
+  {
+   "name": "dogmo/preview_only",
+   "ok": true,
+   "hard": true,
+   "detail": "49 assets (official corpus is 1.2k clips)"
+  }
+ ],
+ "elapsed_s": 32.6,
+ "passed": true
+}

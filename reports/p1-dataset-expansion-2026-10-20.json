@@ -1,0 +1,202 @@
+{
+ "report": "P1 dataset expansion — MammalNet / DogMo / DogCentric",
+ "date": "2026-10-20",
+ "owner": "数据实施员",
+ "verify_command": "D:/Desktop/PR论文/k9-training-system/.venv/Scripts/python.exe scripts/verify_dataset_expansion.py",
+ "verify_result": {
+  "exit_code": 0,
+  "checks_total": 31,
+  "checks_passed": 31,
+  "elapsed_s": 22.6,
+  "report": "reports/p1-dataset-expansion-verify.json"
+ },
+ "sources": {
+  "mammalnet": {
+   "available": true,
+   "status": "delivered_subset",
+   "repo": "https://github.com/Vision-CAIR/MammalNet",
+   "citation": "Chen et al., MammalNet, CVPR 2023, pp.13052-13061",
+   "annotation_url": "https://mammalnet.s3.amazonaws.com/annotation.tar",
+   "annotation_bytes": 1512456,
+   "annotation_md5": "baeeed5de04d69f91bd621ec7dc52d92",
+   "video_url_pattern": "https://mammalnet.s3.amazonaws.com/trimmed_videos/<id>[_n].mp4",
+   "readme_tarball_status": "403 (trimmed_videos.tar.gz does not exist; bucket has trimmed_video.tar.gz, 158,954,389,396 B)",
+   "license": "annotations CC BY; videos YouTube-sourced, authors state they do not distribute videos -> research use only, no redistribution",
+   "annotation_stats": {
+    "videos": 18346,
+    "domestic_clips": 1129,
+    "domestic_keywords": {
+     "bulldog": 384,
+     "eskimo dog": 17,
+     "foxhound": 6,
+     "hound": 109,
+     "husky dog": 43,
+     "malamute": 177,
+     "shepherd dog": 36,
+     "terrier": 357
+    },
+    "domestic_annotation_duration_hours": 28.43,
+    "domestic_segment_span_hours": 23.19,
+    "taxonomy_rows": 173,
+    "taxonomy_families": 71,
+    "taxonomy_orders": 19,
+    "readme_claims": "69 families / 17 orders (inconsistent)"
+   },
+   "full_domestic_subset": {
+    "clips": 1129,
+    "files": 1198,
+    "bytes": 9292730066,
+    "hours": 28.43
+   },
+   "delivered": {
+    "path": "D:\\Desktop\\PR论文\\datasets\\mammalnet_canine",
+    "files": 752,
+    "clips": 709,
+    "bytes": 1542535302,
+    "clip_hours_ffprobe": 6.71,
+    "fraction_of_full_bytes": 0.166,
+    "by_split": {
+     "test": {
+      "files": 149,
+      "clips": 143,
+      "bytes": 327308229,
+      "duration_s": 4974.9
+     },
+     "train": {
+      "files": 548,
+      "clips": 512,
+      "bytes": 1087924451,
+      "duration_s": 17356.2
+     },
+     "val": {
+      "files": 55,
+      "clips": 54,
+      "bytes": 127302622,
+      "duration_s": 1815.8
+     }
+    },
+    "by_breed": {
+     "bulldog": 253,
+     "eskimo dog": 11,
+     "foxhound": 3,
+     "hound": 66,
+     "husky dog": 31,
+     "malamute": 120,
+     "shepherd dog": 27,
+     "terrier": 241
+    },
+    "behaviors_clip_level": {
+     "sleeps": 260,
+     "fights against other animals": 99,
+     "nurses or breastfeeds its baby": 84,
+     "drinks water": 80,
+     "hunts other animals": 66,
+     "eats food": 60,
+     "mates with other animals": 44,
+     "pees": 27,
+     "poops": 25,
+     "gives birth to a baby": 13,
+     "vomits": 5,
+     "grooms/cleans itself or other animal": 2
+    },
+    "resolutions_distinct": 58,
+    "integrity": {
+     "sha256_ok": 752,
+     "ffprobe_ok": 752,
+     "md5_matches_s3_etag": true,
+     "etag_single_part_files": 748,
+     "etag_multipart_files": 4,
+     "note": "4 multipart ETags contain '-' and cannot be compared to plain MD5; sha256 + ffprobe were used instead"
+    }
+   },
+   "throughput_measured": {
+    "single_stream_KBps": 19.9,
+    "32_way_KBps": 242,
+    "128_way_KBps": 1173,
+    "256_way_KBps": 2609,
+    "768_way_KBps": 1932,
+    "actual_download_KBps": 4627
+   },
+   "recovery_command": "python scripts/download_mammalnet_canine.py --dataset mammalnet --max-gb 9.3"
+  },
+  "dogmo": {
+   "available": false,
+   "status": "preview_only",
+   "paper": "arXiv 2510.24117",
+   "page": "https://pie-lab.cn/DogMo/",
+   "reason": "no public dataset channel: no download link, no request form, no data-availability statement; GitHub BIT-PIE/DogMo has page assets only",
+   "license": "dataset terms unstated; site footer CC BY-SA 4.0 covers the site only",
+   "official_corpus_per_paper": {
+    "clips": 1200,
+    "dogs": 10,
+    "actions": 11,
+    "minutes": 220,
+    "frames_over": 1000000,
+    "cameras": "5 x ORBBEC Astra 2"
+   },
+   "delivered": {
+    "path": "D:\\Desktop\\PR论文\\datasets\\dogmo_preview",
+    "assets": 49,
+    "bytes": 227078945,
+    "videos": 47,
+    "video_seconds": 427.1,
+    "by_kind": {
+     "dataset": {
+      "files": 20,
+      "bytes": 44118104
+     },
+     "dataset_pre": {
+      "files": 20,
+      "bytes": 143378597
+     },
+     "results": {
+      "files": 7,
+      "bytes": 21340912
+     },
+     "glb": {
+      "files": 2,
+      "bytes": 18241332
+     }
+    },
+    "usability": "qualitative reference only; NOT a training/benchmark set"
+   },
+   "pitfall": "static/glbs/*.glb HEAD/Range reports compressed entity length (6,772,757 B) while plain GET returns 14,968,128 B with glTF magic; must use plain GET"
+  },
+  "dogcentric": {
+   "available": false,
+   "status": "blocked_transport",
+   "page": "http://robotics.ait.kyushu-u.ac.jp/~yumi/db/first_dog.html",
+   "channel": "ftp://robotics-ftp.ait.kyushu-u.ac.jp/dogcentric/",
+   "evidence": "curl ftp 15 s timeout exit 124 (re-measured 2026-10-20); Kaggle/HF/OpenAIRE/Wayback indexes empty",
+   "bytes_delivered": 0,
+   "delivered": null
+  }
+ },
+ "artifacts": {
+  "scripts": [
+   "scripts/download_mammalnet_canine.py",
+   "scripts/verify_dataset_expansion.py"
+  ],
+  "docs": [
+   "docs/data-sources.md"
+  ],
+  "reports": [
+   "reports/p1-dataset-expansion-2026-10-20.md",
+   "reports/p1-dataset-expansion-2026-10-20.json",
+   "reports/p1-dataset-expansion-verify.json"
+  ],
+  "datasets": [
+   "D:\\Desktop\\PR论文\\datasets\\mammalnet_canine",
+   "D:\\Desktop\\PR论文\\datasets\\dogmo_preview"
+  ]
+ },
+ "limitations": [
+  "MammalNet subset is 16.6% of the domestic-dog byte total (2 GB/dataset budget cap); stratified sample, not the full subset",
+  "annotation duration is source-YouTube duration, not trimmed clip duration; manifest stores ffprobe clip.duration_s separately",
+  "behaviour labels are clip-level intervals (mean 1.06, max 4 per clip), not frame-level GT",
+  "videos are YouTube-sourced; research use only, no redistribution",
+  "DogMo delivers 227 MB of preview assets only; no dataset exists publicly",
+  "DogCentric delivered 0 bytes (FTP unreachable)",
+  "full pytest not run (out of scope); only targeted verifier + backend import check were executed"
+ ]
+}
