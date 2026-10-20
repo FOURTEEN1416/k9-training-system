@@ -1,0 +1,786 @@
+{
+ "protocol": "P1-SYNTH-ROUTE-2026-10-20",
+ "generated_at_utc": "2026-10-20T08:33:15.010481+00:00",
+ "duration_sec": 5.271808,
+ "command": "scripts/eval_synth_motion_line.py",
+ "environment": {
+  "python": "3.12.12",
+  "numpy": "2.5.1",
+  "torch": "2.11.0+cu128",
+  "cuda_available": true
+ },
+ "acquisition": [
+  {
+   "target": "AniMo (CVPR2025)",
+   "available": "code only",
+   "evidence": "git clone 成功（60 files, 736KB）；utils/paramUtil.py 实测 30 行 offsets；LICENSE 存在=False；仓库内 checkpoint 文件=False",
+   "action": "仅作设计参考（359 维布局 / RVQ→base→residual 结构），不训练"
+  },
+  {
+   "target": "X-MoGen (AAAI2026)",
+   "available": "no",
+   "evidence": "侦察实测：code/xmogen/README.md = 0 字节；仓库 13 条文件、无权重、无 LICENSE",
+   "action": "零投入"
+  },
+  {
+   "target": "OmniMotionGPT (CVPR2024)",
+   "available": "code + data (MIT)",
+   "evidence": "codeload 81,414,958 B 解包成功；LICENSE 首行='MIT License'；dog 子集 65 clip / 192 caption / 2624 帧实测可读；ylib 存在=False；checkpoint=[]",
+   "action": "数据归档为 omni_dog/；不训练（无 ckpt + 缺 ylib + 硬编码 23*6）"
+  },
+  {
+   "target": "Kirin / AiM3D",
+   "available": "partial (action only)",
+   "evidence": "侦察实测：代码未发布；dog.zip 24.5GB 中 npy 仅 ~123MB 压缩，但全部 caption 入口 404",
+   "action": "本轮不下载（磁盘预算与文本缺口），仅记录为未来 Range 抽取候选"
+  },
+  {
+   "target": "syn_v2 (psd-framework)",
+   "available": "yes (in-repo)",
+   "evidence": "本轮实测：fit_from_reference 返回 keys 无类条件字段；同 seed 下 track/jump 输出 max|Δ|=0.0",
+   "action": "作为对照基线；本线路单独实现类条件生成器，不修改对方仓库"
+  }
+ ],
+ "reference": {
+  "path": "D:\\Desktop\\PR论文\\psd-framework\\runs\\public_real_dataset\\full12v2_T30.pkl",
+  "sha256": "59723652616051cc5f23405b7a6e7d53f555527af779e9e35c40a74f29bb5705",
+  "n_clips": 352,
+  "n_train": 256,
+  "n_val": 96,
+  "video_overlap_train_val": 0,
+  "classes_in_reference": [
+   "apprehend",
+   "bite",
+   "jump",
+   "retrieve",
+   "sit",
+   "stay",
+   "track",
+   "watch"
+  ],
+  "normalizer_max_abs_diff_vs_backend": 0.0,
+  "dead_joint_zero_rate": 1.0
+ },
+ "generator": {
+  "name": "k9_synth_v3",
+  "type": "class-conditional PCA relative-pose + empirical frame-delta bootstrap + bone-length projection",
+  "pca_dim_per_class": {
+   "stay": 3,
+   "bite": 2,
+   "track": 3,
+   "apprehend": 3,
+   "watch": 3,
+   "retrieve": 3,
+   "jump": 3
+  },
+  "text_conditioning": "lexical keyword mapping (not learned)",
+  "samples_per_class": 40,
+  "seed": 20261020
+ },
+ "metrics": {
+  "nearest_centroid": {
+   "real_val": {
+    "accuracy": 0.19148936170212766,
+    "n": 94,
+    "chance": 0.14285714285714285,
+    "confusion": {
+     "3->3": 5,
+     "3->6": 1,
+     "3->7": 1,
+     "3->9": 1,
+     "3->10": 1,
+     "5->6": 2,
+     "5->9": 1,
+     "5->10": 7,
+     "6->3": 11,
+     "6->5": 3,
+     "6->6": 3,
+     "6->7": 1,
+     "6->8": 1,
+     "6->9": 14,
+     "7->3": 1,
+     "7->7": 1,
+     "7->8": 3,
+     "7->10": 1,
+     "8->3": 10,
+     "8->6": 2,
+     "8->7": 1,
+     "8->8": 3,
+     "8->9": 3,
+     "8->10": 2,
+     "9->6": 1,
+     "9->9": 1,
+     "9->10": 2,
+     "10->3": 1,
+     "10->6": 1,
+     "10->7": 2,
+     "10->9": 2,
+     "10->10": 5
+    },
+    "classes": [
+     3,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10
+    ]
+   },
+   "ours": {
+    "accuracy": 0.5785714285714286,
+    "n": 280,
+    "chance": 0.14285714285714285,
+    "confusion": {
+     "3->3": 24,
+     "3->6": 3,
+     "3->7": 1,
+     "3->8": 5,
+     "3->9": 7,
+     "5->3": 2,
+     "5->5": 13,
+     "5->6": 8,
+     "5->7": 10,
+     "5->8": 1,
+     "5->9": 5,
+     "5->10": 1,
+     "6->5": 2,
+     "6->6": 22,
+     "6->7": 2,
+     "6->8": 2,
+     "6->9": 2,
+     "6->10": 10,
+     "7->7": 37,
+     "7->8": 3,
+     "8->3": 3,
+     "8->5": 9,
+     "8->6": 8,
+     "8->7": 2,
+     "8->8": 9,
+     "8->9": 8,
+     "8->10": 1,
+     "9->6": 1,
+     "9->9": 39,
+     "10->5": 3,
+     "10->6": 8,
+     "10->7": 10,
+     "10->8": 1,
+     "10->10": 18
+    },
+    "classes": [
+     3,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10
+    ]
+   },
+   "syn_v2": {
+    "accuracy": 0.14285714285714285,
+    "n": 280,
+    "chance": 0.14285714285714285,
+    "confusion": {
+     "3->6": 1,
+     "3->10": 39,
+     "5->6": 1,
+     "5->10": 39,
+     "6->10": 40,
+     "7->10": 40,
+     "8->10": 40,
+     "9->6": 1,
+     "9->10": 39,
+     "10->10": 40
+    },
+    "classes": [
+     3,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10
+    ]
+   }
+  },
+  "fidelity_per_class": {
+   "stay": {
+    "ours": {
+     "speed_ks_mean": 0.42302203065134103,
+     "speed_l1_mean": 0.5239846743295019,
+     "speed_mean_gen": 0.07397850088751208,
+     "speed_mean_real": 0.06640035115826295,
+     "speed_ratio": 1.114128157412705,
+     "pose_mean_err_rel": 2.091914076424884,
+     "bone_cv_gen": 0.44278860036263945,
+     "bone_cv_real": 0.5907965709154853,
+     "n_gen": 40,
+     "n_real": 9
+    },
+    "syn_v2": {
+     "speed_ks_mean": 0.7436494252873563,
+     "speed_l1_mean": 1.523342911877395,
+     "speed_mean_gen": 0.19682679888380522,
+     "speed_mean_real": 0.06640035115826295,
+     "speed_ratio": 2.964243342850331,
+     "pose_mean_err_rel": 1.590194401843407,
+     "bone_cv_gen": 0.5372375443215636,
+     "bone_cv_real": 0.5907965709154853,
+     "n_gen": 40,
+     "n_real": 9
+    }
+   },
+   "bite": {
+    "ours": {
+     "speed_ks_mean": 0.36431034482758623,
+     "speed_l1_mean": 0.7031896551724139,
+     "speed_mean_gen": 0.14785609690258275,
+     "speed_mean_real": 0.30328099432862476,
+     "speed_ratio": 0.48752180211586554,
+     "pose_mean_err_rel": 7.884434244467314,
+     "bone_cv_gen": 0.47392628606777165,
+     "bone_cv_real": 0.490662905969852,
+     "n_gen": 40,
+     "n_real": 10
+    },
+    "syn_v2": {
+     "speed_ks_mean": 0.21982758620689657,
+     "speed_l1_mean": 0.5782758620689655,
+     "speed_mean_gen": 0.19756084211298652,
+     "speed_mean_real": 0.30328099432862476,
+     "speed_ratio": 0.6514118781176128,
+     "pose_mean_err_rel": 7.319848792748365,
+     "bone_cv_gen": 0.5424534861814733,
+     "bone_cv_real": 0.490662905969852,
+     "n_gen": 40,
+     "n_real": 10
+    }
+   },
+   "track": {
+    "ours": {
+     "speed_ks_mean": 0.41950235109717876,
+     "speed_l1_mean": 0.8097831765935213,
+     "speed_mean_gen": 0.22155527618040816,
+     "speed_mean_real": 0.08330398937003218,
+     "speed_ratio": 2.659599832563488,
+     "pose_mean_err_rel": 3.5530315370127505,
+     "bone_cv_gen": 0.49283991660916493,
+     "bone_cv_real": 0.5237824261296116,
+     "n_gen": 40,
+     "n_real": 33
+    },
+    "syn_v2": {
+     "speed_ks_mean": 0.575141065830721,
+     "speed_l1_mean": 1.1504858934169278,
+     "speed_mean_gen": 0.1972864187069363,
+     "speed_mean_real": 0.08330398937003218,
+     "speed_ratio": 2.368270957956165,
+     "pose_mean_err_rel": 2.3716070651057826,
+     "bone_cv_gen": 0.5399282511791892,
+     "bone_cv_real": 0.5237824261296116,
+     "n_gen": 40,
+     "n_real": 33
+    }
+   },
+   "apprehend": {
+    "ours": {
+     "speed_ks_mean": 0.468735632183908,
+     "speed_l1_mean": 0.949971264367816,
+     "speed_mean_gen": 0.20130234794748775,
+     "speed_mean_real": 0.12888807271845343,
+     "speed_ratio": 1.5618384517799255,
+     "pose_mean_err_rel": 6.869562151289423,
+     "bone_cv_gen": 0.48841296102700565,
+     "bone_cv_real": 0.6892019218450273,
+     "n_gen": 40,
+     "n_real": 6
+    },
+    "syn_v2": {
+     "speed_ks_mean": 0.6514224137931035,
+     "speed_l1_mean": 1.4187356321839082,
+     "speed_mean_gen": 0.1968257998860992,
+     "speed_mean_real": 0.12888807271845343,
+     "speed_ratio": 1.5271063934368136,
+     "pose_mean_err_rel": 7.686427345880647,
+     "bone_cv_gen": 0.525400402285182,
+     "bone_cv_real": 0.6892019218450273,
+     "n_gen": 40,
+     "n_real": 6
+    }
+   },
+   "watch": {
+    "ours": {
+     "speed_ks_mean": 0.40954022988505745,
+     "speed_l1_mean": 0.7335591133004926,
+     "speed_mean_gen": 0.12592861857903564,
+     "speed_mean_real": 0.08737849849525851,
+     "speed_ratio": 1.4411854260218149,
+     "pose_mean_err_rel": 0.9287722295359169,
+     "bone_cv_gen": 0.5090573250596464,
+     "bone_cv_real": 0.48629513293488624,
+     "n_gen": 40,
+     "n_real": 21
+    },
+    "syn_v2": {
+     "speed_ks_mean": 0.6351662561576353,
+     "speed_l1_mean": 1.3161494252873567,
+     "speed_mean_gen": 0.19874766835547117,
+     "speed_mean_real": 0.08737849849525851,
+     "speed_ratio": 2.2745603526965614,
+     "pose_mean_err_rel": 0.9355573267697971,
+     "bone_cv_gen": 0.5228596172178135,
+     "bone_cv_real": 0.48629513293488624,
+     "n_gen": 40,
+     "n_real": 21
+    }
+   },
+   "retrieve": {
+    "ours": {
+     "speed_ks_mean": 0.21737068965517242,
+     "speed_l1_mean": 0.6237068965517242,
+     "speed_mean_gen": 0.1448485324523013,
+     "speed_mean_real": 0.21303053775403674,
+     "speed_ratio": 0.6799425752731385,
+     "pose_mean_err_rel": 5.958062734643943,
+     "bone_cv_gen": 0.40530370887810374,
+     "bone_cv_real": 0.5281735081781502,
+     "n_gen": 40,
+     "n_real": 4
+    },
+    "syn_v2": {
+     "speed_ks_mean": 0.36323275862068966,
+     "speed_l1_mean": 0.9825862068965516,
+     "speed_mean_gen": 0.19840891887957438,
+     "speed_mean_real": 0.21303053775403674,
+     "speed_ratio": 0.9313637423600537,
+     "pose_mean_err_rel": 2.412742141168096,
+     "bone_cv_gen": 0.5260684836075249,
+     "bone_cv_real": 0.5281735081781502,
+     "n_gen": 40,
+     "n_real": 4
+    }
+   },
+   "jump": {
+    "ours": {
+     "speed_ks_mean": 0.27121081504702194,
+     "speed_l1_mean": 0.47678683385579934,
+     "speed_mean_gen": 0.20385207017094018,
+     "speed_mean_real": 0.14466708048541785,
+     "speed_ratio": 1.409111661664369,
+     "pose_mean_err_rel": 4.968415770395832,
+     "bone_cv_gen": 0.5209667770999589,
+     "bone_cv_real": 0.8400532684063247,
+     "n_gen": 40,
+     "n_real": 11
+    },
+    "syn_v2": {
+     "speed_ks_mean": 0.41218260188087774,
+     "speed_l1_mean": 0.9142084639498431,
+     "speed_mean_gen": 0.1993865729295945,
+     "speed_mean_real": 0.14466708048541785,
+     "speed_ratio": 1.3782442575088274,
+     "pose_mean_err_rel": 5.130692719999838,
+     "bone_cv_gen": 0.5343287249166837,
+     "bone_cv_real": 0.8400532684063247,
+     "n_gen": 40,
+     "n_real": 11
+    }
+   }
+  },
+  "fidelity_aggregate": {
+   "ours": {
+    "speed_ks_mean": 0.3676702990496094,
+    "speed_l1_mean": 0.6887116591673241,
+    "speed_mean_gen": 0.15990306330289542,
+    "speed_mean_real": 0.14670707490144091,
+    "speed_ratio": 1.336189700975901,
+    "pose_mean_err_rel": 4.60774182053858,
+    "bone_cv_gen": 0.47618508215775585
+   },
+   "syn_v2": {
+    "speed_ks_mean": 0.5143745868253258,
+    "speed_l1_mean": 1.1262549136687068,
+    "speed_mean_gen": 0.19786328853635246,
+    "speed_mean_real": 0.14670707490144091,
+    "speed_ratio": 1.7278858464180522,
+    "pose_mean_err_rel": 3.921009970502276,
+    "bone_cv_gen": 0.53261092995849
+   }
+  },
+  "real_split_half_floor": {
+   "speed_ks_mean": 0.13125978209702607,
+   "speed_l1_mean": 0.26411085849016885,
+   "speed_mean_gen": 0.1259985549058668,
+   "speed_mean_real": 0.12452818321705131,
+   "speed_ratio": 0.9745100565189839,
+   "pose_mean_err_rel": 1.2851376096513334,
+   "bone_cv_gen": 0.6009753887827773,
+   "bone_cv_real": 0.6210438107364712
+  },
+  "crossfit": {
+   "primary_metric": true,
+   "note": "每类训练 clip 随机 2 折，A 拟合 → B 折算，交换再算；无验证集参与",
+   "per_class": {
+    "stay": [
+     {
+      "speed_ks_mean": 0.5732095490716181,
+      "speed_l1_mean": 0.789920424403183,
+      "speed_mean_gen": 0.08923541307443066,
+      "speed_mean_real": 0.03740832697314824,
+      "speed_ratio": 2.385442501571481,
+      "pose_mean_err_rel": 3.475729933990469,
+      "bone_cv_gen": 0.45124209217844957,
+      "bone_cv_real": 0.5663995590826528,
+      "n_gen": 13,
+      "n_real": 13,
+      "n_fit": 12,
+      "n_held": 13
+     },
+     {
+      "speed_ks_mean": 0.13979885057471267,
+      "speed_l1_mean": 0.25229885057471263,
+      "speed_mean_gen": 0.053276100002988616,
+      "speed_mean_real": 0.07263546979842135,
+      "speed_ratio": 0.7334722299014649,
+      "pose_mean_err_rel": 4.082728041787982,
+      "bone_cv_gen": 0.3323039042676608,
+      "bone_cv_real": 0.6025512302344396,
+      "n_gen": 12,
+      "n_real": 12,
+      "n_fit": 13,
+      "n_held": 12
+     }
+    ],
+    "bite": [
+     {
+      "speed_ks_mean": 0.3610837438423645,
+      "speed_l1_mean": 0.6822660098522166,
+      "speed_mean_gen": 0.192947087038787,
+      "speed_mean_real": 0.09387077628093955,
+      "speed_ratio": 2.0554542604540584,
+      "pose_mean_err_rel": 14.014097550013524,
+      "bone_cv_gen": 0.45485120912262594,
+      "bone_cv_real": 0.8770059294293148,
+      "n_gen": 7,
+      "n_real": 7,
+      "n_fit": 7,
+      "n_held": 7
+     },
+     {
+      "speed_ks_mean": 0.1931034482758621,
+      "speed_l1_mean": 0.3650246305418719,
+      "speed_mean_gen": 0.10981618953752643,
+      "speed_mean_real": 0.1437355438912195,
+      "speed_ratio": 0.764015542464823,
+      "pose_mean_err_rel": 4.613953398008247,
+      "bone_cv_gen": 0.45378301656556846,
+      "bone_cv_real": 0.6215409587557751,
+      "n_gen": 7,
+      "n_real": 7,
+      "n_fit": 7,
+      "n_held": 7
+     }
+    ],
+    "track": [
+     {
+      "speed_ks_mean": 0.20917241379310342,
+      "speed_l1_mean": 0.3617931034482758,
+      "speed_mean_gen": 0.2058427046483501,
+      "speed_mean_real": 0.17186168690507042,
+      "speed_ratio": 1.1977230548310018,
+      "pose_mean_err_rel": 4.188281072275875,
+      "bone_cv_gen": 0.4973258809095582,
+      "bone_cv_real": 0.6980119226398177,
+      "n_gen": 25,
+      "n_real": 25,
+      "n_fit": 25,
+      "n_held": 25
+     },
+     {
+      "speed_ks_mean": 0.25282758620689655,
+      "speed_l1_mean": 0.43489655172413794,
+      "speed_mean_gen": 0.21846644868198364,
+      "speed_mean_real": 0.15966695079907137,
+      "speed_ratio": 1.3682634232610038,
+      "pose_mean_err_rel": 2.508165892946591,
+      "bone_cv_gen": 0.49350848381786155,
+      "bone_cv_real": 0.648849725434666,
+      "n_gen": 25,
+      "n_real": 25,
+      "n_fit": 25,
+      "n_held": 25
+     }
+    ],
+    "apprehend": [
+     {
+      "speed_ks_mean": 0.323132183908046,
+      "speed_l1_mean": 0.7474137931034484,
+      "speed_mean_gen": 0.24319394373810188,
+      "speed_mean_real": 0.15849979830959043,
+      "speed_ratio": 1.5343486006403757,
+      "pose_mean_err_rel": 3.383773592356201,
+      "bone_cv_gen": 0.3985979864885502,
+      "bone_cv_real": 0.606269998977257,
+      "n_gen": 4,
+      "n_real": 3,
+      "n_fit": 3,
+      "n_held": 3
+     },
+     {
+      "speed_ks_mean": 0.2695402298850575,
+      "speed_l1_mean": 0.6528735632183909,
+      "speed_mean_gen": 0.20180214627849472,
+      "speed_mean_real": 0.17428410832034544,
+      "speed_ratio": 1.1578918366301612,
+      "pose_mean_err_rel": 2.1432339131409153,
+      "bone_cv_gen": 0.46509931943937166,
+      "bone_cv_real": 0.43157251895041504,
+      "n_gen": 4,
+      "n_real": 3,
+      "n_fit": 3,
+      "n_held": 3
+     }
+    ],
+    "watch": [
+     {
+      "speed_ks_mean": 0.24467634603750757,
+      "speed_l1_mean": 0.3304900181488203,
+      "speed_mean_gen": 0.09924158613241195,
+      "speed_mean_real": 0.10308074024130402,
+      "speed_ratio": 0.9627558542953328,
+      "pose_mean_err_rel": 0.7328814730705553,
+      "bone_cv_gen": 0.5070460279004944,
+      "bone_cv_real": 0.6244198758122866,
+      "n_gen": 57,
+      "n_real": 57,
+      "n_fit": 56,
+      "n_held": 57
+     },
+     {
+      "speed_ks_mean": 0.4001231527093596,
+      "speed_l1_mean": 0.7032635467980296,
+      "speed_mean_gen": 0.1396472214961042,
+      "speed_mean_real": 0.07126750315150156,
+      "speed_ratio": 1.9594796410818545,
+      "pose_mean_err_rel": 1.119086091349243,
+      "bone_cv_gen": 0.49249673078035133,
+      "bone_cv_real": 0.727219118031858,
+      "n_gen": 56,
+      "n_real": 56,
+      "n_fit": 57,
+      "n_held": 56
+     }
+    ],
+    "retrieve": [
+     {
+      "speed_ks_mean": 0.14770114942528736,
+      "speed_l1_mean": 0.38620689655172413,
+      "speed_mean_gen": 0.14074825794712162,
+      "speed_mean_real": 0.1253729564199852,
+      "speed_ratio": 1.1226365076343172,
+      "pose_mean_err_rel": 3.4183053241736787,
+      "bone_cv_gen": 0.4258385448026254,
+      "bone_cv_real": 0.4186530478880749,
+      "n_gen": 6,
+      "n_real": 6,
+      "n_fit": 6,
+      "n_held": 6
+     },
+     {
+      "speed_ks_mean": 0.2149425287356322,
+      "speed_l1_mean": 0.5425287356321837,
+      "speed_mean_gen": 0.132393024794782,
+      "speed_mean_real": 0.12729004963819004,
+      "speed_ratio": 1.0400893484690803,
+      "pose_mean_err_rel": 3.2207058575550636,
+      "bone_cv_gen": 0.3937869678323054,
+      "bone_cv_real": 0.42035858602676524,
+      "n_gen": 6,
+      "n_real": 6,
+      "n_fit": 6,
+      "n_held": 6
+     }
+    ],
+    "jump": [
+     {
+      "speed_ks_mean": 0.20574712643678167,
+      "speed_l1_mean": 0.36360153256704986,
+      "speed_mean_gen": 0.18417158956221533,
+      "speed_mean_real": 0.172760391268169,
+      "speed_ratio": 1.0660521674573726,
+      "pose_mean_err_rel": 1.9348216600630896,
+      "bone_cv_gen": 0.5152244681248044,
+      "bone_cv_real": 0.6680934380001233,
+      "n_gen": 18,
+      "n_real": 18,
+      "n_fit": 18,
+      "n_held": 18
+     },
+     {
+      "speed_ks_mean": 0.34080459770114946,
+      "speed_l1_mean": 0.6272030651340997,
+      "speed_mean_gen": 0.1956854936409072,
+      "speed_mean_real": 0.14435629972031108,
+      "speed_ratio": 1.3555729401491028,
+      "pose_mean_err_rel": 3.9673791528370113,
+      "bone_cv_gen": 0.4878163391515625,
+      "bone_cv_real": 0.6500842617732996,
+      "n_gen": 18,
+      "n_real": 18,
+      "n_fit": 18,
+      "n_held": 18
+     }
+    ]
+   },
+   "aggregate": {
+    "speed_ks_mean": 0.2768473504716699,
+    "speed_l1_mean": 0.5171271944070103,
+    "speed_mean_gen": 0.15760480046958608,
+    "speed_mean_real": 0.12543504297980482,
+    "speed_ratio": 1.335942707774388,
+    "pose_mean_err_rel": 3.7716530681120317,
+    "bone_cv_gen": 0.45492292652727073,
+    "bone_cv_real": 0.6115021550740533
+   },
+   "real_half_within_fold_floor": {
+    "speed_ks_mean": 0.16923478394103234,
+    "speed_l1_mean": 0.27919969495546365,
+    "speed_mean_gen": 0.10934480665150911,
+    "speed_mean_real": 0.14108842080813241,
+    "speed_ratio": 0.7769153693922958,
+    "pose_mean_err_rel": 1.9494685675863472,
+    "bone_cv_gen": 0.6050032979836882,
+    "bone_cv_real": 0.6105389430871375
+   }
+  }
+ },
+ "text_lexicon": {
+  "conditmoding_note": "lexical, not learned",
+  "prompts_total": 280,
+  "prompt_roundtrip_ok": 280,
+  "omni_captions": 192,
+  "omni_resolved": 39,
+  "omni_unresolved": 153,
+  "omni_resolved_by_class": {
+   "stay": 9,
+   "bite": 0,
+   "track": 0,
+   "apprehend": 11,
+   "watch": 0,
+   "retrieve": 0,
+   "jump": 19
+  }
+ },
+ "upstream_facts": {
+  "animo": {
+   "present": true,
+   "offset_rows": 30,
+   "layout_359_formula": 359,
+   "license_file": false,
+   "num_tokens_nameerror_in_base_transformer": true,
+   "has_checkpoint_files": false
+  },
+  "xmogen": {
+   "note": "侦察结论：code/xmogen/README.md 为 0 字节空占位；本轮未重复克隆（零可用产物）"
+  },
+  "omnimotiongpt": {
+   "present": true,
+   "license_head": "MIT License",
+   "ylib_present": false,
+   "motion_clip_input_feats_23x6": true,
+   "checkpoint_files": []
+  }
+ },
+ "omni_dog": {
+  "source_repo": "USRC-SEA/OmniMotionGPT",
+  "source_license": "MIT (LICENSE, Copyright (c) 2024 OPPO)",
+  "source_archive_sha256": {
+   "animals_smal_joints.zip": "a3d302b30f375cd91244892529fb19df7273753641a5c4c961eee44249f1d01c",
+   "animals_maa_motions.zip": "5cf50d824d00a9b41ecbe5b20a7569998c676e6058a04f282226c5ac08d21a49",
+   "motion_captions.zip": "88d93b037b4401c45f2557ed2f57adc81b74e0876a56afadc7b0ff49174fc443"
+  },
+  "clips": 65,
+  "captions": 192,
+  "frames": 2624,
+  "joints_shape_note": "(sum_T, 35, 3) float32 — SMAL 35 关节",
+  "maa_shape_note": "(sum_T, 36, 6) float32 — 35 关节 6D 旋转 + 根平移补 3 个 0",
+  "caption_lexicon": {
+   "resolved": {
+    "stay": 9,
+    "bite": 0,
+    "track": 0,
+    "apprehend": 11,
+    "watch": 0,
+    "retrieve": 0,
+    "jump": 19
+   },
+   "unresolved_out_of_taxonomy": 153,
+   "note": "词法覆盖不是标注准确率；PSD 7 类词表无法覆盖 DeformingThings4D 的狗动作空间"
+  }
+ },
+ "artifacts": [
+  {
+   "path": "D:\\Desktop\\PR论文\\datasets\\synth_motion_samples\\k9_synth_v3\\generator_params.npz",
+   "bytes": 1103416,
+   "sha256": "c2abdae12b5e17fdb122964f062676ba442497dfbc6141dd765eb75360221694"
+  },
+  {
+   "path": "D:\\Desktop\\PR论文\\datasets\\synth_motion_samples\\k9_synth_v3\\manifest.json",
+   "bytes": 2266,
+   "sha256": "e25bb86d0249584b32a81050d6c078a365d2beec03ba84e842aa22cec4feaf7d"
+  },
+  {
+   "path": "D:\\Desktop\\PR论文\\datasets\\synth_motion_samples\\k9_synth_v3\\samples.npz",
+   "bytes": 1774129,
+   "sha256": "70e8725407ce6773c6de2e2fe93944d89c90cf7d88fea54cf776cd409c3eaa63"
+  },
+  {
+   "path": "D:\\Desktop\\PR论文\\datasets\\synth_motion_samples\\k9_synth_v3\\text_lexicon.json",
+   "bytes": 2465,
+   "sha256": "832cd26789b82f2616206e4c02d39deef200f579caf012207999fe0232b719d7"
+  },
+  {
+   "path": "D:\\Desktop\\PR论文\\datasets\\synth_motion_samples\\k9_synth_v2_baseline\\manifest.json",
+   "bytes": 374,
+   "sha256": "7a2f542243b3cb63162a345e0cd77b9ef4705e37bb9bdcdccd5bc8aa0e9484c6"
+  },
+  {
+   "path": "D:\\Desktop\\PR论文\\datasets\\synth_motion_samples\\k9_synth_v2_baseline\\samples.npz",
+   "bytes": 1806023,
+   "sha256": "5edc5a7d81d65ac080b6838117a94b91259ebc1a70745af118a4a45f4e296d8b"
+  },
+  {
+   "path": "D:\\Desktop\\PR论文\\datasets\\synth_motion_samples\\omni_dog\\omni_dog_captions.json",
+   "bytes": 13325,
+   "sha256": "384ebf7c8a147c2b36db05707670174b835b7dd649658ab45376e40ecd7480b5"
+  },
+  {
+   "path": "D:\\Desktop\\PR论文\\datasets\\synth_motion_samples\\omni_dog\\omni_dog_manifest.json",
+   "bytes": 1117,
+   "sha256": "6262b83d3308614406de95844a449fe338c63fad60e52f609c68ba889515107a"
+  },
+  {
+   "path": "D:\\Desktop\\PR论文\\datasets\\synth_motion_samples\\omni_dog\\omni_dog_motions.npz",
+   "bytes": 2930342,
+   "sha256": "fbefdd310935dbba1352db5c0241fc6b17b85acff04b6e757fc21e5cdf851f29"
+  }
+ ],
+ "artifact_total_bytes": 7633457,
+ "disk_budget_bytes": 2147483648,
+ "limits": [
+  "文本条件是词法映射，不是学习到的文本-运动对齐；不能声称具备文本生成能力。",
+  "生成器是类条件 PCA + 经验增量 bootstrap 的统计模型（无神经网络、无训练损失），不是扩散/Transformer，也不是对 AniMo/X-MoGen/Omni 的复现。",
+  "仅 7 个参考类可拟合；sit 只有 2 条且全在 val（训练 0 条），已排除。",
+  "所有指标为合成层自证：真实留出集仅 96 条 clip、7 类，最近质心命中率的置信区间很宽。",
+  "骨长逐帧投影保证骨骼刚性，但也会把真实检测抖动一并规整；骨长 CV 与真实仍有差距（见 3.2 表）。",
+  "OmniMotionGPT 无法形成可训练基线：无预训练权重、无 ylib、motion_clip.py 硬编码 23*6；本轮只归档数据。",
+  "AniMo 无 LICENSE、无权重、无 AniMo4D 数据，且 BaseTransformer 存在 _num_tokens NameError；未训练。",
+  "Kirin 未下载：dog.zip 24.5GB（npy-only 需 Range 抽取）且 captions 全部 404；本轮未投入。",
+  "X-MoGen 为空壳仓库，零可用产物。",
+  "生成器新息直接取自真实训练残差行（block bootstrap），因此生成样本在动态统计上是训练片段的「重组」，无法外推训练集未出现的运动模式；这不是可泛化的生成模型。",
+  "主口径速度均值仍为真实的 1.34 倍、姿态误差为真实折半下限的 1.9 倍——即本线路尚未达到\"与真实数据不可区分\"的保真度，只能作为受控合成层使用。",
+  "脚本依赖本机路径 D:/Desktop/PR论文/psd-framework（参考集与 syn_v2 基线）与 external/omnimotiongpt（Omni dog 数据）；缺任一项时脚本会报错而非静默降级。",
+  "白名单偏差：OmniMotionGPT 解包目录为 external/omnimotiongpt/（80MB，已被 .gitignore 的 external/ 规则覆盖），非白名单列出的 external/animo/；因 Omni 数据是唯一可用真实犬文本-运动来源且 omni_dog 归档需要可复现地重建，故保留，特此声明。"
+ ]
+}
